@@ -1,0 +1,143 @@
+/*
+ * This is a manifest file that'll be compiled into application.css, which will include all the files
+ * listed below.
+ *
+ * Any CSS (and SCSS, if configured) file within this directory, lib/assets/stylesheets, or any plugin's
+ * vendor/assets/stylesheets directory can be referenced here using a relative path.
+ *
+ * You're free to add application-wide styles to this file and they'll appear at the bottom of the
+ * compiled file so the styles you add here take precedence over styles defined in any other CSS
+ * files in this directory. Styles in this file should be added after the last require_* statement.
+ * It is generally better to create a new file per style scope.
+ *
+ *= require_tree .
+ *= require_self
+ */
+
+/* Mobile-specific fixes to prevent gaps and overflow */
+@media (max-width: 768px) {
+    body {
+        overflow-x: hidden !important;
+        width: 100vw !important;
+        max-width: 100vw !important;
+    }
+    
+    #main-content {
+        overflow-x: hidden !important;
+        width: 100vw !important;
+        max-width: 100vw !important;
+    }
+    
+    #home {
+        overflow-x: hidden !important;
+        width: 100vw !important;
+        max-width: 100vw !important;
+    }
+    
+    #home video {
+        width: 100vw !important;
+        height: 100vh !important;
+        object-fit: cover !important;
+        object-position: center !important;
+    }
+    
+    .container {
+        max-width: 100vw !important;
+        padding-left: 1rem !important;
+        padding-right: 1rem !important;
+    }
+    
+    /* Fix for any potential horizontal scroll */
+    * {
+        max-width: 100vw !important;
+    }
+    
+    /* Fix canvas elements */
+    canvas {
+        width: 100vw !important;
+        height: 100vh !important;
+        max-width: 100vw !important;
+    }
+    
+    /* Ensure navbar doesn't cause overflow */
+    #navbar {
+        width: 100vw !important;
+        max-width: 100vw !important;
+        overflow-x: hidden !important;
+    }
+    
+    /* Fix loading screen */
+    #loading-screen {
+        width: 100vw !important;
+        max-width: 100vw !important;
+        overflow-x: hidden !important;
+    }
+    
+    /* Mobile sidebar fixes */
+    #mobile-sidebar {
+        width: 288px !important;
+        max-width: 288px !important;
+        z-index: 60 !important;
+        will-change: transform !important;
+        backface-visibility: hidden !important;
+        transform-style: preserve-3d !important;
+    }
+    
+    #sidebar-overlay {
+        z-index: 55 !important;
+    }
+    
+    /* Ensure navbar stays above sidebar overlay but below sidebar */
+    #navbar {
+        z-index: 50 !important;
+    }
+    
+    /* Prevent body scroll when sidebar is open */
+    body.sidebar-open {
+        overflow: hidden !important;
+        position: fixed !important;
+        width: 100% !important;
+    }
+    
+    /* Fix any potential touch issues on mobile */
+    #mobile-sidebar * {
+        -webkit-tap-highlight-color: transparent !important;
+    }
+    
+    /* Smooth sidebar menu item animations */
+    #mobile-sidebar a {
+        transition: all 0.2s ease !important;
+    }
+    
+    #mobile-sidebar a:hover {
+        transform: translateX(-4px) !important;
+    }
+}
+
+/* Gradient animation for footer */
+@keyframes gradient {
+    0% { background-position: 0% 50%; }
+    50% { background-position: 100% 50%; }
+    100% { background-position: 0% 50%; }
+}
+
+.animate-gradient-slow {
+    animation: gradient 15s ease infinite;
+    background-size: 400% 400%;
+}
+
+/* Custom scroll animation */
+@keyframes scroll-bounce {
+    0%, 100% {
+        transform: translateY(0);
+        opacity: 0.6;
+    }
+    50% {
+        transform: translateY(12px);
+        opacity: 1;
+    }
+}
+
+.animate-scroll-bounce {
+    animation: scroll-bounce 2s ease-in-out infinite;
+}

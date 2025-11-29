@@ -1,0 +1,61 @@
+<% general_setting ||= nil %>
+<% amount_due = local_assigns[:amount] %>
+<% reference_code = local_assigns[:reference] %>
+
+<% if general_setting.blank? %>
+  <p class="text-sm text-ssgrip-silver">Bank details have not been configured yet.</p>
+  <% return %>
+<% end %>
+
+<% if general_setting.bank_account_name.present? &&
+      general_setting.bank_account_number.present? &&
+      general_setting.bank_sort_code.present? %>
+  <div class="space-y-2 text-sm">
+    <div class="flex justify-between items-start">
+      <span class="text-ssgrip-silver-dark">Account Name</span>
+      <span class="text-white text-right"><%= general_setting.bank_account_name %></span>
+    </div>
+    <div class="flex justify-between items-start">
+      <span class="text-ssgrip-silver-dark">Sort Code</span>
+      <span class="text-white font-mono"><%= general_setting.bank_sort_code %></span>
+    </div>
+    <div class="flex justify-between items-start">
+      <span class="text-ssgrip-silver-dark">Account Number</span>
+      <span class="text-white font-mono"><%= general_setting.bank_account_number %></span>
+    </div>
+    <% if general_setting.bank_iban.present? %>
+      <div class="flex justify-between items-start">
+        <span class="text-ssgrip-silver-dark">IBAN/SWIFT</span>
+        <span class="text-white font-mono text-right break-all"><%= general_setting.bank_iban %></span>
+      </div>
+    <% end %>
+  </div>
+<% else %>
+  <p class="text-sm text-ssgrip-silver">We'll email the account details shortly.</p>
+<% end %>
+
+<% if reference_code.present? || general_setting.bank_reference_hint.present? %>
+  <div class="pt-3 mt-3 border-t border-ssgrip-silver/10 space-y-2">
+    <% if reference_code.present? %>
+      <div class="flex items-center justify-between text-sm">
+        <span class="text-ssgrip-silver-dark">Payment Reference</span>
+        <span class="text-white font-medium"><%= reference_code %></span>
+      </div>
+    <% else %>
+      <p class="text-xs text-ssgrip-silver"><%= general_setting.bank_reference_hint %></p>
+    <% end %>
+    <% if amount_due.present? %>
+      <div class="flex items-center justify-between text-sm">
+        <span class="text-ssgrip-silver-dark">Amount Due</span>
+        <span class="text-lg font-semibold text-white"><%= number_to_currency(amount_due) %></span>
+      </div>
+    <% end %>
+  </div>
+<% end %>
+
+<% if general_setting.bank_instructions.present? %>
+  <div class="text-xs text-ssgrip-silver leading-relaxed pt-3 border-t border-ssgrip-silver/10">
+    <%= general_setting.bank_instructions %>
+  </div>
+<% end %>
+

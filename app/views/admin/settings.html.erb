@@ -1,0 +1,234 @@
+<div class="flex-1 overflow-y-auto bg-gradient-to-br from-gray-50 to-gray-100 dark:from-zinc-900 dark:to-zinc-800 transition duration-200">
+  <div class="max-w-8xl mx-auto p-4 sm:p-6 lg:p-8">
+    <!-- Header Section with Glassmorphism -->
+    <div class="backdrop-blur-lg bg-white/30 dark:bg-zinc-800/30 rounded-3xl p-6 mb-8 shadow-xl">
+      <div class="flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
+        <div>
+          <h1 class="text-4xl font-extrabold text-gray-900 dark:text-white mb-2">Admin Settings</h1>
+          <p class="text-gray-600 dark:text-gray-400">Configure your application settings and preferences</p>
+        </div>
+        <div class="flex items-center space-x-3">
+          <%= link_to admin_changelog_path, class: "group px-6 py-3 bg-purple-500 hover:bg-purple-600 dark:bg-purple-600 dark:hover:bg-purple-700 text-white font-medium rounded-xl shadow-lg hover:shadow-xl transition duration-200" do %>
+            <span class="flex items-center">
+              <i class='bx bx-history text-lg mr-2'></i>
+              Changelog
+            </span>
+          <% end %>
+        </div>
+      </div>
+    </div>
+
+    <!-- Settings Grid -->
+    <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-8">
+      <!-- Quick Access Card -->
+      <div class="bg-white dark:bg-zinc-800 rounded-3xl shadow-xl overflow-hidden">
+        <div class="p-8">
+          <div class="flex items-center gap-3 mb-6">
+            <div class="w-16 h-16 rounded-full bg-gradient-to-r from-yellow-400 to-orange-500 flex items-center justify-center">
+              <i class='bx bx-search-alt text-2xl text-white'></i>
+            </div>
+            <div>
+              <h3 class="text-xl font-semibold text-gray-900 dark:text-white">SEO Settings</h3>
+              <p class="text-sm text-gray-500 dark:text-gray-400">Manage search engine optimization</p>
+            </div>
+          </div>
+          
+          <div class="space-y-4">
+            <p class="text-sm text-gray-600 dark:text-gray-400">
+              Configure meta tags, Open Graph, Twitter Cards, and structured data for all pages.
+            </p>
+            
+            <%= link_to admin_seo_settings_path, class: "w-full bg-gradient-to-r from-yellow-400 to-orange-500 hover:from-yellow-500 hover:to-orange-600 text-white py-3 px-4 rounded-xl font-medium inline-flex items-center justify-center gap-2 group transition-all duration-200 shadow-lg hover:shadow-xl" do %>
+              <i class='bx bx-cog text-xl group-hover:scale-110 transition-transform'></i>
+              Manage SEO Settings
+            <% end %>
+          </div>
+        </div>
+      </div>
+
+      <!-- Stripe Settings Card -->
+      <div class="bg-white dark:bg-zinc-800 rounded-3xl shadow-xl overflow-hidden">
+        <div class="p-8">
+          <div class="flex items-center gap-3 mb-6">
+            <div class="w-16 h-16 rounded-full bg-gradient-to-r from-blue-500 to-indigo-600 flex items-center justify-center">
+              <i class='bx bx-credit-card text-2xl text-white'></i>
+            </div>
+            <div>
+              <h3 class="text-xl font-semibold text-gray-900 dark:text-white">Stripe Settings</h3>
+              <p class="text-sm text-gray-500 dark:text-gray-400">Configure payment processing</p>
+            </div>
+          </div>
+          
+          <div class="space-y-4">
+            <p class="text-sm text-gray-600 dark:text-gray-400">
+              Set up Stripe API keys and webhook configuration for card payments.
+            </p>
+            
+            <%= link_to admin_stripe_settings_path, class: "w-full bg-gradient-to-r from-blue-500 to-indigo-600 hover:from-blue-600 hover:to-indigo-700 text-white py-3 px-4 rounded-xl font-medium inline-flex items-center justify-center gap-2 group transition-all duration-200 shadow-lg hover:shadow-xl" do %>
+              <i class='bx bx-cog text-xl group-hover:scale-110 transition-transform'></i>
+              Configure Stripe
+            <% end %>
+          </div>
+        </div>
+      </div>
+      <!-- General Settings Card -->
+      <div class="bg-white dark:bg-zinc-800 rounded-3xl shadow-xl overflow-hidden">
+        <div class="p-8">
+          <div class="flex items-center gap-3 mb-6">
+            <div class="w-16 h-16 rounded-full bg-purple-100 dark:bg-purple-900/30 flex items-center justify-center">
+              <i class='bx bx-cog text-2xl text-purple-600 dark:text-purple-400'></i>
+            </div>
+            <div>
+              <h3 class="text-xl font-semibold text-gray-900 dark:text-white">General Settings</h3>
+              <p class="text-sm text-gray-500 dark:text-gray-400">Basic application configuration</p>
+            </div>
+          </div>
+
+          <%= form_with(model: @general_setting, url: update_settings_path, method: :patch, local: true) do |f| %>
+            <div class="space-y-6">
+              <!-- Toggle Switches -->
+              <div class="space-y-4">
+                <div class="flex items-center justify-between p-4 rounded-xl bg-gray-50 dark:bg-zinc-700/50 border border-gray-200 dark:border-zinc-600">
+                  <div>
+                    <h4 class="font-medium text-gray-900 dark:text-gray-100">Disable Logins/Registrations</h4>
+                    <p class="text-sm text-gray-500 dark:text-gray-400 mt-1">Temporarily disable user access</p>
+                  </div>
+                  <label class="switch">
+                    <%= f.check_box :maintenance_mode, class: "slider round", id: "maintenance_mode_toggle" %>
+                    <span class="slider round"></span>
+                  </label>
+                </div>
+
+                <div class="flex items-center justify-between p-4 rounded-xl bg-gray-50 dark:bg-zinc-700/50 border border-gray-200 dark:border-zinc-600">
+                  <div>
+                    <h4 class="font-medium text-gray-900 dark:text-gray-100">Maintenance Mode</h4>
+                    <p class="text-sm text-gray-500 dark:text-gray-400 mt-1">Enable site maintenance mode</p>
+                  </div>
+                  <label class="switch">
+                    <input type="checkbox">
+                    <span class="slider round"></span>
+                  </label>
+                </div>
+              </div>
+
+              <!-- Text Fields -->
+              <div class="space-y-4">
+                <div>
+                  <%= f.label :application_name, "Application Name", class: "block text-sm font-medium text-gray-600 dark:text-gray-300 mb-2" %>
+                  <%= f.text_field :application_name, class: "w-full px-4 py-3 rounded-xl border border-gray-200 dark:border-zinc-700 bg-white dark:bg-zinc-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-purple-500 focus:border-purple-500 focus:outline-none transition duration-200" %>
+                </div>
+
+                <div>
+                  <%= f.label :currency, "Global Currency", class: "block text-sm font-medium text-gray-600 dark:text-gray-300 mb-2" %>
+                  <%= f.select :currency, options_for_select([['USD', 'USD'], ['GBP', 'GBP'], ['EUR', 'EUR']], @general_setting.currency), {}, class: "w-full px-4 py-3 rounded-xl border border-gray-200 dark:border-zinc-700 bg-white dark:bg-zinc-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-purple-500 focus:border-purple-500 focus:outline-none transition duration-200" %>
+                </div>
+              </div>
+
+              <button type="submit" class="w-full bg-gradient-to-r from-purple-600 to-purple-700 hover:from-purple-700 hover:to-purple-800 text-white py-3 px-4 rounded-xl font-medium inline-flex items-center justify-center gap-2 group transition-all duration-200 shadow-lg hover:shadow-xl">
+                <i class='bx bx-save text-xl group-hover:scale-110 transition-transform'></i>
+                Save Changes
+              </button>
+            </div>
+          <% end %>
+        </div>
+      </div>
+
+      <!-- System Information Card -->
+      <div class="bg-white dark:bg-zinc-800 rounded-3xl shadow-xl overflow-hidden">
+        <div class="p-8">
+          <div class="flex items-center gap-3 mb-6">
+            <div class="w-16 h-16 rounded-full bg-blue-100 dark:bg-blue-900/30 flex items-center justify-center">
+              <i class='bx bx-info-circle text-2xl text-blue-600 dark:text-blue-400'></i>
+            </div>
+            <div>
+              <h3 class="text-xl font-semibold text-gray-900 dark:text-white">System Information</h3>
+              <p class="text-sm text-gray-500 dark:text-gray-400">Application details and status</p>
+            </div>
+          </div>
+
+          <div class="space-y-4">
+            <div class="p-4 rounded-xl bg-gray-50 dark:bg-zinc-700/50 border border-gray-200 dark:border-zinc-600">
+              <div class="flex justify-between items-center">
+                <span class="text-sm font-medium text-gray-600 dark:text-gray-300">Rails Version</span>
+                <span class="text-sm text-gray-900 dark:text-white font-mono"><%= Rails.version %></span>
+              </div>
+            </div>
+            
+            <div class="p-4 rounded-xl bg-gray-50 dark:bg-zinc-700/50 border border-gray-200 dark:border-zinc-600">
+              <div class="flex justify-between items-center">
+                <span class="text-sm font-medium text-gray-600 dark:text-gray-300">Ruby Version</span>
+                <span class="text-sm text-gray-900 dark:text-white font-mono"><%= RUBY_VERSION %></span>
+              </div>
+            </div>
+
+            <div class="p-4 rounded-xl bg-gray-50 dark:bg-zinc-700/50 border border-gray-200 dark:border-zinc-600">
+              <div class="flex justify-between items-center">
+                <span class="text-sm font-medium text-gray-600 dark:text-gray-300">Environment</span>
+                <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium <%= Rails.env.production? ? 'bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-400' : 'bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-400' %>">
+                  <%= Rails.env.titleize %>
+                </span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<style>
+  .switch {
+    position: relative;
+    display: inline-block;
+    width: 48px;
+    height: 24px;
+  }
+
+  .switch input {
+    opacity: 0;
+    width: 0;
+    height: 0;
+  }
+
+  .slider {
+    position: absolute;
+    cursor: pointer;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: #d1d5db;
+    transition: .4s;
+  }
+
+  .slider:before {
+    position: absolute;
+    content: "";
+    height: 18px;
+    width: 18px;
+    left: 3px;
+    bottom: 3px;
+    background-color: white;
+    transition: .4s;
+  }
+
+  input:checked + .slider {
+    background-color: #9333EA;
+  }
+
+  input:focus + .slider {
+    box-shadow: 0 0 1px #9333EA;
+  }
+
+  input:checked + .slider:before {
+    transform: translateX(24px);
+  }
+
+  .slider.round {
+    border-radius: 24px;
+  }
+
+  .slider.round:before {
+    border-radius: 50%;
+  }
+</style>

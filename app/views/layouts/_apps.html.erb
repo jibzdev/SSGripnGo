@@ -1,0 +1,418 @@
+<div class="h-screen flex flex-col bg-white dark:bg-zinc-900 transition duration-200">
+  <div class="flex-grow overflow-y-auto px-4 sm:px-6 lg:px-8 py-8">
+    <div class="max-w-8xl mx-auto mb-32">
+      <div class="text-center mb-6 sm:mb-3 mt-10">
+        <h2 class="text-3xl sm:text-4xl font-bold text-gray-900 dark:text-white transition duration-200"><%= @general_setting.application_name %> Hub</h2>
+      </div>
+      <p class="text-base sm:text-lg text-gray-600 dark:text-gray-400 mb-20 text-center">Welcome to the <%= @general_setting.application_name %> Hub! To start learning, select a product from one of the applications below.</p>
+      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
+        <% @apps.order(position: :asc).each do |app| %>
+          <% if app.status == 'Active' || (app.status == 'Admin Only' && current_user&.admin?) %>
+            <div class="bg-white dark:bg-zinc-800 rounded-2xl shadow-lg overflow-hidden transition duration-200 hover:shadow-xl">
+              <div class="h-56 relative overflow-hidden">
+                <% if app.banner_image_url.present? %>
+                  <%= image_tag app.banner_image_url, class: "w-full h-full object-cover opacity-90 transition duration-200 hover:opacity-100 transform hover:scale-105" %>
+                <% else %>
+                <script src="<%= asset_path('card-particles.js') %>"></script>
+                <script src="<%= asset_path('particles.js') %>"></script>
+                <div class="w-full h-full bg-gradient-to-br from-indigo-800 via-purple-800 to-gray-900 animate-gradient-x relative">
+                  <div class="card-particles-2" class="absolute inset-0 opacity-30"></div>
+                </div>
+                <% end %>
+                <div class="absolute inset-0 bg-gradient-to-t from-black/80 via-black/50 to-transparent flex flex-col justify-end p-6">
+                  <h3 class="text-3xl font-bold text-white mb-2 drop-shadow-lg"><%= app.name %></h3>
+                </div>
+              </div>
+              <div class="p-6">
+                <h4 class="text-md font-semibold text-gray-800 dark:text-gray-200 mb-4 border-b border-gray-200 dark:border-gray-700 pb-2 transition duration-200">Products</h4>
+                <div class="space-y-4">
+                  <% app.products.each do |product| %>
+                    <% if product.status == 'Active' || (product.status == 'Admin Only' && current_user&.admin?) %>
+                      <% user_product = UserProduct.where(user: current_user, product: product) %>
+                      <% has_active = user_product.any? { |up| up.status == 'active' || up.status == 'ending' } %>
+                      <% if has_active || product.pricing_type == 'Free' %>
+                        <%= form_with url: select_product_path, method: :post, local: true do %>
+                          <%= hidden_field_tag :product_id, product.id %>
+                          <div class="relative group">
+                            <button type="submit" class="w-full text-left px-4 py-3 rounded-xl text-gray-700 dark:text-gray-300 bg-gray-100 dark:bg-zinc-700 hover:bg-purple-50 dark:hover:bg-purple-900/30 transition duration-200 flex items-center">
+                              <div class="flex-shrink-0 mr-4">
+                                <% if product.icon_image_url.present? %>
+                                  <div class="w-12 h-12 rounded-full overflow-hidden ring-2 ring-purple-500 transition duration-200 group-hover:ring-4">
+                                    <%= image_tag product.icon_image_url, class: "w-full h-full object-cover transition duration-200 group-hover:scale-110" %>
+                                  </div>
+                                <% else %>
+                                  <div class="w-12 h-12 bg-gradient-to-br from-indigo-500 to-purple-600 rounded-full flex items-center justify-center ring-2 ring-purple-500 transition duration-200 group-hover:ring-4 relative overflow-hidden">
+                                    <div class="absolute inset-0 bg-black/20"></div>
+                                    <div class="absolute w-full h-full bg-gradient-to-t from-black/60 via-transparent to-transparent"></div>
+                                    <div class="absolute w-6 h-6 bg-white/20 rounded-full -top-2 -left-2 animate-pulse"></div>
+                                    <div class="absolute w-4 h-4 bg-white/20 rounded-full bottom-1 right-1 animate-pulse" style="animation-delay: 0.5s;"></div>
+                                    <i class='bx bx-cube-alt text-2xl text-white relative z-10 drop-shadow-lg'></i>
+                                  </div>
+                                <% end %>
+                              </div>
+                              <div class="flex-grow overflow-hidden">
+                                <div class="flex items-center">
+                                  <span class="text-lg font-semibold group-hover:text-purple-600 dark:group-hover:text-purple-400 transition duration-200 truncate"><%= product.name %></span>
+                                  <% if product.label.present? %>
+                                    <span class="ml-2 inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-purple-100 text-purple-800 dark:bg-purple-900 dark:text-purple-200">
+                                      <%= product.label %>
+                                    </span>
+                                  <% end %>
+                                </div>
+                                <p class="text-sm text-gray-500 dark:text-gray-400 mt-1 group-hover:text-purple-500 dark:group-hover:text-purple-300 transition duration-200 truncate">
+                                  Explore this product
+                                </p>
+                              </div>
+                              <i class='bx bx-chevron-right text-2xl text-gray-400 group-hover:text-purple-600 dark:group-hover:text-purple-400 transition duration-200 transform group-hover:translate-x-1'></i>
+                            </button>
+                          </div>
+                        <% end %>
+                      <% else %>
+                        <div class="relative group">
+                          <button type="button" onclick="openPaywallModal('<%= product.id %>', '<%= j product.name %>', '<%= product.pricing_type %>', '<%= product.price %>', '<%= j product.subscriptions.to_json %>')" class="w-full text-left px-4 py-3 rounded-xl text-gray-700 dark:text-gray-300 bg-gray-100 dark:bg-zinc-700 hover:bg-purple-50 dark:hover:bg-purple-900/30 transition duration-200 flex items-center">
+                            <div class="flex-shrink-0 mr-4">
+                              <% if product.icon_image_url.present? %>
+                                <div class="w-12 h-12 rounded-full overflow-hidden ring-2 ring-purple-500 transition duration-200 group-hover:ring-4">
+                                  <%= image_tag product.icon_image_url, class: "w-full h-full object-cover transition duration-200 group-hover:scale-110" %>
+                                </div>
+                              <% else %>
+                                <div class="w-12 h-12 bg-gradient-to-br from-indigo-500 to-purple-600 rounded-full flex items-center justify-center ring-2 ring-purple-500 transition duration-200 group-hover:ring-4 relative overflow-hidden">
+                                  <div class="absolute inset-0 bg-black/20"></div>
+                                  <div class="absolute w-full h-full bg-gradient-to-t from-black/60 via-transparent to-transparent"></div>
+                                  <div class="absolute w-6 h-6 bg-white/20 rounded-full -top-2 -left-2 animate-pulse"></div>
+                                  <div class="absolute w-4 h-4 bg-white/20 rounded-full bottom-1 right-1 animate-pulse" style="animation-delay: 0.5s;"></div>
+                                  <i class='bx bx-cube-alt text-2xl text-white relative z-10 drop-shadow-lg'></i>
+                                </div>
+                              <% end %>
+                            </div>
+                            <div class="flex-grow overflow-hidden">
+                              <div class="flex items-center">
+                                <span class="text-lg font-semibold group-hover:text-purple-600 dark:group-hover:text-purple-400 transition duration-200 truncate"><%= product.name %></span>
+                                <% if product.label.present? %>
+                                  <span class="ml-2 inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-purple-100 text-purple-800 dark:bg-purple-900 dark:text-purple-200">
+                                    <%= product.label %>
+                                  </span>
+                                <% end %>
+                              </div>
+                              <p class="text-sm text-gray-500 dark:text-gray-400 mt-1 group-hover:text-purple-500 dark:group-hover:text-purple-300 transition duration-200 truncate">
+                                Unlock Product
+                              </p>
+                            </div>
+                            <% if product.pricing_type == 'Subscription' || product.pricing_type == 'One Time Payment' %>
+                              <i class='bx bx-lock text-2xl text-gray-400 group-hover:text-purple-600 dark:group-hover:text-purple-400 transition duration-200 transform group-hover:translate-x-1'></i>
+                            <% end %>
+                          </button>
+                        </div>
+                      <% end %>
+                    <% end %>
+                  <% end %>
+                </div>
+              </div>
+            </div>
+          <% end %>
+        <% end %>
+      </div>
+      <% if @apps.none? { |app| app.status == 'Active' || (app.status == 'Admin Only' && current_user&.admin?) } %>
+        <div class="text-center py-16">
+          <i class='bx bx-info-circle text-6xl text-gray-400 dark:text-gray-600 mb-4'></i>
+          <p class="text-xl text-gray-600 dark:text-gray-400">No apps available at the moment. Check back later for exciting new products!</p>
+        </div>
+      <% end %>
+    </div>
+  </div>
+</div>
+
+<!-- Paywall Modal -->
+<div id="paywallModal" class="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center opacity-0 pointer-events-none transition-opacity duration-200">
+  <div class="bg-white dark:bg-zinc-800 rounded-lg shadow-xl w-full max-w-md transform transition-transform duration-200 scale-95 relative">
+    <button onclick="closePaywallModal()" class="absolute top-2 right-2 text-gray-600 dark:text-gray-400 hover:text-gray-800 dark:hover:text-gray-200 transition duration-200">
+      <i class='bx bx-x text-3xl'></i>
+    </button>
+    <div class="p-6">
+      <h3 class="text-2xl font-semibold text-gray-900 dark:text-white mb-4 text-center">
+        Unlock Product
+      </h3>
+      <div id="modalContent">
+        <!-- Content will be dynamically inserted here -->
+      </div>
+    </div>
+  </div>
+</div>
+
+
+<% if StripeSetting.first&.secret_key.present? && StripeSetting.first&.publishable_key.present? && StripeSetting.first&.webhook_secret.present? %>
+  <script>
+    function openPaywallModal(productId, productName, pricingType, price, subscriptions) {
+      const modal = document.getElementById('paywallModal');
+      const modalContent = document.getElementById('modalContent');
+      
+      let content = '';
+      const currencySymbol = '<%= @general_setting.currency == "USD" ? "$" : @general_setting.currency == "GBP" ? "£" : "€" %>';
+
+      if (pricingType === 'One Time Payment') {
+        if (!price || price <= 0) {
+          content = `
+            <div class="text-center py-4">
+              <i class='bx bx-error-circle text-4xl text-gray-400 mb-3'></i>
+              <p class="text-gray-600 dark:text-gray-400">No pricing information is available for this product.</p>
+              <p class="text-sm text-gray-500 mt-2">Please contact support for assistance.</p>
+            </div>
+          `;
+        } else {
+          content = `
+            <p class="text-gray-600 dark:text-gray-400 mb-6 text-center">This product requires a one-time payment to access.</p>
+            <div class="mb-8 space-y-3">
+              <div class="flex items-center text-gray-700 dark:text-gray-300">
+                <i class="bx bx-check-circle text-green-500 text-xl mr-3"></i>
+                <span>Access to 1000+ Practice Questions</span>
+              </div>
+              <div class="flex items-center text-gray-700 dark:text-gray-300">
+                <i class="bx bx-check-circle text-green-500 text-xl mr-3"></i>
+                <span>Comprehensive Flashcard Library</span>
+              </div>
+              <div class="flex items-center text-gray-700 dark:text-gray-300">
+                <i class="bx bx-check-circle text-green-500 text-xl mr-3"></i>
+                <span>Realistic Mock Exams</span>
+              </div>
+              <div class="flex items-center text-gray-700 dark:text-gray-300">
+                <i class="bx bx-check-circle text-green-500 text-xl mr-3"></i>
+                <span>Detailed Performance Analytics</span>
+              </div>
+              <div class="flex items-center text-gray-700 dark:text-gray-300">
+                <i class="bx bx-check-circle text-green-500 text-xl mr-3"></i>
+                <span>Study Progress Tracking</span>
+              </div>
+            </div>
+            <div class="flex justify-between items-center bg-gray-50 dark:bg-zinc-700 p-4 rounded-xl">
+              <div>
+                <span class="text-2xl font-bold text-gray-900 dark:text-white">${currencySymbol}${parseFloat(price).toFixed(2)}</span>
+              </div>
+              <button onclick="redirectToStripe(${productId}, 'one-time')" class="px-6 py-3 text-sm font-medium text-white bg-purple-600 border border-transparent rounded-lg hover:bg-purple-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-purple-500 transition duration-200">
+                Unlock Product
+              </button>
+            </div>
+            <div class="text-center text-sm text-gray-500 dark:text-gray-400 space-y-2">
+              <p>Full refund within 7 days if you're not satisfied.</p>
+            </div>
+          `;
+        }
+      } else if (pricingType === 'Subscription') {
+        try {
+          const subscriptionData = JSON.parse(subscriptions);
+          if (!subscriptionData || subscriptionData.length === 0) {
+            content = `
+              <div class="text-center py-4">
+                <i class='bx bx-error-circle text-4xl text-gray-400 mb-3'></i>
+                <p class="text-gray-600 dark:text-gray-400">No subscription plans are currently available.</p>
+                <p class="text-sm text-gray-500 mt-2">Please check back later or contact support.</p>
+              </div>
+            `;
+          } else {
+            const currencySymbols = {
+              'USD': '$',
+              'GBP': '£',
+              'EUR': '€'
+            };
+            const currencySymbol = currencySymbols['<%= @general_setting.currency %>'] || '$';
+            
+            content = `
+              <p class="text-gray-600 dark:text-gray-400 mb-6 text-center">This product requires a subscription to access.</p>
+              <div class="mb-8 space-y-3">
+                <div class="flex items-center text-gray-700 dark:text-gray-300">
+                  <i class="bx bx-check-circle text-green-500 text-xl mr-3"></i>
+                  <span>Access to 1000+ Practice Questions</span>
+                </div>
+                <div class="flex items-center text-gray-700 dark:text-gray-300">
+                  <i class="bx bx-check-circle text-green-500 text-xl mr-3"></i>
+                  <span>Comprehensive Flashcard Library</span>
+                </div>
+                <div class="flex items-center text-gray-700 dark:text-gray-300">
+                  <i class="bx bx-check-circle text-green-500 text-xl mr-3"></i>
+                  <span>Realistic Mock Exams</span>
+                </div>
+                <div class="flex items-center text-gray-700 dark:text-gray-300">
+                  <i class="bx bx-check-circle text-green-500 text-xl mr-3"></i>
+                  <span>Detailed Performance Analytics</span>
+                </div>
+                <div class="flex items-center text-gray-700 dark:text-gray-300">
+                  <i class="bx bx-check-circle text-green-500 text-xl mr-3"></i>
+                  <span>Study Progress Tracking</span>
+                </div>
+              </div>
+              <div class="grid grid-cols-2 gap-3 mb-6">
+                ${subscriptionData.map((sub, index) => `
+                  ${sub.duration_price && sub.duration_price > 0 ? `
+                    <label class="relative">
+                      <input type="radio" name="subscription-period" id="sub-${index}"
+                            value="${sub.duration_price}"
+                            data-price="${sub.duration_price}"
+                            data-duration="${sub.duration}"
+                            class="peer sr-only"
+                            ${index === 0 ? 'checked' : ''}
+                            onclick="document.getElementById('subscription-price').textContent = '${currencySymbol}' + parseFloat(${sub.duration_price}).toFixed(2)">
+                      <div class="p-3 rounded-xl border-2 border-gray-200 dark:border-zinc-600 cursor-pointer 
+                                  peer-checked:border-purple-500 peer-checked:bg-purple-50 dark:peer-checked:bg-purple-900/30
+                                  hover:border-purple-400 dark:hover:border-purple-400 transition-all duration-200">
+                        <div class="flex items-center justify-between">
+                          <div>
+                            <h4 class="font-medium text-gray-900 dark:text-white text-sm">${sub.display_name || 'Subscription'}</h4>
+                            <p class="text-xs text-gray-500 dark:text-gray-400">${sub.duration || 'Period not specified'}</p>
+                          </div>
+                          <div class="flex items-center">
+                            <span class="text-sm font-semibold text-gray-900 dark:text-white">${currencySymbol}${parseFloat(sub.duration_price).toFixed(2)}</span>
+                            <div class="ml-2 text-purple-500 invisible peer-checked:visible">
+                              <i class="bx bx-check-circle text-lg"></i>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    </label>
+                  ` : ''}
+                `).join('')}
+              </div>
+              <div class="flex justify-between items-center bg-gray-50 dark:bg-zinc-700 p-4 rounded-xl mb-4">
+                <div>
+                  <span id="subscription-price" class="text-2xl font-bold text-gray-900 dark:text-white">${currencySymbol}${parseFloat(subscriptionData[0].duration_price).toFixed(2)}</span>
+                </div>
+                <button onclick="redirectToStripe(${productId}, 'subscription')" class="px-6 py-3 text-sm font-medium text-white bg-purple-600 border border-transparent rounded-lg hover:bg-purple-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-purple-500 transition duration-200">
+                  Unlock Product
+                </button>
+              </div>
+              <div class="text-center text-sm text-gray-500 dark:text-gray-400 space-y-2">
+                <p>Cancel your subscription at any time.</p>
+              </div>
+            `;
+          }
+        } catch (error) {
+          content = `
+            <div class="text-center py-4">
+              <i class='bx bx-error-circle text-4xl text-red-500 mb-3'></i>
+              <p class="text-gray-600 dark:text-gray-400">Sorry, there was an error loading the subscription information.</p>
+              <p class="text-sm text-gray-500 mt-2">Please try again later or contact support.</p>
+            </div>
+          `;
+        }
+      }
+      
+      modalContent.innerHTML = content;
+      
+      modal.classList.remove('opacity-0', 'pointer-events-none');
+      setTimeout(() => {
+        modal.querySelector('.transform').classList.remove('scale-95');
+        modal.querySelector('.transform').classList.add('scale-100');
+      }, 10);
+    }
+
+    function closePaywallModal() {
+      const modal = document.getElementById('paywallModal');
+      modal.querySelector('.transform').classList.remove('scale-100');
+      modal.querySelector('.transform').classList.add('scale-95');
+      setTimeout(() => {
+        modal.classList.remove('opacity-100');
+        modal.classList.add('opacity-0', 'pointer-events-none');
+      }, 50);
+    }
+
+    function redirectToStripe(productId, type) {
+      let subscriptionPrice = null;
+      let subscriptionDuration = null;
+
+      if (type === 'subscription') {
+        const selectedSubscription = document.querySelector('input[name="subscription-period"]:checked');
+        if (!selectedSubscription) {
+          alert('Please select a subscription period.');
+          return;
+        }
+        subscriptionPrice = selectedSubscription.dataset.price;
+        subscriptionDuration = selectedSubscription.dataset.duration;
+      }
+
+      fetch('<%= create_payment_path %>', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'X-CSRF-Token': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
+        },
+        body: JSON.stringify({ 
+          product_id: productId, 
+          subscription_price: subscriptionPrice,
+          subscription_duration: subscriptionDuration
+        })
+      })
+      .then(response => response.json())
+      .then(data => {
+        if (data.url) {
+          window.location.href = data.url;
+        } else {
+          alert('Failed to create payment session. Please try again.');
+        }
+      })
+      .catch(error => {
+        console.error('Error:', error);
+        alert('An error occurred. Please try again.');
+      });
+    }
+  </script>
+<% else %>
+  <script>
+    function openPaywallModal(productId, productName, pricingType, price, subscriptions) {
+      const modal = document.getElementById('paywallModal');
+      const modalContent = document.getElementById('modalContent');
+      
+      const isAdmin = <%= current_user&.admin? %>;
+      
+      const content = isAdmin ? `
+        <div class="text-center">
+          <div class="mb-4">
+            <svg class="w-16 h-16 mx-auto text-gray-400 dark:text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+            </svg>
+          </div>
+          <h2 class="mb-2 text-xl font-semibold text-gray-900 dark:text-gray-100">
+            Stripe Not Configured
+          </h2>
+          <p class="mb-4 text-gray-600 dark:text-gray-400">
+            Payment processing is currently unavailable. Stripe integration needs to be configured.
+          </p>
+          <a href="/admin/payment_modules" class="inline-flex items-center px-4 py-2 text-sm font-medium text-white bg-blue-600 rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 dark:bg-blue-500 dark:hover:bg-blue-600 dark:focus:ring-offset-gray-800">
+            <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"></path>
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
+            </svg>
+            Configure Stripe Settings
+          </a>
+        </div>
+      ` : `
+        <div class="text-center">
+          <div class="mb-4">
+            <svg class="w-16 h-16 mx-auto text-red-500 dark:text-red-400" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path>
+            </svg>
+          </div>
+          <h2 class="mb-2 text-xl font-semibold text-gray-900 dark:text-gray-100">
+            Critical System Issue
+          </h2>
+          <p class="text-gray-600 dark:text-gray-400">
+            Please contact support immediately.
+          </p>
+        </div>
+      `;
+
+      modalContent.innerHTML = content;
+      modal.classList.remove('opacity-0', 'pointer-events-none');
+      modal.classList.add('opacity-100');
+      modal.querySelector('.transform').classList.remove('scale-95');
+      modal.querySelector('.transform').classList.add('scale-100');
+    }
+
+    function closePaywallModal() {
+      const modal = document.getElementById('paywallModal');
+      modal.querySelector('.transform').classList.remove('scale-100');
+      modal.querySelector('.transform').classList.add('scale-95');
+      setTimeout(() => {
+        modal.classList.remove('opacity-100');
+        modal.classList.add('opacity-0', 'pointer-events-none');
+      }, 50);
+    }
+  </script>
+<% end %>

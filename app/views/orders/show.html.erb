@@ -1,0 +1,217 @@
+<section class="bg-ssgrip-darkest min-h-screen text-white pb-24">
+  <div class="mx-auto max-w-7xl px-6 pt-12 space-y-8">
+    <!-- Header Section -->
+    <div class="flex flex-col md:flex-row md:items-start md:justify-between gap-4">
+      <div>
+        <p class="text-xs text-ssgrip-silver-dark uppercase tracking-wider mb-2">Order Detail</p>
+        <h1 class="text-3xl font-semibold text-white mb-1">
+          <%= @order.order_number %>
+        </h1>
+        <p class="text-sm text-ssgrip-silver">Placed <%= l(@order.created_at, format: :long) %></p>
+      </div>
+      <div class="flex flex-wrap gap-2">
+        <span class="px-3 py-1 rounded-full text-xs font-semibold <%= status_badge_class(@order.status) %>">
+          <%= @order.status.humanize %>
+        </span>
+        <span class="px-3 py-1 rounded-full text-xs font-semibold <%= status_badge_class(@order.payment_status) %>">
+          <%= @order.payment_status.humanize %>
+        </span>
+        <span class="px-3 py-1 rounded-full text-xs font-semibold <%= status_badge_class(@order.fulfillment_status) %>">
+          <%= @order.fulfillment_status.humanize %>
+        </span>
+      </div>
+    </div>
+
+    <!-- Order Progress Timeline -->
+    <div class="rounded-lg border border-ssgrip-silver/10 bg-ssgrip-darker/30 p-6 md:p-8">
+      <h2 class="text-lg font-semibold text-white mb-8">Order Progress</h2>
+      
+      <% current_step = order_progress_step(@order) %>
+      <div class="relative">
+        <!-- Progress Line -->
+        <div class="absolute top-5 left-0 right-0 h-px bg-ssgrip-silver/20 hidden md:block"></div>
+        <div class="absolute top-5 left-0 h-px bg-white hidden md:block transition-all duration-1000 ease-out" 
+             style="width: <%= ((current_step - 1) * 25).to_f %>%"></div>
+        
+        <!-- Timeline Steps -->
+        <div class="grid grid-cols-1 md:grid-cols-5 gap-6 md:gap-2 relative">
+          <% order_progress_stages.each do |stage| %>
+            <% is_completed = stage[:step] <= current_step %>
+            <% is_current = stage[:step] == current_step %>
+            <div class="flex flex-col items-center text-center">
+              <!-- Icon Circle -->
+              <div class="relative z-10 mb-3">
+                <div class="w-10 h-10 rounded-full flex items-center justify-center transition-all duration-300 <%= is_completed ? 'bg-white' : 'bg-ssgrip-darker border border-ssgrip-silver/30' %>">
+                  <% if stage[:icon] == 'clock' %>
+                    <svg class="w-5 h-5 <%= is_completed ? 'text-ssgrip-darkest' : 'text-ssgrip-silver-dark' %> transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                    </svg>
+                  <% elsif stage[:icon] == 'credit-card' %>
+                    <svg class="w-5 h-5 <%= is_completed ? 'text-ssgrip-darkest' : 'text-ssgrip-silver-dark' %> transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z"/>
+                    </svg>
+                  <% elsif stage[:icon] == 'cog' %>
+                    <svg class="w-5 h-5 <%= is_completed ? 'text-ssgrip-darkest' : 'text-ssgrip-silver-dark' %> <%= is_current ? 'animate-spin' : '' %> transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"/>
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/>
+                    </svg>
+                  <% elsif stage[:icon] == 'package' %>
+                    <svg class="w-5 h-5 <%= is_completed ? 'text-ssgrip-darkest' : 'text-ssgrip-silver-dark' %> transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"/>
+                    </svg>
+                  <% elsif stage[:icon] == 'check' %>
+                    <svg class="w-5 h-5 <%= is_completed ? 'text-ssgrip-darkest' : 'text-ssgrip-silver-dark' %> transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                    </svg>
+                  <% end %>
+                </div>
+              </div>
+              
+              <!-- Label -->
+              <p class="text-xs font-medium <%= is_completed ? 'text-white' : 'text-ssgrip-silver-dark' %> transition-colors">
+                <%= stage[:label] %>
+              </p>
+              
+              <% if is_current %>
+                <div class="mt-2 w-1.5 h-1.5 rounded-full bg-white"></div>
+              <% end %>
+            </div>
+          <% end %>
+        </div>
+      </div>
+    </div>
+
+    <!-- Main Content Grid -->
+    <div class="grid gap-6 md:grid-cols-[2fr_1fr] lg:grid-cols-[1.5fr_1fr]">
+      <!-- Order Items Section -->
+      <div class="space-y-4">
+        <h2 class="text-sm font-semibold text-white mb-2">Order Items</h2>
+        
+        <% @order.order_items.each do |item| %>
+          <div class="rounded-lg border border-ssgrip-silver/10 bg-ssgrip-darker/30 p-5 hover:border-ssgrip-silver/20 transition-all">
+            <div class="flex items-start justify-between gap-4">
+              <div class="flex-1">
+                <p class="text-xs uppercase tracking-wider text-ssgrip-silver-dark mb-1">
+                  <%= item.product&.category&.name || 'General' %>
+                </p>
+                <h3 class="text-base font-medium text-white mb-2">
+                  <%= item.product_name %>
+                </h3>
+                <div class="flex items-center gap-3 text-xs text-ssgrip-silver">
+                  <span><%= number_to_currency(item.unit_price) %> each</span>
+                  <span>·</span>
+                  <span>Qty <%= item.quantity %></span>
+                </div>
+              </div>
+              <div class="text-right">
+                <p class="text-xs text-ssgrip-silver-dark mb-1">Total</p>
+                <p class="text-xl font-semibold text-white">
+                  <%= number_to_currency(item.total_price) %>
+                </p>
+              </div>
+            </div>
+          </div>
+        <% end %>
+      </div>
+
+      <!-- Sidebar Section -->
+      <div class="space-y-4">
+        <!-- Bank Transfer Details (shown after order placement) -->
+        <% if @order.payment_status != 'paid' %>
+          <div class="rounded-lg border border-ssgrip-silver/10 bg-ssgrip-darker/30 p-5 space-y-4">
+            <h2 class="text-sm font-semibold text-white">Bank Transfer Details</h2>
+
+            <%= render "bank_transfer_details",
+                       general_setting: @general_setting,
+                       amount: @order.total,
+                       reference: @order.order_number %>
+
+            <p class="text-xs text-ssgrip-silver-dark">Quote the reference exactly so we can match your payment. We'll update the order as soon as the funds land.</p>
+          </div>
+        <% end %>
+
+        <!-- Order Summary -->
+        <div class="rounded-lg border border-ssgrip-silver/10 bg-ssgrip-darker/30 p-5 space-y-3">
+          <h2 class="text-sm font-semibold text-white">Order Summary</h2>
+          
+          <div class="space-y-2 text-sm">
+            <div class="flex justify-between items-center">
+              <span class="text-ssgrip-silver">Subtotal</span>
+              <span class="text-white"><%= number_to_currency(@order.subtotal) %></span>
+            </div>
+            <div class="flex justify-between items-center">
+              <span class="text-ssgrip-silver">Shipping</span>
+              <span class="text-white"><%= @order.shipping_total.positive? ? number_to_currency(@order.shipping_total) : 'TBC' %></span>
+            </div>
+            <div class="flex justify-between items-center pb-2 border-b border-ssgrip-silver/10">
+              <span class="text-ssgrip-silver">Tax</span>
+              <span class="text-white"><%= number_to_currency(@order.tax_total) %></span>
+            </div>
+            <div class="flex justify-between items-center pt-1">
+              <span class="text-base font-semibold text-white">Total</span>
+              <span class="text-xl font-semibold text-white">
+                <%= number_to_currency(@order.total) %>
+              </span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Shipping & Delivery -->
+        <div class="rounded-lg border border-ssgrip-silver/10 bg-ssgrip-darker/30 p-5 space-y-4">
+          <h2 class="text-sm font-semibold text-white">Shipping & Delivery</h2>
+          
+          <div class="space-y-3">
+            <div class="text-sm">
+              <p class="text-white font-medium"><%= @order.shipping_method || 'Standard courier (DPD)' %></p>
+              <p class="text-xs text-ssgrip-silver-dark mt-1">ETA: <%= @order.delivery_eta %></p>
+            </div>
+            
+            <% if @order.shipping_address.present? %>
+              <div class="pt-2 border-t border-ssgrip-silver/10">
+                <p class="text-xs uppercase tracking-wider text-ssgrip-silver-dark mb-2">Delivery Address</p>
+                <div class="text-sm text-ssgrip-silver leading-relaxed">
+                  <%= formatted_address(@order.shipping_address) %>
+                </div>
+              </div>
+            <% end %>
+            
+            <% if @order.billing_address.present? %>
+              <div class="pt-2 border-t border-ssgrip-silver/10">
+                <p class="text-xs uppercase tracking-wider text-ssgrip-silver-dark mb-2">Billing Address</p>
+                <div class="text-sm text-ssgrip-silver leading-relaxed">
+                  <%= formatted_address(@order.billing_address) %>
+                </div>
+              </div>
+            <% end %>
+            
+            <div class="pt-2 border-t border-ssgrip-silver/10">
+              <p class="text-xs uppercase tracking-wider text-ssgrip-silver-dark mb-2">Contact</p>
+              <div class="space-y-1 text-sm text-ssgrip-silver">
+                <p><%= @order.email %></p>
+                <% if @order.phone_number.present? %>
+                  <p><%= @order.phone_number %></p>
+                <% end %>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Payment Information -->
+        <div class="rounded-lg border border-ssgrip-silver/10 bg-ssgrip-darker/30 p-5 space-y-3">
+          <h2 class="text-sm font-semibold text-white">Payment Status</h2>
+          
+          <% if (payment = @order.payments.successful.first) %>
+            <div class="text-sm">
+              <p class="text-white mb-1">Paid <%= number_to_currency(payment.amount) %> via <%= payment.payment_method.humanize %></p>
+              <p class="text-xs text-ssgrip-silver-dark">Transaction: <%= payment.reference_code || payment.stripe_charge_id || 'Pending reference' %></p>
+            </div>
+          <% else %>
+            <p class="text-sm text-ssgrip-silver">
+              This order has not been paid yet. Complete payment to start fulfillment.
+            </p>
+          <% end %>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>

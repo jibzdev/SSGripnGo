@@ -1,0 +1,332 @@
+<section class="bg-ssgrip-darkest min-h-screen text-white pb-24">
+  <div class="mx-auto max-w-6xl px-6 pt-24">
+    <!-- Back Navigation -->
+    <%= link_to catalog_path, class: "inline-flex items-center gap-2 text-sm text-ssgrip-silver hover:text-white transition-colors group mb-8" do %>
+      <svg class="w-4 h-4 group-hover:-translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/>
+      </svg>
+      <span class="font-medium">Back to Catalog</span>
+    <% end %>
+
+    <% all_images = @product.all_images %>
+    <% primary_image = all_images.first %>
+
+    <!-- Product Grid -->
+    <div class="grid gap-12 lg:grid-cols-2">
+      <!-- Left Column: Image Gallery -->
+      <div class="space-y-4">
+        <!-- Main Product Image -->
+        <div class="aspect-square overflow-hidden bg-ssgrip-darker/30 relative <%= primary_image.present? ? 'cursor-pointer' : '' %>" id="main-image">
+          <% if primary_image.present? %>
+            <img src="<%= primary_image %>" alt="<%= @product.name %>" class="w-full h-full object-cover">
+          <% else %>
+            <div class="w-full h-full flex items-center justify-center">
+              <svg class="w-12 h-12 text-ssgrip-silver-dark opacity-20" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="1">
+                <circle cx="12" cy="12" r="10"/>
+                <circle cx="12" cy="12" r="3" fill="currentColor"/>
+              </svg>
+            </div>
+          <% end %>
+          
+          <!-- Zoom Icon Overlay -->
+          <div class="absolute inset-0 bg-ssgrip-darkest/0 hover:bg-ssgrip-darkest/40 transition-colors flex items-center justify-center opacity-0 hover:opacity-100">
+            <div class="w-12 h-12 rounded-full bg-white/10 backdrop-blur-md border border-white/20 flex items-center justify-center">
+              <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0zM10 7v3m0 0v3m0-3h3m-3 0H7"/>
+              </svg>
+            </div>
+          </div>
+
+          <!-- Stock Badge -->
+          <% if @product.in_stock? %>
+            <div class="absolute top-3 right-3 w-2 h-2 rounded-full bg-white opacity-80"></div>
+          <% end %>
+        </div>
+
+        <!-- Thumbnail Gallery -->
+        <% if all_images.size > 1 %>
+          <div class="grid grid-cols-4 gap-3" id="thumbnail-gallery">
+            <% all_images.each_with_index do |image, index| %>
+              <div class="aspect-square overflow-hidden bg-ssgrip-darker/30 cursor-pointer border border-transparent hover:border-ssgrip-silver/20 transition-colors" data-image="<%= image %>" data-index="<%= index %>">
+                <img src="<%= image %>" alt="<%= @product.name %> - Image <%= index + 1 %>" class="w-full h-full object-cover hover:opacity-90 transition-opacity">
+              </div>
+            <% end %>
+          </div>
+        <% end %>
+      </div>
+
+      <!-- Right Column: Product Info -->
+      <div class="space-y-6">
+        <!-- Product Header -->
+        <div class="space-y-3">
+          <p class="text-xs uppercase tracking-wider text-ssgrip-silver-dark"><%= @product.category&.name || 'Steering Wheel' %></p>
+          <h1 class="text-3xl font-medium text-white leading-snug"><%= @product.name %></h1>
+          <div class="flex items-baseline gap-3 pt-2">
+            <span class="text-2xl font-semibold text-ssgrip-silver-bright"><%= @product.display_price %></span>
+            <% if @product.compare_price? %>
+              <span class="text-base text-ssgrip-silver-dark line-through"><%= number_to_currency(@product.compare_at_price, unit: @product.currency_symbol) %></span>
+            <% end %>
+          </div>
+        </div>
+
+        <!-- Add to Cart -->
+        <% if @product.in_stock? %>
+          <%= form_with url: add_item_basket_path(product_id: @product.id), method: :post, class: "flex gap-3" do %>
+            <input type="number" min="1" max="<%= @product.max_purchaseable_quantity %>" name="quantity" value="1"
+                   class="w-20 px-3 py-2 text-sm bg-transparent border-b border-ssgrip-silver/20 text-white text-center focus:outline-none focus:border-white transition-colors">
+            <button type="submit" class="flex-1 px-6 py-2 text-sm border-b border-ssgrip-silver/20 hover:border-white text-white font-medium transition-colors text-left">
+              Add to Basket
+            </button>
+          <% end %>
+        <% else %>
+          <div class="py-2 border-b border-ssgrip-silver/20">
+            <p class="text-sm text-ssgrip-silver-dark">Currently out of stock</p>
+          </div>
+        <% end %>
+
+        <!-- Product Info Cards -->
+        <div class="space-y-3 pt-4">
+          <!-- Description -->
+          <details class="group" open>
+            <summary class="flex items-center justify-between cursor-pointer py-3 border-b border-ssgrip-silver/20 hover:border-ssgrip-silver/40 transition-colors">
+              <span class="text-xs uppercase tracking-widest text-ssgrip-silver-dark">Description</span>
+              <svg class="w-4 h-4 text-ssgrip-silver-dark group-open:rotate-180 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
+              </svg>
+            </summary>
+            <div class="py-4 text-sm text-ssgrip-silver leading-relaxed">
+              <%= @product.description || @product.short_description %>
+            </div>
+          </details>
+
+          <!-- Specifications -->
+          <% if @product.specifications.present? %>
+            <details class="group">
+              <summary class="flex items-center justify-between cursor-pointer py-3 border-b border-ssgrip-silver/20 hover:border-ssgrip-silver/40 transition-colors">
+                <span class="text-xs uppercase tracking-widest text-ssgrip-silver-dark">Specifications</span>
+                <svg class="w-4 h-4 text-ssgrip-silver-dark group-open:rotate-180 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
+                </svg>
+              </summary>
+              <div class="py-4 space-y-2">
+                <% @product.specifications.each do |key, value| %>
+                  <div class="flex justify-between items-center text-sm">
+                    <span class="text-ssgrip-silver-dark"><%= key.to_s.humanize %></span>
+                    <span class="text-white font-medium"><%= value %></span>
+                  </div>
+                <% end %>
+              </div>
+            </details>
+          <% end %>
+
+          <!-- Delivery Info -->
+          <details class="group">
+            <summary class="flex items-center justify-between cursor-pointer py-3 border-b border-ssgrip-silver/20 hover:border-ssgrip-silver/40 transition-colors">
+              <span class="text-xs uppercase tracking-widest text-ssgrip-silver-dark">Delivery</span>
+              <svg class="w-4 h-4 text-ssgrip-silver-dark group-open:rotate-180 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
+              </svg>
+            </summary>
+            <div class="py-4 space-y-2 text-sm text-ssgrip-silver">
+              <% if @product.delivery_window.present? %>
+                <p><span class="text-white font-medium">Estimated Delivery:</span> <%= @product.delivery_window %></p>
+              <% end %>
+              <p><span class="text-white font-medium">UK Shipping:</span> 2-3 business days</p>
+              <p><span class="text-white font-medium">International:</span> 5-10 business days</p>
+              <p class="text-xs text-ssgrip-silver-dark pt-2">Free shipping on orders over £100</p>
+            </div>
+          </details>
+
+          <!-- Fitment -->
+          <details class="group">
+            <summary class="flex items-center justify-between cursor-pointer py-3 border-b border-ssgrip-silver/20 hover:border-ssgrip-silver/40 transition-colors">
+              <span class="text-xs uppercase tracking-widest text-ssgrip-silver-dark">Fitment</span>
+              <svg class="w-4 h-4 text-ssgrip-silver-dark group-open:rotate-180 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
+              </svg>
+            </summary>
+            <div class="py-4 text-sm text-ssgrip-silver leading-relaxed">
+              <p class="mb-2">Universal fit with standard 6-bolt pattern (70mm PCD)</p>
+              <p class="mb-2">Compatible with most quick-release hubs</p>
+              <p class="text-xs text-ssgrip-silver-dark">Contact us if you have specific fitment questions</p>
+            </div>
+          </details>
+
+          <!-- Stock Status -->
+          <div class="py-3 border-b border-ssgrip-silver/20">
+            <div class="flex items-center justify-between text-sm">
+              <span class="text-xs uppercase tracking-widest text-ssgrip-silver-dark">Availability</span>
+              <% if @product.in_stock? %>
+                <span class="text-white font-medium"><%= @product.stock_quantity %> in stock</span>
+              <% else %>
+                <span class="text-ssgrip-silver-dark">Out of stock</span>
+              <% end %>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Related Products -->
+    <% if @related_products.present? %>
+      <div class="mt-20 pt-12 border-t border-ssgrip-silver/10">
+        <div class="flex items-center justify-between mb-8">
+          <h3 class="text-xl font-medium text-white">More from this collection</h3>
+          <%= link_to catalog_path(category: @product.category&.slug), class: "text-xs uppercase tracking-widest text-ssgrip-silver-dark hover:text-white transition-colors" do %>
+            View All
+          <% end %>
+        </div>
+        
+        <div class="grid gap-8 sm:grid-cols-2 lg:grid-cols-4">
+          <% @related_products.each do |related| %>
+            <%= link_to product_path(related), class: "group block" do %>
+              <!-- Product Image -->
+              <div class="aspect-[3/4] overflow-hidden bg-ssgrip-darker/30 mb-4 relative">
+                <% primary_related = related.primary_image %>
+                <% hover_related = related.hover_image %>
+                <% if primary_related.present? %>
+                  <img src="<%= primary_related %>" alt="<%= related.name %>" class="w-full h-full object-cover transition-opacity duration-500 <%= hover_related.present? ? 'group-hover:opacity-0' : 'group-hover:opacity-90' %>">
+                  <% if hover_related.present? %>
+                    <img src="<%= hover_related %>" alt="<%= related.name %> hover" class="absolute inset-0 w-full h-full object-cover opacity-0 transition-opacity duration-500 group-hover:opacity-100">
+                  <% end %>
+                <% else %>
+                  <div class="w-full h-full flex items-center justify-center">
+                    <svg class="w-12 h-12 text-ssgrip-silver-dark opacity-20" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="1">
+                      <circle cx="12" cy="12" r="10"/>
+                      <circle cx="12" cy="12" r="3" fill="currentColor"/>
+                    </svg>
+                  </div>
+                <% end %>
+                
+                <!-- Stock Indicator -->
+                <% if related.in_stock? %>
+                  <div class="absolute top-3 right-3 w-2 h-2 rounded-full bg-white opacity-80"></div>
+                <% end %>
+              </div>
+              
+              <!-- Product Info -->
+              <div class="space-y-2">
+                <h3 class="text-base font-medium text-white group-hover:text-ssgrip-accent-bright transition-colors leading-snug"><%= related.name %></h3>
+                <div class="flex items-center justify-between">
+                  <p class="text-xs text-ssgrip-silver-dark uppercase tracking-wider"><%= related.category&.name || 'Steering Wheel' %></p>
+                  <span class="text-sm font-semibold text-ssgrip-silver-bright"><%= related.display_price %></span>
+                </div>
+              </div>
+            <% end %>
+          <% end %>
+        </div>
+      </div>
+    <% end %>
+  </div>
+</section>
+
+<!-- Image Modal Overlay -->
+<div id="image-modal" class="fixed inset-0 bg-ssgrip-darkest/95 backdrop-blur-md z-50 hidden items-center justify-center p-6">
+  <button id="close-modal" class="absolute top-6 right-6 w-10 h-10 rounded-full bg-white/10 hover:bg-white/20 border border-white/20 flex items-center justify-center transition-colors">
+    <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+    </svg>
+  </button>
+  
+  <div class="relative max-w-5xl max-h-full">
+    <img id="modal-image" src="" alt="<%= @product.name %>" class="max-w-full max-h-[90vh] object-contain">
+    
+    <!-- Navigation Arrows -->
+    <% if all_images.size > 1 %>
+      <button id="prev-image" class="absolute left-4 top-1/2 -translate-y-1/2 w-10 h-10 rounded-full bg-white/10 hover:bg-white/20 border border-white/20 flex items-center justify-center transition-colors">
+        <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/>
+        </svg>
+      </button>
+      <button id="next-image" class="absolute right-4 top-1/2 -translate-y-1/2 w-10 h-10 rounded-full bg-white/10 hover:bg-white/20 border border-white/20 flex items-center justify-center transition-colors">
+        <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
+        </svg>
+      </button>
+    <% end %>
+  </div>
+  
+  <!-- Image Counter -->
+  <div class="absolute bottom-6 left-1/2 -translate-x-1/2 px-4 py-2 rounded-full bg-white/10 backdrop-blur-md border border-white/20">
+    <p class="text-sm text-white font-medium">
+      <span id="current-image-num">1</span> / <span id="total-images"><%= all_images.size %></span>
+    </p>
+  </div>
+</div>
+
+<script>
+  document.addEventListener('DOMContentLoaded', function() {
+    const modal = document.getElementById('image-modal');
+    const modalImage = document.getElementById('modal-image');
+    const mainImage = document.getElementById('main-image');
+    const closeModal = document.getElementById('close-modal');
+    const thumbnails = document.querySelectorAll('#thumbnail-gallery > div');
+    const prevBtn = document.getElementById('prev-image');
+    const nextBtn = document.getElementById('next-image');
+    const currentNumSpan = document.getElementById('current-image-num');
+    const mainImageTag = mainImage ? mainImage.querySelector('img') : null;
+    const allImages = <%= raw(all_images.to_json) %>;
+    let currentIndex = 0;
+    if (allImages.length === 0) {
+      currentNumSpan.textContent = 0;
+    }
+    
+    function openModal(index) {
+      if (!allImages[index]) return;
+      currentIndex = index;
+      modalImage.src = allImages[index];
+      currentNumSpan.textContent = index + 1;
+      modal.classList.remove('hidden');
+      modal.classList.add('flex');
+    }
+    
+    function closeModalFunc() {
+      modal.classList.add('hidden');
+      modal.classList.remove('flex');
+    }
+    
+    function showPrevImage() {
+      currentIndex = (currentIndex - 1 + allImages.length) % allImages.length;
+      openModal(currentIndex);
+    }
+    
+    function showNextImage() {
+      currentIndex = (currentIndex + 1) % allImages.length;
+      openModal(currentIndex);
+    }
+    
+    // Event Listeners
+    if (primaryImageAvailable()) {
+      mainImage.addEventListener('click', () => openModal(0));
+    }
+    closeModal.addEventListener('click', closeModalFunc);
+    modal.addEventListener('click', (e) => {
+      if (e.target === modal) closeModalFunc();
+    });
+    
+    thumbnails.forEach((thumb, index) => {
+      thumb.addEventListener('click', () => {
+        if (allImages[index]) {
+          if (mainImageTag) mainImageTag.src = allImages[index];
+          openModal(index);
+        }
+      });
+    });
+    
+    if (prevBtn) prevBtn.addEventListener('click', showPrevImage);
+    if (nextBtn) nextBtn.addEventListener('click', showNextImage);
+    
+    function primaryImageAvailable() {
+      return allImages.length > 0 && Boolean(mainImage);
+    }
+    
+    // Keyboard navigation
+    document.addEventListener('keydown', (e) => {
+      if (!modal.classList.contains('hidden') && allImages.length > 0) {
+        if (e.key === 'Escape') closeModalFunc();
+        if (e.key === 'ArrowLeft') showPrevImage();
+        if (e.key === 'ArrowRight') showNextImage();
+      }
+    });
+  });
+</script>

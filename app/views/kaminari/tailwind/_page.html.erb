@@ -1,0 +1,10 @@
+<li>
+  <% if page.current? %>
+    <span class="inline-flex h-10 w-10 items-center justify-center rounded-xl bg-amber-500 text-black font-semibold shadow-lg shadow-amber-500/30">
+      <%= page.number %>
+    </span>
+  <% else %>
+    <%= link_to page.number, url, remote: remote, class: "inline-flex h-10 w-10 items-center justify-center rounded-xl border border-white/10 text-white hover:border-amber-400 hover:text-amber-300 transition" %>
+  <% end %>
+</li>
+

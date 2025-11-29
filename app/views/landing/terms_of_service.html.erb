@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <%= seo_meta_tags('terms_of_service') %>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <%= csrf_meta_tags %>
+    <%= csp_meta_tag %>
+    
+    <%= stylesheet_link_tag "tailwind", "data-turbo-track": "reload" %>
+    <%= stylesheet_link_tag "application", "data-turbo-track": "reload" %>
+    
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Poppins:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+    
+    <script src="https://unpkg.com/boxicons@2.1.4/dist/boxicons.js"></script>
+    <link href='https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css' rel='stylesheet'>
+</head>
+<body class="bg-black text-white font-sans">
+
+    <!-- Navigation -->
+    <nav class="bg-black/90 backdrop-blur-sm border-b border-white/10">
+        <div class="container mx-auto px-4 sm:px-6 py-4">
+            <div class="flex items-center justify-between">
+                <div class="flex items-center">
+                    <div class="relative">
+                        <div class="absolute inset-0 bg-gradient-to-r from-yellow-400 to-orange-500 rounded-full blur-lg opacity-50"></div>
+                        <img src="/assets/images/logo3.png" alt="RK Customs" class="relative w-16 h-10 object-contain">
+                    </div>
+                </div>
+                
+                <div class="flex items-center space-x-4">
+                    <%= link_to root_path, class: "px-4 py-2 text-sm font-semibold text-white/90 hover:text-yellow-400 transition-colors duration-300" do %>
+                        <i class='bx bx-home text-lg mr-2'></i>
+                        Home
+                    <% end %>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <div class="min-h-screen bg-gradient-to-br from-black via-zinc-900 to-black">
+        <div class="container mx-auto px-4 sm:px-6 py-16">
+            <div class="max-w-4xl mx-auto">
+                <!-- Header -->
+                <div class="text-center mb-12">
+                    <h1 class="text-4xl md:text-5xl font-bold text-white mb-4">
+                        Terms of Service
+                    </h1>
+                    <p class="text-zinc-400 text-lg">Last updated: <%= Date.current.strftime("%B %d, %Y") %></p>
+                </div>
+
+                <!-- Content -->
+                <div class="bg-zinc-900/50 backdrop-blur-xl border border-zinc-800/50 rounded-3xl p-8 md:p-12">
+                    <div class="prose prose-invert prose-lg max-w-none">
+                        <h2 class="text-2xl font-semibold text-yellow-400 mb-4">1. Acceptance of Terms</h2>
+                        <p class="text-zinc-300 mb-6">
+                            By accessing and using the services provided by RK Customs, you accept and agree to be bound by the terms and provision of this agreement.
+                        </p>
+
+                        <h2 class="text-2xl font-semibold text-yellow-400 mb-4">2. Services</h2>
+                        <p class="text-zinc-300 mb-6">
+                            RK Customs provides automotive services including but not limited to window tinting, paint protection, vehicle wrapping, and detailing services.
+                        </p>
+
+                        <h2 class="text-2xl font-semibold text-yellow-400 mb-4">3. Booking and Appointments</h2>
+                        <p class="text-zinc-300 mb-6">
+                            All appointments must be booked through our official booking system. Cancellations require 24 hours notice. Late cancellations may incur a fee.
+                        </p>
+
+                        <h2 class="text-2xl font-semibold text-yellow-400 mb-4">4. Payment Terms</h2>
+                        <p class="text-zinc-300 mb-6">
+                            Payment is required upon completion of services. We accept cash, card, and bank transfer. All prices are subject to change without notice.
+                        </p>
+
+                        <h2 class="text-2xl font-semibold text-yellow-400 mb-4">5. Warranty and Liability</h2>
+                        <p class="text-zinc-300 mb-6">
+                            Our services come with a standard warranty. RK Customs is not liable for any damage that may occur during normal use or wear and tear.
+                        </p>
+
+                        <h2 class="text-2xl font-semibold text-yellow-400 mb-4">6. Privacy and Data</h2>
+                        <p class="text-zinc-300 mb-6">
+                            We respect your privacy and protect your personal information. Please refer to our Privacy Policy for detailed information.
+                        </p>
+
+                        <h2 class="text-2xl font-semibold text-yellow-400 mb-4">7. Contact Information</h2>
+                        <p class="text-zinc-300 mb-6">
+                            For questions about these terms, please contact us at rkcustomsportsmouth@gmail.com or call +44 7459731426.
+                        </p>
+                    </div>
+
+                    <!-- Action Buttons -->
+                    <div class="mt-12 pt-8 border-t border-zinc-800/50 flex flex-col sm:flex-row gap-4 justify-center">
+                        <%= link_to root_path, class: "px-8 py-3 bg-gradient-to-r from-yellow-400 to-orange-500 hover:from-yellow-500 hover:to-orange-600 text-black font-semibold rounded-xl transition-all duration-200 shadow-lg hover:shadow-xl" do %>
+                            <i class='bx bx-home text-lg mr-2'></i>
+                            Back to Home
+                        <% end %>
+                        
+                        <%= link_to privacy_policy_path, class: "px-8 py-3 border border-zinc-600 text-white hover:bg-zinc-800 font-semibold rounded-xl transition-all duration-200" do %>
+                            <i class='bx bx-shield text-lg mr-2'></i>
+                            Privacy Policy
+                        <% end %>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Toast Notifications -->
+    <%= render 'layouts/toast' %>
+</body>
+</html>

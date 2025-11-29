@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <%= seo_meta_tags('contact') %>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <%= csrf_meta_tags %>
+  <%= csp_meta_tag %>
+  <%= stylesheet_link_tag "tailwind", "data-turbo-track": "reload" %>
+  <%= stylesheet_link_tag "application", "data-turbo-track": "reload" %>
+  <link href='https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css' rel='stylesheet'>
+</head>
+<body class="bg-black text-white">
+  <%= render 'landing/navbar' %>
+
+  <main class="pt-24 pb-16">
+    <div class="container mx-auto px-4 sm:px-6 lg:px-8 max-w-7xl">
+      <!-- Header -->
+      <div class="mb-12">
+        <h1 class="text-4xl md:text-5xl font-bold text-white mb-3">Contact Us</h1>
+        <p class="text-lg text-zinc-400">Get in touch with RK Customs</p>
+      </div>
+
+      <!-- Main Content Grid -->
+      <div class="grid lg:grid-cols-2 gap-8">
+        <!-- Left Column - Contact Information -->
+        <div class="space-y-6">
+          <!-- Location Card -->
+          <div class="bg-zinc-900/60 border border-zinc-800 rounded-xl p-6">
+            <div class="flex items-start gap-4">
+              <div class="w-12 h-12 bg-yellow-500/10 rounded-lg flex items-center justify-center flex-shrink-0">
+                <i class='bx bxs-map text-yellow-400 text-2xl'></i>
+              </div>
+              <div>
+                <h3 class="text-lg font-semibold text-white mb-2">Location</h3>
+                <p class="text-zinc-300 leading-relaxed">
+                  Unit 10D, Jays Industrial Park<br>
+                  Claybank Road<br>
+                  Portsmouth, PO3 5SX<br>
+                  United Kingdom
+                </p>
+              </div>
+            </div>
+          </div>
+
+          <!-- Phone Card -->
+          <div class="bg-zinc-900/60 border border-zinc-800 rounded-xl p-6">
+            <div class="flex items-start gap-4">
+              <div class="w-12 h-12 bg-blue-500/10 rounded-lg flex items-center justify-center flex-shrink-0">
+                <i class='bx bxs-phone text-blue-400 text-2xl'></i>
+              </div>
+              <div>
+                <h3 class="text-lg font-semibold text-white mb-2">Phone</h3>
+                <a href="tel:+447459731426" class="text-zinc-300 hover:text-yellow-400 transition-colors">
+                  +44 7459 731426
+                </a>
+              </div>
+            </div>
+          </div>
+
+          <!-- Email Card -->
+          <div class="bg-zinc-900/60 border border-zinc-800 rounded-xl p-6">
+            <div class="flex items-start gap-4">
+              <div class="w-12 h-12 bg-purple-500/10 rounded-lg flex items-center justify-center flex-shrink-0">
+                <i class='bx bxs-envelope text-purple-400 text-2xl'></i>
+              </div>
+              <div class="min-w-0">
+                <h3 class="text-lg font-semibold text-white mb-2">Email</h3>
+                <a href="mailto:rkcustomsportsmouth@gmail.com" class="text-zinc-300 hover:text-yellow-400 transition-colors break-all">
+                  rkcustomsportsmouth@gmail.com
+                </a>
+              </div>
+            </div>
+          </div>
+
+          <!-- Business Hours Card -->
+          <div class="bg-zinc-900/60 border border-zinc-800 rounded-xl p-6">
+            <div class="flex items-start gap-4 mb-4">
+              <div class="w-12 h-12 bg-green-500/10 rounded-lg flex items-center justify-center flex-shrink-0">
+                <i class='bx bxs-time text-green-400 text-2xl'></i>
+              </div>
+              <div>
+                <h3 class="text-lg font-semibold text-white">Business Hours</h3>
+              </div>
+            </div>
+            <div class="space-y-3 pl-16">
+              <div class="flex justify-between items-center">
+                <span class="text-zinc-300">Monday - Friday</span>
+                <span class="text-white font-medium">9:00 AM - 6:00 PM</span>
+              </div>
+              <div class="border-t border-zinc-800"></div>
+              <div class="flex justify-between items-center">
+                <span class="text-zinc-300">Saturday</span>
+                <span class="text-white font-medium">10:00 AM - 4:00 PM</span>
+              </div>
+              <div class="border-t border-zinc-800"></div>
+              <div class="flex justify-between items-center">
+                <span class="text-zinc-300">Sunday</span>
+                <span class="text-red-400 font-medium">Closed</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Right Column - Map -->
+        <div class="lg:sticky lg:top-24 h-fit">
+          <div class="bg-zinc-900/60 border border-zinc-800 rounded-xl overflow-hidden">
+            <div class="aspect-[4/3] w-full">
+              <iframe 
+                class="w-full h-full" 
+                loading="lazy" 
+                referrerpolicy="no-referrer-when-downgrade" 
+                allowfullscreen 
+                src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d2545.796070726907!2d-1.058!3d50.818!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x0:0x0!2z!5e0!3m2!1sen!2suk!4v1700000000000">
+              </iframe>
+            </div>
+            <div class="p-4 border-t border-zinc-800">
+              <a href="https://maps.google.com/?q=Unit+10D+Jays+Industrial+park+Claybank+Road+Portsmouth+PO3+5SX" 
+                 target="_blank" 
+                 rel="noopener noreferrer"
+                 class="flex items-center justify-center gap-2 w-full px-6 py-3 bg-yellow-400 hover:bg-yellow-500 text-black font-semibold rounded-lg transition-colors">
+                <i class='bx bx-directions text-xl'></i>
+                <span>Get Directions</span>
+              </a>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <%= javascript_include_tag "landing" %>
+</body>
+</html>

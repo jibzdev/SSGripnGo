@@ -1,0 +1,17 @@
+<div class="min-h-screen bg-gradient-to-br from-zinc-950 via-zinc-900 to-zinc-950">
+  <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+    <div class="mb-8">
+      <div class="flex items-center gap-3 mb-3">
+        <%= link_to admin_services_path, class: "p-2 hover:bg-zinc-800 rounded-lg transition-colors" do %>
+          <i class='bx bx-arrow-back text-zinc-400 text-xl'></i>
+        <% end %>
+        <h1 class="text-3xl md:text-4xl font-bold bg-gradient-to-r from-white via-zinc-100 to-zinc-300 bg-clip-text text-transparent">
+          Edit Service
+        </h1>
+      </div>
+      <p class="text-zinc-500 ml-12">Update <%= @service.name %> settings and pricing</p>
+    </div>
+
+    <%= render 'form' %>
+  </div>
+</div>

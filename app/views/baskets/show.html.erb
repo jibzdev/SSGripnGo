@@ -1,0 +1,160 @@
+<section class="bg-ssgrip-darkest min-h-screen text-white pb-24">
+  <div class="mx-auto max-w-6xl px-6 pt-24">
+    <!-- Page Header -->
+    <div class="mb-10">
+      <h1 class="text-3xl font-black text-white mb-2">Your Basket</h1>
+      <p class="text-ssgrip-silver text-sm">
+        Review your selections before checkout
+      </p>
+    </div>
+
+    <% if @basket.basket_items.any? %>
+      <div class="grid gap-8 lg:grid-cols-[2fr_1fr]">
+        <!-- Basket Items -->
+        <div class="space-y-4">
+          <% @basket.basket_items.includes(:product).each do |item| %>
+            <div class="group bg-ssgrip-darker/30 border border-ssgrip-silver/10 rounded-xl p-6 hover:border-ssgrip-silver/20 transition-all">
+              <div class="flex flex-col md:flex-row gap-6">
+                <!-- Product Image -->
+                <% basket_image = item.product&.primary_image || item.product_snapshot['hero_image'] %>
+                <div class="w-full md:w-32 h-32 flex-shrink-0 overflow-hidden rounded-lg bg-ssgrip-darkest">
+                  <% if basket_image.present? %>
+                    <img src="<%= basket_image %>" alt="<%= item.product_snapshot['name'] || item.product&.name %>" class="w-full h-full object-cover">
+                  <% else %>
+                    <div class="w-full h-full flex items-center justify-center">
+                      <svg class="w-12 h-12 text-ssgrip-silver-dark opacity-30" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="1">
+                        <circle cx="12" cy="12" r="10"/>
+                        <circle cx="12" cy="12" r="3" fill="currentColor"/>
+                      </svg>
+                    </div>
+                  <% end %>
+                </div>
+
+                <!-- Product Info -->
+                <div class="flex-1 space-y-2">
+                  <div>
+                    <p class="text-xs uppercase tracking-wider text-ssgrip-silver-dark"><%= item.product&.category&.name || 'Steering Wheel' %></p>
+                    <h2 class="text-xl font-bold text-white"><%= item.product_snapshot['name'] || item.product&.name %></h2>
+                    <% if item.product&.delivery_window || item.product_snapshot['delivery_window'] %>
+                      <p class="text-sm text-ssgrip-silver mt-1">
+                        <svg class="w-4 h-4 inline-block mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/>
+                        </svg>
+                        <%= item.product&.delivery_window || item.product_snapshot['delivery_window'] %>
+                      </p>
+                    <% end %>
+                  </div>
+
+                  <!-- Quantity & Actions -->
+                  <div class="flex flex-wrap items-center gap-4 pt-3">
+                    <%= form_with url: update_item_basket_path(item), method: :patch, local: true, class: "flex items-center gap-3" do %>
+                      <div class="flex items-center gap-2">
+                        <label class="text-xs text-ssgrip-silver-dark uppercase tracking-wider">Qty:</label>
+                        <input type="number" name="quantity" min="1" value="<%= item.quantity %>"
+                               class="w-16 rounded-lg bg-ssgrip-darkest border border-ssgrip-silver/20 px-3 py-2 text-center text-white focus:outline-none focus:border-ssgrip-accent transition-colors">
+                      </div>
+                      <button class="text-sm font-medium text-ssgrip-accent hover:text-ssgrip-accent-bright transition-colors">Update</button>
+                    <% end %>
+                    <%= button_to 'Remove', remove_item_basket_path(item), method: :delete, class: "text-sm font-medium text-ssgrip-silver-dark hover:text-red-400 transition-colors" %>
+                  </div>
+                </div>
+
+                <!-- Price -->
+                <div class="text-right">
+                  <p class="text-xs text-ssgrip-silver-dark uppercase tracking-wider mb-1">Item Total</p>
+                  <p class="text-2xl font-black text-white"><%= number_to_currency(item.total_price, unit: item.product&.currency_symbol || '£') %></p>
+                </div>
+              </div>
+            </div>
+          <% end %>
+        </div>
+
+        <!-- Order Summary Sidebar -->
+        <div class="lg:sticky lg:top-24 h-fit">
+          <div class="bg-ssgrip-darker/30 border border-ssgrip-silver/10 rounded-xl p-6 space-y-6">
+            <h3 class="text-xl font-black text-white">Order Summary</h3>
+            
+            <div class="space-y-3">
+              <div class="flex justify-between text-sm">
+                <span class="text-ssgrip-silver">Subtotal</span>
+                <span class="text-white font-semibold"><%= number_to_currency(@basket.subtotal) %></span>
+              </div>
+              <div class="flex justify-between text-sm">
+                <span class="text-ssgrip-silver">Shipping</span>
+                <span class="text-white font-semibold">
+                  <%= @basket.shipping_total.positive? ? number_to_currency(@basket.shipping_total) : 'At checkout' %>
+                </span>
+              </div>
+            </div>
+
+            <div class="border-t border-ssgrip-silver/10 pt-4">
+              <div class="flex justify-between items-baseline">
+                <span class="text-lg font-bold text-white">Total</span>
+                <span class="text-2xl font-black text-white"><%= number_to_currency(@basket.total.positive? ? @basket.total : @basket.subtotal) %></span>
+              </div>
+            </div>
+
+            <div class="space-y-3 pt-2">
+              <%= link_to new_order_path, class: "block w-full text-center rounded-lg bg-white text-ssgrip-darkest font-bold py-3 hover:bg-ssgrip-accent-bright transition-all group" do %>
+                <span class="inline-flex items-center gap-2">
+                  Proceed to Checkout
+                  <svg class="w-4 h-4 group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
+                  </svg>
+                </span>
+              <% end %>
+              
+              <%= link_to catalog_path, class: "block w-full text-center rounded-lg border border-ssgrip-silver/30 text-white font-semibold py-3 hover:border-ssgrip-silver hover:bg-ssgrip-silver/5 transition-all" do %>
+                Continue Shopping
+              <% end %>
+              
+              <%= button_to basket_path, method: :delete, class: "block w-full text-center rounded-lg border border-ssgrip-silver/20 text-ssgrip-silver-dark py-3 font-semibold hover:border-red-400/50 hover:text-red-400 transition-all", data: { confirm: 'Are you sure you want to empty your basket?' } do %>
+                Empty Basket
+              <% end %>
+            </div>
+
+            <!-- Trust Indicators -->
+            <div class="pt-4 border-t border-ssgrip-silver/10 space-y-2">
+              <div class="flex items-center gap-2 text-xs text-ssgrip-silver">
+                <svg class="w-4 h-4 text-ssgrip-accent" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                </svg>
+                Secure checkout
+              </div>
+              <div class="flex items-center gap-2 text-xs text-ssgrip-silver">
+                <svg class="w-4 h-4 text-ssgrip-accent" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
+                </svg>
+                30-day return policy
+              </div>
+              <div class="flex items-center gap-2 text-xs text-ssgrip-silver">
+                <svg class="w-4 h-4 text-ssgrip-accent" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"/>
+                </svg>
+                Free shipping over £200
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    <% else %>
+      <!-- Empty Basket State -->
+      <div class="relative">
+        <div class="text-center py-24 border border-ssgrip-silver/10 rounded-xl bg-ssgrip-darker/30">
+          <svg class="w-16 h-16 mx-auto mb-4 text-ssgrip-silver-dark opacity-50" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z"/>
+          </svg>
+          <h2 class="text-2xl font-black text-white mb-2">Your basket is empty</h2>
+          <p class="text-ssgrip-silver mb-6">Discover our premium steering wheel collection</p>
+          <%= link_to catalog_path, class: "inline-flex items-center gap-2 px-6 py-3 rounded-lg bg-white text-ssgrip-darkest font-bold hover:bg-ssgrip-accent-bright transition-all group" do %>
+            <span>Browse Catalog</span>
+            <svg class="w-4 h-4 group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
+            </svg>
+          <% end %>
+        </div>
+      </div>
+    <% end %>
+  </div>
+</section>
+

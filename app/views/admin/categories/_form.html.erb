@@ -1,0 +1,35 @@
+<%= form_with model: [:admin, @category], class: "space-y-6" do |f| %>
+  <div class="grid gap-4 md:grid-cols-2">
+    <div>
+      <%= f.label :name, class: "text-sm text-ssgrip-silver-dark uppercase tracking-wider mb-2 block" %>
+      <%= f.text_field :name, class: "w-full rounded-lg bg-ssgrip-darkest/50 border border-ssgrip-silver/20 px-4 py-3 text-white focus:outline-none focus:border-ssgrip-silver transition-colors" %>
+    </div>
+    <div>
+      <%= f.label :slug, class: "text-sm text-ssgrip-silver-dark uppercase tracking-wider mb-2 block" %>
+      <%= f.text_field :slug, class: "w-full rounded-lg bg-ssgrip-darkest/50 border border-ssgrip-silver/20 px-4 py-3 text-white focus:outline-none focus:border-ssgrip-silver transition-colors" %>
+    </div>
+  </div>
+  <div>
+    <%= f.label :description, class: "text-sm text-ssgrip-silver-dark uppercase tracking-wider mb-2 block" %>
+    <%= f.text_area :description, rows: 3, class: "w-full rounded-lg bg-ssgrip-darkest/50 border border-ssgrip-silver/20 px-4 py-3 text-white focus:outline-none focus:border-ssgrip-silver transition-colors" %>
+  </div>
+  <div class="grid gap-4 md:grid-cols-2">
+    <div>
+      <%= f.label :position, class: "text-sm text-ssgrip-silver-dark uppercase tracking-wider mb-2 block" %>
+      <%= f.number_field :position, class: "w-full rounded-lg bg-ssgrip-darkest/50 border border-ssgrip-silver/20 px-4 py-3 text-white focus:outline-none focus:border-ssgrip-silver transition-colors" %>
+    </div>
+    <div>
+      <%= f.label :hero_image, class: "text-sm text-ssgrip-silver-dark uppercase tracking-wider mb-2 block" %>
+      <%= f.text_field :hero_image, class: "w-full rounded-lg bg-ssgrip-darkest/50 border border-ssgrip-silver/20 px-4 py-3 text-white focus:outline-none focus:border-ssgrip-silver transition-colors" %>
+    </div>
+  </div>
+  <div class="flex items-center gap-3">
+    <label class="inline-flex items-center gap-2 text-sm text-white">
+      <%= f.check_box :active %>
+      Active on storefront
+    </label>
+  </div>
+  <div class="flex justify-end">
+    <%= f.submit class: "inline-flex items-center rounded-lg bg-white text-ssgrip-darkest font-bold px-8 py-4 hover:bg-ssgrip-accent-bright transition-all" %>
+  </div>
+<% end %>

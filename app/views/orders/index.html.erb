@@ -1,0 +1,62 @@
+<section class="bg-ssgrip-darkest min-h-screen text-white pb-24">
+  <div class="mx-auto max-w-7xl px-6 pt-12">
+    <div class="flex items-center justify-between mb-10">
+      <div>
+        <p class="text-xs text-ssgrip-silver-dark uppercase tracking-[0.3em] mb-2">Orders</p>
+        <h1 class="text-4xl font-black text-white">Order History</h1>
+      </div>
+      <%= link_to track_orders_path, class: "inline-flex items-center gap-2 rounded-lg border border-ssgrip-silver/30 px-5 py-3 text-sm font-semibold text-white hover:border-ssgrip-silver hover:bg-ssgrip-silver/5 transition-all" do %>
+        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/>
+        </svg>
+        <span>Track Order</span>
+      <% end %>
+    </div>
+
+    <% if @orders.any? %>
+      <div class="space-y-4">
+        <% @orders.each do |order| %>
+          <div class="rounded-xl border border-ssgrip-silver/10 bg-ssgrip-darker/30 p-6 hover:border-ssgrip-silver/20 transition-all">
+            <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+              <div>
+                <p class="text-xs text-ssgrip-silver-dark uppercase tracking-wider mb-1">Order <span class="font-semibold text-white"><%= order.order_number %></span></p>
+                <p class="text-xl font-bold text-white mb-1"><%= number_to_currency(order.total) %></p>
+                <p class="text-sm text-ssgrip-silver">Placed <%= l(order.created_at, format: :long) %></p>
+              </div>
+              <div class="flex items-center gap-4">
+                <span class="px-3 py-1 rounded-full text-xs font-semibold <%= status_badge_class(order.status) %>">
+                  <%= order.status.humanize %>
+                </span>
+                <span class="px-3 py-1 rounded-full text-xs font-semibold <%= status_badge_class(order.payment_status) %>">
+                  <%= order.payment_status.humanize %>
+                </span>
+              </div>
+              <div class="flex items-center gap-3">
+                <%= link_to order_path(order.order_number), class: "inline-flex items-center gap-2 rounded-lg border border-ssgrip-silver/30 px-4 py-2 text-sm font-semibold text-white hover:border-ssgrip-silver hover:bg-ssgrip-silver/5 transition-all" do %>
+                  <span>View Details</span>
+                  <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
+                  </svg>
+                <% end %>
+              </div>
+            </div>
+          </div>
+        <% end %>
+      </div>
+    <% else %>
+      <div class="text-center py-24 border border-ssgrip-silver/10 rounded-xl bg-ssgrip-darker/30">
+        <svg class="w-16 h-16 mx-auto text-ssgrip-silver-dark mb-4 opacity-50" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z"/>
+        </svg>
+        <h3 class="text-xl font-bold text-white mb-2">No orders yet</h3>
+        <p class="text-ssgrip-silver mb-6">You haven't placed any orders yet.</p>
+        <%= link_to catalog_path, class: "inline-flex items-center gap-2 px-6 py-3 rounded-lg bg-white text-ssgrip-darkest font-bold hover:bg-ssgrip-accent-bright transition-all" do %>
+          <span>Browse Catalog</span>
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
+          </svg>
+        <% end %>
+      </div>
+    <% end %>
+  </div>
+</section>

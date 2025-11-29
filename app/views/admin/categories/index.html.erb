@@ -1,0 +1,57 @@
+<section class="bg-ssgrip-darkest min-h-screen text-white">
+  <div class="max-w-7xl mx-auto px-6 py-8 space-y-6">
+    <!-- Header -->
+    <div class="flex items-center justify-between">
+      <div>
+        <p class="text-xs text-ssgrip-silver-dark uppercase tracking-[0.3em] mb-2">Organization</p>
+        <h1 class="text-4xl font-black text-white mb-1">Categories</h1>
+        <p class="text-sm text-ssgrip-silver">Organize storefront inventory.</p>
+      </div>
+      <%= link_to new_admin_category_path, class: "inline-flex items-center gap-2 rounded-lg bg-white text-ssgrip-darkest font-bold px-6 py-3 hover:bg-ssgrip-accent-bright transition-all" do %>
+        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/>
+        </svg>
+        <span>New Category</span>
+      <% end %>
+    </div>
+
+    <!-- Categories Table -->
+    <div class="rounded-xl border border-ssgrip-silver/10 bg-ssgrip-darker/30 overflow-hidden">
+      <div class="overflow-x-auto">
+        <table class="w-full text-left text-sm">
+          <thead>
+            <tr class="text-xs uppercase text-ssgrip-silver-dark border-b border-ssgrip-silver/10">
+              <th class="py-4 px-6 font-bold tracking-wider">Name</th>
+              <th class="px-6 font-bold tracking-wider">Slug</th>
+              <th class="px-6 font-bold tracking-wider">Status</th>
+              <th class="px-6 font-bold tracking-wider">Position</th>
+              <th class="px-6 text-right font-bold tracking-wider">Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            <% @categories.each do |category| %>
+              <tr class="border-b border-ssgrip-silver/10 hover:bg-ssgrip-silver/5 transition-colors">
+                <td class="py-4 px-6 text-white font-semibold"><%= category.name %></td>
+                <td class="px-6 text-ssgrip-silver"><%= category.slug %></td>
+                <td class="px-6">
+                  <span class="px-2 py-1 rounded-lg text-xs font-semibold <%= category.active ? 'bg-green-500/10 text-green-400 border border-green-500/20' : 'bg-ssgrip-silver/5 text-ssgrip-silver-dark border border-ssgrip-silver/10' %>">
+                    <%= category.active ? 'Active' : 'Hidden' %>
+                  </span>
+                </td>
+                <td class="px-6 text-white font-medium"><%= category.position %></td>
+                <td class="px-6 text-right space-x-3">
+                  <%= link_to edit_admin_category_path(category), class: "text-white hover:text-ssgrip-accent-bright transition-colors text-sm font-medium" do %>
+                    Edit
+                  <% end %>
+                  <%= link_to admin_category_path(category), data: { turbo_method: :delete, turbo_confirm: 'Delete category?' }, class: "text-red-400 hover:text-red-300 transition-colors text-sm font-medium" do %>
+                    Delete
+                  <% end %>
+                </td>
+              </tr>
+            <% end %>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</section>

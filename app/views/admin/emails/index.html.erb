@@ -1,0 +1,50 @@
+<div class="min-h-screen bg-black text-white">
+  <div class="container mx-auto px-6 py-12">
+    <div class="mb-8">
+      <h1 class="text-4xl font-bold text-white mb-4">Email Templates</h1>
+      <p class="text-white/60 text-lg">Preview and manage your email templates</p>
+    </div>
+
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+      <% @email_templates.each do |template| %>
+        <div class="bg-white/5 backdrop-blur-xl rounded-2xl border border-white/20 p-6 shadow-2xl hover:bg-white/10 transition-all duration-300">
+          <div class="flex items-center justify-between mb-4">
+            <h3 class="text-xl font-semibold text-white"><%= template[:name] %></h3>
+            <div class="w-3 h-3 bg-green-400 rounded-full"></div>
+          </div>
+          
+          <p class="text-white/60 text-sm mb-6"><%= template[:description] %></p>
+          
+          <div class="flex gap-3">
+            <%= link_to admin_email_preview_path(template: template[:template]), 
+                class: "flex-1 bg-gradient-to-r from-yellow-400 to-orange-500 text-black font-semibold py-2 px-4 rounded-lg text-center hover:from-yellow-300 hover:to-orange-400 transition-all duration-300",
+                target: "_blank" do %>
+              <i class='bx bx-show mr-2'></i>
+              Preview
+            <% end %>
+            
+            <%= link_to "/app/views/user_mailer/#{template[:template]}.html.erb", 
+                class: "flex-1 bg-white/10 text-white font-semibold py-2 px-4 rounded-lg text-center hover:bg-white/20 transition-all duration-300",
+                target: "_blank" do %>
+              <i class='bx bx-edit mr-2'></i>
+              Edit
+            <% end %>
+          </div>
+        </div>
+      <% end %>
+    </div>
+
+    <div class="mt-12 bg-blue-500/10 border border-blue-500/20 rounded-xl p-6">
+      <h3 class="text-lg font-semibold text-blue-400 mb-3 flex items-center">
+        <i class='bx bx-info-circle mr-2'></i>
+        How to Edit Templates
+      </h3>
+      <div class="text-white/80 text-sm space-y-2">
+        <p>• <strong>Preview:</strong> Click "Preview" to see how the email looks with sample data</p>
+        <p>• <strong>Edit:</strong> Click "Edit" to open the template file in your editor</p>
+        <p>• <strong>Variables:</strong> Use ERB syntax like <code class="bg-white/10 px-2 py-1 rounded">&lt;%= @user.username %&gt;</code> for dynamic content</p>
+        <p>• <strong>Styling:</strong> All styles are inline for email client compatibility</p>
+      </div>
+    </div>
+  </div>
+</div>

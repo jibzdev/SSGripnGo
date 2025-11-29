@@ -1,0 +1,258 @@
+<%= form_with(model: [:admin, seo_setting], local: true, class: "space-y-8") do |f| %>
+  <% if seo_setting.errors.any? %>
+    <div class="bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-xl p-4">
+      <div class="flex">
+        <div class="flex-shrink-0">
+          <i class="bx bx-error-circle text-red-400 text-xl"></i>
+        </div>
+        <div class="ml-3">
+          <h3 class="text-sm font-medium text-red-800 dark:text-red-200">
+            <%= pluralize(seo_setting.errors.count, "error") %> prohibited this SEO setting from being saved:
+          </h3>
+          <div class="mt-2 text-sm text-red-700 dark:text-red-300">
+            <ul class="list-disc pl-5 space-y-1">
+              <% seo_setting.errors.full_messages.each do |message| %>
+                <li><%= message %></li>
+              <% end %>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </div>
+  <% end %>
+
+  <!-- Basic SEO Information -->
+  <div class="bg-white dark:bg-zinc-800 rounded-3xl shadow-xl p-8">
+    <div class="flex items-center gap-3 mb-6">
+      <div class="w-12 h-12 rounded-full bg-gradient-to-r from-yellow-400 to-orange-500 flex items-center justify-center">
+        <i class='bx bx-search-alt text-xl text-white'></i>
+      </div>
+      <div>
+        <h3 class="text-xl font-semibold text-gray-900 dark:text-white">Basic SEO Information</h3>
+        <p class="text-sm text-gray-500 dark:text-gray-400">Core search engine optimization settings</p>
+      </div>
+    </div>
+
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+      <div>
+        <%= f.label :page_name, "Page Name", class: "block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2" %>
+        <%= f.select :page_name, 
+            options_for_select([
+              ['Landing Page', 'landing'],
+              ['Login Page', 'login'],
+              ['Register Page', 'register'],
+              ['Terms of Service', 'terms_of_service'],
+              ['Privacy Policy', 'privacy_policy']
+            ], seo_setting.page_name), 
+            { prompt: 'Select a page' }, 
+            { class: "w-full px-4 py-3 rounded-xl border border-gray-200 dark:border-zinc-700 bg-white dark:bg-zinc-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-yellow-500 focus:border-yellow-500 focus:outline-none transition duration-200" } %>
+      </div>
+
+      <div>
+        <%= f.label :author, "Author", class: "block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2" %>
+        <%= f.text_field :author, class: "w-full px-4 py-3 rounded-xl border border-gray-200 dark:border-zinc-700 bg-white dark:bg-zinc-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-yellow-500 focus:border-yellow-500 focus:outline-none transition duration-200" %>
+      </div>
+
+      <div>
+        <%= f.label :title, "Page Title", class: "block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2" %>
+        <div class="relative">
+          <%= f.text_field :title, maxlength: 60, class: "w-full px-4 py-3 rounded-xl border border-gray-200 dark:border-zinc-700 bg-white dark:bg-zinc-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-yellow-500 focus:border-yellow-500 focus:outline-none transition duration-200" %>
+          <div class="absolute right-3 top-1/2 transform -translate-y-1/2 text-xs text-gray-400">
+            <%= (seo_setting.title&.length || 0) %>/60
+          </div>
+        </div>
+        <p class="text-xs text-gray-500 dark:text-gray-400 mt-1">Recommended: 50-60 characters</p>
+      </div>
+
+      <div>
+        <%= f.label :robots, "Robots Directive", class: "block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2" %>
+        <%= f.select :robots, 
+            options_for_select([
+              ['index, follow', 'index, follow'],
+              ['noindex, follow', 'noindex, follow'],
+              ['index, nofollow', 'index, nofollow'],
+              ['noindex, nofollow', 'noindex, nofollow']
+            ], seo_setting.robots), 
+            {}, 
+            { class: "w-full px-4 py-3 rounded-xl border border-gray-200 dark:border-zinc-700 bg-white dark:bg-zinc-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-yellow-500 focus:border-yellow-500 focus:outline-none transition duration-200" } %>
+      </div>
+
+      <div class="md:col-span-2">
+        <%= f.label :description, "Meta Description", class: "block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2" %>
+        <div class="relative">
+          <%= f.text_area :description, maxlength: 160, rows: 3, class: "w-full px-4 py-3 rounded-xl border border-gray-200 dark:border-zinc-700 bg-white dark:bg-zinc-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-yellow-500 focus:border-yellow-500 focus:outline-none transition duration-200 resize-none" %>
+          <div class="absolute right-3 bottom-3 text-xs text-gray-400">
+            <%= (seo_setting.description&.length || 0) %>/160
+          </div>
+        </div>
+        <p class="text-xs text-gray-500 dark:text-gray-400 mt-1">Recommended: 150-160 characters</p>
+      </div>
+
+      <div class="md:col-span-2">
+        <%= f.label :keywords, "Keywords", class: "block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2" %>
+        <%= f.text_field :keywords, class: "w-full px-4 py-3 rounded-xl border border-gray-200 dark:border-zinc-700 bg-white dark:bg-zinc-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-yellow-500 focus:border-yellow-500 focus:outline-none transition duration-200" %>
+        <p class="text-xs text-gray-500 dark:text-gray-400 mt-1">Separate keywords with commas</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- Open Graph (Facebook) -->
+  <div class="bg-white dark:bg-zinc-800 rounded-3xl shadow-xl p-8">
+    <div class="flex items-center gap-3 mb-6">
+      <div class="w-12 h-12 rounded-full bg-gradient-to-r from-blue-500 to-blue-600 flex items-center justify-center">
+        <i class='bx bxl-facebook text-xl text-white'></i>
+      </div>
+      <div>
+        <h3 class="text-xl font-semibold text-gray-900 dark:text-white">Open Graph (Facebook)</h3>
+        <p class="text-sm text-gray-500 dark:text-gray-400">Social media sharing optimization for Facebook</p>
+      </div>
+    </div>
+
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+      <div>
+        <%= f.label :og_type, "Content Type", class: "block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2" %>
+        <%= f.select :og_type, 
+            options_for_select([
+              ['website', 'website'],
+              ['article', 'article'],
+              ['product', 'product'],
+              ['profile', 'profile']
+            ], seo_setting.og_type), 
+            {}, 
+            { class: "w-full px-4 py-3 rounded-xl border border-gray-200 dark:border-zinc-700 bg-white dark:bg-zinc-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-yellow-500 focus:border-yellow-500 focus:outline-none transition duration-200" } %>
+      </div>
+
+      <div>
+        <%= f.label :og_url, "Canonical URL", class: "block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2" %>
+        <%= f.text_field :og_url, class: "w-full px-4 py-3 rounded-xl border border-gray-200 dark:border-zinc-700 bg-white dark:bg-zinc-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-yellow-500 focus:border-yellow-500 focus:outline-none transition duration-200" %>
+      </div>
+
+      <div>
+        <%= f.label :og_title, "OG Title", class: "block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2" %>
+        <%= f.text_field :og_title, class: "w-full px-4 py-3 rounded-xl border border-gray-200 dark:border-zinc-700 bg-white dark:bg-zinc-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-yellow-500 focus:border-yellow-500 focus:outline-none transition duration-200" %>
+        <p class="text-xs text-gray-500 dark:text-gray-400 mt-1">Leave blank to use page title</p>
+      </div>
+
+      <div>
+        <%= f.label :og_image, "OG Image URL", class: "block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2" %>
+        <%= f.text_field :og_image, class: "w-full px-4 py-3 rounded-xl border border-gray-200 dark:border-zinc-700 bg-white dark:bg-zinc-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-yellow-500 focus:border-yellow-500 focus:outline-none transition duration-200" %>
+        <p class="text-xs text-gray-500 dark:text-gray-400 mt-1">Recommended: 1200x630px</p>
+      </div>
+
+      <div class="md:col-span-2">
+        <%= f.label :og_description, "OG Description", class: "block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2" %>
+        <%= f.text_area :og_description, rows: 3, class: "w-full px-4 py-3 rounded-xl border border-gray-200 dark:border-zinc-700 bg-white dark:bg-zinc-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-yellow-500 focus:border-yellow-500 focus:outline-none transition duration-200 resize-none" %>
+        <p class="text-xs text-gray-500 dark:text-gray-400 mt-1">Leave blank to use meta description</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- Twitter Card -->
+  <div class="bg-white dark:bg-zinc-800 rounded-3xl shadow-xl p-8">
+    <div class="flex items-center gap-3 mb-6">
+      <div class="w-12 h-12 rounded-full bg-gradient-to-r from-blue-400 to-blue-500 flex items-center justify-center">
+        <i class='bx bxl-twitter text-xl text-white'></i>
+      </div>
+      <div>
+        <h3 class="text-xl font-semibold text-gray-900 dark:text-white">Twitter Card</h3>
+        <p class="text-sm text-gray-500 dark:text-gray-400">Social media sharing optimization for Twitter</p>
+      </div>
+    </div>
+
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+      <div>
+        <%= f.label :twitter_card, "Card Type", class: "block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2" %>
+        <%= f.select :twitter_card, 
+            options_for_select([
+              ['summary', 'summary'],
+              ['summary_large_image', 'summary_large_image'],
+              ['app', 'app'],
+              ['player', 'player']
+            ], seo_setting.twitter_card), 
+            {}, 
+            { class: "w-full px-4 py-3 rounded-xl border border-gray-200 dark:border-zinc-700 bg-white dark:bg-zinc-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-yellow-500 focus:border-yellow-500 focus:outline-none transition duration-200" } %>
+      </div>
+
+      <div>
+        <%= f.label :twitter_url, "Twitter URL", class: "block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2" %>
+        <%= f.text_field :twitter_url, class: "w-full px-4 py-3 rounded-xl border border-gray-200 dark:border-zinc-700 bg-white dark:bg-zinc-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-yellow-500 focus:border-yellow-500 focus:outline-none transition duration-200" %>
+      </div>
+
+      <div>
+        <%= f.label :twitter_title, "Twitter Title", class: "block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2" %>
+        <%= f.text_field :twitter_title, class: "w-full px-4 py-3 rounded-xl border border-gray-200 dark:border-zinc-700 bg-white dark:bg-zinc-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-yellow-500 focus:border-yellow-500 focus:outline-none transition duration-200" %>
+        <p class="text-xs text-gray-500 dark:text-gray-400 mt-1">Leave blank to use page title</p>
+      </div>
+
+      <div>
+        <%= f.label :twitter_image, "Twitter Image URL", class: "block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2" %>
+        <%= f.text_field :twitter_image, class: "w-full px-4 py-3 rounded-xl border border-gray-200 dark:border-zinc-700 bg-white dark:bg-zinc-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-yellow-500 focus:border-yellow-500 focus:outline-none transition duration-200" %>
+        <p class="text-xs text-gray-500 dark:text-gray-400 mt-1">Recommended: 1200x600px</p>
+      </div>
+
+      <div class="md:col-span-2">
+        <%= f.label :twitter_description, "Twitter Description", class: "block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2" %>
+        <%= f.text_area :twitter_description, rows: 3, class: "w-full px-4 py-3 rounded-xl border border-gray-200 dark:border-zinc-700 bg-white dark:bg-zinc-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-yellow-500 focus:border-yellow-500 focus:outline-none transition duration-200 resize-none" %>
+        <p class="text-xs text-gray-500 dark:text-gray-400 mt-1">Leave blank to use meta description</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- Additional Settings -->
+  <div class="bg-white dark:bg-zinc-800 rounded-3xl shadow-xl p-8">
+    <div class="flex items-center gap-3 mb-6">
+      <div class="w-12 h-12 rounded-full bg-gradient-to-r from-purple-500 to-purple-600 flex items-center justify-center">
+        <i class='bx bx-cog text-xl text-white'></i>
+      </div>
+      <div>
+        <h3 class="text-xl font-semibold text-gray-900 dark:text-white">Additional Settings</h3>
+        <p class="text-sm text-gray-500 dark:text-gray-400">Favicon and other meta information</p>
+      </div>
+    </div>
+
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+      <div>
+        <%= f.label :favicon_url, "Favicon URL", class: "block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2" %>
+        <%= f.text_field :favicon_url, class: "w-full px-4 py-3 rounded-xl border border-gray-200 dark:border-zinc-700 bg-white dark:bg-zinc-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-yellow-500 focus:border-yellow-500 focus:outline-none transition duration-200" %>
+        <p class="text-xs text-gray-500 dark:text-gray-400 mt-1">Recommended: 32x32px or 16x16px</p>
+      </div>
+
+      <div>
+        <%= f.label :apple_touch_icon_url, "Apple Touch Icon URL", class: "block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2" %>
+        <%= f.text_field :apple_touch_icon_url, class: "w-full px-4 py-3 rounded-xl border border-gray-200 dark:border-zinc-700 bg-white dark:bg-zinc-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-yellow-500 focus:border-yellow-500 focus:outline-none transition duration-200" %>
+        <p class="text-xs text-gray-500 dark:text-gray-400 mt-1">Recommended: 180x180px</p>
+      </div>
+
+      <div>
+        <%= f.label :canonical_url, "Canonical URL", class: "block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2" %>
+        <%= f.text_field :canonical_url, class: "w-full px-4 py-3 rounded-xl border border-gray-200 dark:border-zinc-700 bg-white dark:bg-zinc-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-yellow-500 focus:border-yellow-500 focus:outline-none transition duration-200" %>
+        <p class="text-xs text-gray-500 dark:text-gray-400 mt-1">Preferred URL for this page</p>
+      </div>
+
+      <div class="md:col-span-2">
+        <%= f.label :structured_data, "Structured Data (JSON-LD)", class: "block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2" %>
+        <%= f.text_area :structured_data, rows: 6, class: "w-full px-4 py-3 rounded-xl border border-gray-200 dark:border-zinc-700 bg-white dark:bg-zinc-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-yellow-500 focus:border-yellow-500 focus:outline-none transition duration-200 resize-none font-mono text-sm" %>
+        <p class="text-xs text-gray-500 dark:text-gray-400 mt-1">JSON-LD structured data for rich snippets</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- Form Actions -->
+  <div class="flex items-center justify-between pt-6">
+    <%= link_to admin_seo_settings_path, class: "px-6 py-3 border border-gray-300 dark:border-zinc-600 text-gray-700 dark:text-gray-300 font-medium rounded-xl hover:bg-gray-50 dark:hover:bg-zinc-700 transition duration-200" do %>
+      <i class='bx bx-arrow-back text-lg mr-2'></i>
+      Back to SEO Settings
+    <% end %>
+
+    <div class="flex items-center space-x-4">
+      <%= link_to admin_seo_settings_path, class: "px-6 py-3 border border-gray-300 dark:border-zinc-600 text-gray-700 dark:text-gray-300 font-medium rounded-xl hover:bg-gray-50 dark:hover:bg-zinc-700 transition duration-200" do %>
+        Cancel
+      <% end %>
+      
+      <%= f.submit class: "px-8 py-3 bg-gradient-to-r from-yellow-500 to-orange-500 hover:from-yellow-600 hover:to-orange-600 text-white font-medium rounded-xl shadow-lg hover:shadow-xl transition duration-200 inline-flex items-center" do %>
+        <i class='bx bx-save text-lg mr-2'></i>
+        <%= seo_setting.persisted? ? 'Update SEO Settings' : 'Create SEO Settings' %>
+      <% end %>
+    </div>
+  </div>
+<% end %>

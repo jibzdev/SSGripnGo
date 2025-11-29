@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <title>SSGrip Storefront</title>
+    <%= csrf_meta_tags %>
+    <%= csp_meta_tag %>
+    <%= seo_meta_tags(@seo_page || controller_name) if respond_to?(:seo_meta_tags) %>
+    <%= stylesheet_link_tag "tailwind", "data-turbo-track": "reload" %>
+    <%= stylesheet_link_tag "application", "data-turbo-track": "reload" %>
+    <%= javascript_importmap_tags %>
+  </head>
+  <body class="bg-ssgrip-darkest text-white min-h-screen" data-controller="<%= controller_name %>" data-action="<%= action_name %>">
+    <header id="main-header" class="fixed top-0 inset-x-0 z-50 transition-all duration-300 <%= controller_name == 'landing' && action_name == 'index' ? 'bg-transparent border-transparent' : 'border-b border-ssgrip-silver/5 bg-ssgrip-darkest/80 backdrop-blur-2xl' %>">
+      <div class="max-w-7xl mx-auto px-6">
+        <div class="flex items-center justify-between h-16">
+          <!-- Logo - Left -->
+          <%= link_to root_path, class: "flex items-center group z-10" do %>
+            <img src="/assets/images/logo.png" alt="SSGrip8o" class="h-8 w-auto object-contain group-hover:opacity-80 transition-opacity">
+          <% end %>
+          
+          <!-- Navigation - Center -->
+          <nav class="hidden md:flex items-center gap-1 absolute left-1/2 -translate-x-1/2">
+            <%= link_to 'Catalog', catalog_path, class: "px-4 py-2 text-sm font-medium text-ssgrip-silver hover:text-white hover:bg-ssgrip-silver/5 rounded-lg transition-all" %>
+            <%= link_to 'Reviews', reviews_path, class: "px-4 py-2 text-sm font-medium text-ssgrip-silver hover:text-white hover:bg-ssgrip-silver/5 rounded-lg transition-all" %>
+            <%= link_to 'FAQ', root_path(anchor: 'faq'), class: "px-4 py-2 text-sm font-medium text-ssgrip-silver hover:text-white hover:bg-ssgrip-silver/5 rounded-lg transition-all" %>
+          </nav>
+          
+          <!-- Actions - Right -->
+          <div class="flex items-center gap-2">
+            <!-- Basket Icon -->
+            <%= link_to basket_path, class: "relative p-2 hover:bg-ssgrip-silver/5 rounded-lg transition-all group" do %>
+              <svg class="w-5 h-5 text-ssgrip-silver group-hover:text-white transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="1.5">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z"/>
+              </svg>
+              <%= turbo_frame_tag 'basket-count' do %>
+                <%= render 'baskets/nav_badge', count: basket_item_count %>
+              <% end %>
+            <% end %>
+            
+            <% if user_signed_in? %>
+              <!-- User Menu Dropdown -->
+              <div class="relative" data-controller="user-menu">
+                <button class="p-2 hover:bg-ssgrip-silver/5 rounded-lg transition-all group"
+                        data-action="click->user-menu#toggle">
+                  <svg class="w-5 h-5 text-ssgrip-silver group-hover:text-white transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="1.5">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/>
+                  </svg>
+                </button>
+                
+                <!-- Dropdown Menu -->
+                <div class="hidden absolute right-0 mt-2 w-48 bg-ssgrip-darker border border-ssgrip-silver/10 rounded-lg shadow-2xl py-2 backdrop-blur-xl transform origin-top-right scale-95 opacity-0 transition duration-200"
+                     data-user-menu-target="panel">
+                  <%= link_to dashboard_path, class: "block px-4 py-2 text-sm text-ssgrip-silver hover:text-white hover:bg-ssgrip-silver/5 transition-colors" do %>
+                    Dashboard
+                  <% end %>
+                  <%= link_to orders_path, class: "block px-4 py-2 text-sm text-ssgrip-silver hover:text-white hover:bg-ssgrip-silver/5 transition-colors" do %>
+                    Orders
+                  <% end %>
+                  <div class="h-px bg-ssgrip-silver/10 my-2"></div>
+                  <%= link_to logout_path, class: "block px-4 py-2 text-sm text-ssgrip-silver hover:text-white hover:bg-ssgrip-silver/5 transition-colors" do %>
+                    Logout
+                  <% end %>
+                </div>
+              </div>
+            <% else %>
+              <%= link_to 'Login', login_path, class: "px-4 py-2 text-sm font-medium text-ssgrip-silver hover:text-white transition-colors" %>
+            <% end %>
+            
+            <!-- Mobile menu button -->
+            <button id="menu-toggle" class="md:hidden p-2 hover:bg-ssgrip-silver/5 rounded-lg transition-all">
+              <svg class="w-5 h-5 text-ssgrip-silver" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"/>
+              </svg>
+            </button>
+          </div>
+        </div>
+      </div>
+    </header>
+
+    <main>
+      <%= yield %>
+    </main>
+    
+    <!-- Navbar Scroll Animation & User Menu Script -->
+    <script>
+      (function() {
+        // Detect if we're on the landing page
+        const body = document.body;
+        const isLandingPage = body.getAttribute('data-controller') === 'landing' && 
+                             body.getAttribute('data-action') === 'index';
+        
+        // Navbar scroll animation
+        let lastScrollTop = 0;
+        const navbar = document.getElementById('main-header');
+        const scrollThreshold = 100;
+        let ticking = false;
+        
+        function updateNavbar(scrollTop) {
+          if (isLandingPage) {
+            // Landing page specific behavior: transparent at top, colored when scrolled
+            if (scrollTop > 50) {
+              navbar.classList.remove('bg-transparent', 'border-transparent');
+              navbar.classList.add('bg-ssgrip-darkest/90', 'backdrop-blur-2xl', 'border-b', 'border-ssgrip-silver/5');
+            } else {
+              navbar.classList.add('bg-transparent', 'border-transparent');
+              navbar.classList.remove('bg-ssgrip-darkest/90', 'backdrop-blur-2xl', 'border-b', 'border-ssgrip-silver/5');
+            }
+          } else {
+            // Other pages: hide on scroll down, show on scroll up
+            if (scrollTop > scrollThreshold) {
+              if (scrollTop > lastScrollTop) {
+                navbar.style.transform = 'translateY(-100%)';
+              } else {
+                navbar.style.transform = 'translateY(0)';
+              }
+            } else {
+              navbar.style.transform = 'translateY(0)';
+            }
+          }
+          lastScrollTop = scrollTop;
+        }
+        
+        window.addEventListener('scroll', function() {
+          const scrollTop = window.pageYOffset || document.documentElement.scrollTop;
+          
+          if (!ticking) {
+            window.requestAnimationFrame(function() {
+              updateNavbar(scrollTop);
+              ticking = false;
+            });
+            ticking = true;
+          }
+        });
+        
+        if (!isLandingPage) {
+          navbar.style.transition = 'transform 0.3s ease-in-out';
+        }
+        
+        // Initialize navbar state on page load
+        updateNavbar(window.pageYOffset || document.documentElement.scrollTop);
+        
+      })();
+    </script>
+
+    <div id="flash-container">
+      <%= render 'layouts/toast' %>
+    </div>
+  </body>
+</html>

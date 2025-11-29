@@ -1,0 +1,9 @@
+<% count = (local_assigns[:count] || basket_item_count).to_i %>
+<span
+  class="absolute -top-1 -right-1 h-4 min-w-[1rem] rounded-full bg-white text-ssgrip-darkest text-[10px] font-bold flex items-center justify-center px-1 transition-all duration-200 <%= count.zero? ? 'opacity-0 scale-75 pointer-events-none' : 'opacity-100 scale-100' %>"
+  aria-live="polite"
+  aria-label="<%= count.zero? ? 'Basket empty' : "#{count} items in basket" %>"
+>
+  <%= count %>
+</span>
+

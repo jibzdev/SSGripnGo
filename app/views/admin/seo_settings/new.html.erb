@@ -1,0 +1,22 @@
+<div class="flex-1 overflow-y-auto bg-gradient-to-br from-gray-50 to-gray-100 dark:from-zinc-900 dark:to-zinc-800 transition duration-200">
+  <div class="max-w-6xl mx-auto p-4 sm:p-6 lg:p-8">
+    <!-- Header Section -->
+    <div class="backdrop-blur-lg bg-white/30 dark:bg-zinc-800/30 rounded-3xl p-6 mb-8 shadow-xl">
+      <div class="flex items-center justify-between">
+        <div>
+          <h1 class="text-4xl font-extrabold text-gray-900 dark:text-white mb-2">New SEO Setting</h1>
+          <p class="text-gray-600 dark:text-gray-400">Create comprehensive SEO settings for a new page</p>
+        </div>
+        <div class="flex items-center space-x-3">
+          <%= link_to admin_seo_settings_path, class: "px-6 py-3 border border-gray-300 dark:border-zinc-600 text-gray-700 dark:text-gray-300 font-medium rounded-xl hover:bg-gray-50 dark:hover:bg-zinc-700 transition duration-200" do %>
+            <i class='bx bx-arrow-back text-lg mr-2'></i>
+            Back to SEO Settings
+          <% end %>
+        </div>
+      </div>
+    </div>
+
+    <!-- Form -->
+    <%= render 'form', seo_setting: @seo_setting %>
+  </div>
+</div>

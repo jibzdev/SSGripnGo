@@ -1,0 +1,137 @@
+<% flash.each_with_index do |(type, message), index| %>
+    <div id="toast-<%= type %>-<%= index %>" 
+         class="fixed bottom-6 left-1/2 transform -translate-x-1/2 w-full max-w-md transition-all duration-500 ease-out z-50 opacity-0 translate-y-full" 
+         style="z-index: <%= 9999 + index %>; margin-bottom: <%= index * 80 %>px;"
+         role="alert">
+        
+        <div class="relative overflow-hidden rounded-lg bg-ssgrip-darker/95 backdrop-blur-xl shadow-2xl border border-ssgrip-silver/10 hover:border-ssgrip-silver/20 transition-all duration-200">
+            <!-- Subtle gradient overlay -->
+            <div class="absolute inset-0 bg-gradient-to-br from-white/[0.02] to-transparent pointer-events-none"></div>
+            
+            <!-- Toast Content -->
+            <div class="relative flex items-start p-4">
+                <div class="flex-shrink-0">
+                    <% if type == 'notice' %>
+                        <div class="w-10 h-10 rounded-lg bg-emerald-500/10 flex items-center justify-center border border-emerald-500/20">
+                            <svg class="w-5 h-5 text-emerald-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
+                            </svg>
+                        </div>
+                    <% elsif type == 'alert' %>
+                        <div class="w-10 h-10 rounded-lg bg-red-500/10 flex items-center justify-center border border-red-500/20">
+                            <svg class="w-5 h-5 text-red-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+                            </svg>
+                        </div>
+                    <% else %>
+                        <div class="w-10 h-10 rounded-lg bg-ssgrip-accent/10 flex items-center justify-center border border-ssgrip-accent/20">
+                            <svg class="w-5 h-5 text-ssgrip-accent" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                            </svg>
+                        </div>
+                    <% end %>
+                </div>
+                
+                <div class="ml-4 flex-1 min-w-0">
+                    <p class="text-sm font-bold text-white uppercase tracking-wider">
+                        <%= type.to_s.capitalize %>
+                    </p>
+                    <p class="mt-1 text-sm text-ssgrip-silver leading-relaxed break-words">
+                        <%= message %>
+                    </p>
+                </div>
+                
+                <!-- Close Button -->
+                <div class="ml-4 flex-shrink-0">
+                    <button type="button" 
+                            class="inline-flex items-center justify-center w-8 h-8 rounded-lg text-ssgrip-silver hover:text-white hover:bg-ssgrip-silver/5 focus:outline-none transition-all duration-200"
+                            onclick="this.closest('[id^=toast-]').remove()">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+                        </svg>
+                    </button>
+                </div>
+            </div>
+            
+            <!-- Progress Bar -->
+            <div class="w-full bg-ssgrip-darkest/50 h-0.5">
+                <% if type == 'notice' %>
+                    <div class="progress-bar h-0.5 bg-gradient-to-r from-emerald-400 to-emerald-500 transition-all ease-linear" style="width: 0%; transition-duration: 4000ms;"></div>
+                <% elsif type == 'alert' %>
+                    <div class="progress-bar h-0.5 bg-gradient-to-r from-red-400 to-red-500 transition-all ease-linear" style="width: 0%; transition-duration: 4000ms;"></div>
+                <% else %>
+                    <div class="progress-bar h-0.5 bg-gradient-to-r from-ssgrip-accent to-white transition-all ease-linear" style="width: 0%; transition-duration: 4000ms;"></div>
+                <% end %>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        (function() {
+            const toast = document.getElementById('toast-<%= type %>-<%= index %>');
+            const progressBar = toast.querySelector('.progress-bar');
+            
+            if (!toast) return;
+            
+            // Show toast with slide up animation from bottom
+            requestAnimationFrame(() => {
+                toast.classList.remove('opacity-0', 'translate-y-full');
+            });
+            
+            // Start progress bar animation
+            setTimeout(() => {
+                if (progressBar) {
+                    progressBar.style.width = '100%';
+                }
+            }, 100);
+            
+            // Auto-hide toast after 4 seconds
+            const hideTimeout = setTimeout(() => {
+                if (toast && toast.parentNode) {
+                    toast.classList.add('opacity-0', 'translate-y-full');
+                    setTimeout(() => {
+                        if (toast && toast.parentNode) {
+                            toast.remove();
+                        }
+                    }, 500);
+                }
+            }, 4000);
+            
+            // Pause on hover
+            let isPaused = false;
+            let remainingTime = 4000;
+            let startTime = Date.now();
+            
+            toast.addEventListener('mouseenter', () => {
+                if (!isPaused && progressBar) {
+                    isPaused = true;
+                    remainingTime = remainingTime - (Date.now() - startTime);
+                    const currentWidth = progressBar.style.width;
+                    progressBar.style.transitionDuration = '0s';
+                    progressBar.style.width = currentWidth;
+                    clearTimeout(hideTimeout);
+                }
+            });
+            
+            toast.addEventListener('mouseleave', () => {
+                if (isPaused && progressBar) {
+                    isPaused = false;
+                    startTime = Date.now();
+                    progressBar.style.transitionDuration = remainingTime + 'ms';
+                    progressBar.style.width = '100%';
+                    
+                    setTimeout(() => {
+                        if (toast && toast.parentNode) {
+                            toast.classList.add('opacity-0', 'translate-y-full');
+                            setTimeout(() => {
+                                if (toast && toast.parentNode) {
+                                    toast.remove();
+                                }
+                            }, 500);
+                        }
+                    }, remainingTime);
+                }
+            });
+        })();
+    </script>
+<% end %>

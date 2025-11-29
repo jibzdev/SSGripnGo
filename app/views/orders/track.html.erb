@@ -1,0 +1,70 @@
+<section class="bg-ssgrip-darkest min-h-screen text-white pb-24">
+  <div class="mx-auto max-w-3xl px-6 pt-24">
+    <div class="text-center mb-10">
+      <p class="text-xs text-ssgrip-silver-dark uppercase tracking-[0.3em] mb-2">Track</p>
+      <h1 class="text-4xl font-black text-white mb-3">Where is my order?</h1>
+      <p class="text-ssgrip-silver">Enter your order number and email to see the latest status.</p>
+    </div>
+
+    <div class="rounded-xl border border-ssgrip-silver/10 bg-ssgrip-darker/30 p-6">
+      <%= form_with url: track_orders_path, method: :get, local: true, class: "grid gap-4 md:grid-cols-2" do %>
+        <div>
+          <label class="text-sm text-ssgrip-silver-dark uppercase tracking-wider mb-2 block">Order Number</label>
+          <input type="text" name="order_number" value="<%= @lookup_number %>" class="w-full rounded-lg bg-ssgrip-darkest/50 border border-ssgrip-silver/20 px-4 py-3 text-white focus:outline-none focus:border-ssgrip-silver transition-colors">
+        </div>
+        <div>
+          <label class="text-sm text-ssgrip-silver-dark uppercase tracking-wider mb-2 block">Email</label>
+          <input type="email" name="email" value="<%= @lookup_email %>" class="w-full rounded-lg bg-ssgrip-darkest/50 border border-ssgrip-silver/20 px-4 py-3 text-white focus:outline-none focus:border-ssgrip-silver transition-colors">
+        </div>
+        <div class="md:col-span-2">
+          <button class="w-full rounded-lg bg-white text-ssgrip-darkest font-bold py-4 hover:bg-ssgrip-accent-bright transition-all">Check Status</button>
+        </div>
+      <% end %>
+    </div>
+
+    <% if @tracking_order %>
+      <div class="mt-10 rounded-xl border border-ssgrip-silver/10 bg-ssgrip-darker/30 p-6 space-y-4">
+        <p class="text-xs text-ssgrip-silver-dark uppercase tracking-[0.3em]">Result</p>
+        <h2 class="text-2xl font-black text-white">Order <%= @tracking_order.order_number %></h2>
+        <p class="text-sm text-ssgrip-silver">Placed <%= l(@tracking_order.created_at, format: :long) %></p>
+        <div class="flex gap-3">
+          <span class="px-3 py-1 rounded-full text-xs font-semibold <%= status_badge_class(@tracking_order.status) %>"><%= @tracking_order.status.humanize %></span>
+          <span class="px-3 py-1 rounded-full text-xs font-semibold <%= status_badge_class(@tracking_order.fulfillment_status) %>"><%= @tracking_order.fulfillment_status.humanize %></span>
+        </div>
+        <p class="text-white font-semibold mt-4">Estimated delivery: <%= @tracking_order.delivery_eta %></p>
+        <% if @tracking_order.tracking_number.present? %>
+          <p class="text-sm text-ssgrip-silver">Tracking number: <span class="font-semibold text-white"><%= @tracking_order.tracking_number %></span></p>
+        <% end %>
+        <% if @tracking_order.payment_status != 'paid' %>
+          <div class="mt-4 rounded-lg border border-ssgrip-silver/10 bg-ssgrip-darkest/50 p-4 space-y-2">
+            <h3 class="text-white font-bold">Awaiting Bank Transfer</h3>
+            <% if @general_setting.bank_account_name.present? %>
+              <p class="text-sm text-ssgrip-silver">
+                Please send <strong class="text-white"><%= number_to_currency(@tracking_order.total) %></strong> to <strong class="text-white"><%= @general_setting.bank_account_name %></strong>.
+              </p>
+              <ul class="text-sm text-ssgrip-silver space-y-1">
+                <% if @general_setting.bank_account_number.present? %>
+                  <li>Account number: <%= @general_setting.bank_account_number %></li>
+                <% end %>
+                <% if @general_setting.bank_sort_code.present? %>
+                  <li>Sort code: <%= @general_setting.bank_sort_code %></li>
+                <% end %>
+              </ul>
+              <p class="text-sm text-ssgrip-silver-dark">
+                Reference: <strong class="text-white"><%= @general_setting.bank_reference_hint.presence || @tracking_order.order_number %></strong>
+              </p>
+            <% else %>
+              <p class="text-sm text-ssgrip-silver">Bank instructions will be shared shortly.</p>
+            <% end %>
+          </div>
+        <% end %>
+        <%= link_to order_path(@tracking_order.order_number), class: "inline-flex items-center gap-2 rounded-lg border border-ssgrip-silver/30 px-5 py-3 text-sm font-semibold text-white hover:border-ssgrip-silver hover:bg-ssgrip-silver/5 transition-all" do %>
+          <span>View Full Order</span>
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
+          </svg>
+        <% end %>
+      </div>
+    <% end %>
+  </div>
+</section>

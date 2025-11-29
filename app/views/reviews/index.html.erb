@@ -1,0 +1,86 @@
+<section class="pt-32 pb-20 bg-ssgrip-darkest min-h-screen">
+  <div class="max-w-6xl mx-auto px-6 space-y-16">
+    <div class="text-center space-y-4">
+      <p class="text-xs uppercase tracking-[0.4em] text-ssgrip-silver/60">Owner Feedback</p>
+      <h1 class="text-4xl md:text-5xl font-black text-white">Reviews</h1>
+      <p class="text-ssgrip-silver max-w-2xl mx-auto">
+        Real experiences from SSGrip drivers. Every review is tied to a verified account, and each owner can publish one review.
+      </p>
+    </div>
+
+    <div id="all-reviews" class="space-y-6">
+      <% if @reviews.any? %>
+        <div class="grid gap-6 md:grid-cols-2">
+          <%= render partial: 'review_card', collection: @reviews, as: :review %>
+        </div>
+      <% else %>
+        <div class="border border-dashed border-ssgrip-silver/30 rounded-2xl p-10 text-center">
+          <p class="text-white text-xl font-semibold mb-2">No reviews yet</p>
+          <p class="text-ssgrip-silver mb-4">Be the first to share what driving with SSGrip feels like.</p>
+        </div>
+      <% end %>
+    </div>
+
+    <div class="bg-ssgrip-darker/50 border border-ssgrip-silver/10 rounded-3xl p-8 md:p-10 shadow-2xl shadow-black/30">
+      <% if user_signed_in? %>
+        <div class="flex items-center justify-between flex-wrap gap-4 mb-6">
+          <div>
+            <p class="text-xs uppercase tracking-[0.4em] text-ssgrip-silver/60">
+              <%= @review.persisted? ? 'Update review' : 'Share review' %>
+            </p>
+            <h2 class="text-2xl font-bold text-white">
+              <%= @review.persisted? ? 'Adjust your experience' : 'Tell us about your wheel' %>
+            </h2>
+          </div>
+          <% if @review.persisted? %>
+            <span class="text-sm text-ssgrip-silver">Published <%= time_ago_in_words(@review.updated_at) %> ago</span>
+          <% end %>
+        </div>
+
+        <% if @review.errors.any? %>
+          <div class="mb-6 border border-red-500/30 bg-red-500/10 text-red-200 rounded-2xl p-4">
+            <p class="font-semibold mb-2">Please fix the following:</p>
+            <ul class="space-y-1 text-sm list-disc list-inside">
+              <% @review.errors.full_messages.each do |message| %>
+                <li><%= message %></li>
+              <% end %>
+            </ul>
+          </div>
+        <% end %>
+
+        <%= form_with model: @review, local: true, class: "space-y-6" do |form| %>
+          <div class="grid md:grid-cols-2 gap-6">
+            <div>
+              <%= form.label :rating, "Rating (1-5)", class: "block text-sm font-semibold text-ssgrip-silver mb-2" %>
+              <%= form.number_field :rating, in: Review::RATINGS, required: true, class: "w-full rounded-2xl bg-ssgrip-darkest border border-ssgrip-silver/20 px-4 py-3 text-white focus:outline-none focus:ring-2 focus:ring-ssgrip-accent" %>
+            </div>
+            <div>
+              <%= form.label :title, "Headline", class: "block text-sm font-semibold text-ssgrip-silver mb-2" %>
+              <%= form.text_field :title, required: true, maxlength: 120, class: "w-full rounded-2xl bg-ssgrip-darkest border border-ssgrip-silver/20 px-4 py-3 text-white focus:outline-none focus:ring-2 focus:ring-ssgrip-accent" %>
+            </div>
+          </div>
+          <div>
+            <%= form.label :body, "Review", class: "block text-sm font-semibold text-ssgrip-silver mb-2" %>
+            <%= form.text_area :body, rows: 5, required: true, class: "w-full rounded-2xl bg-ssgrip-darkest border border-ssgrip-silver/20 px-4 py-3 text-white focus:outline-none focus:ring-2 focus:ring-ssgrip-accent" %>
+          </div>
+          <div class="flex flex-wrap gap-3 items-center">
+            <%= form.submit(@review.persisted? ? 'Update review' : 'Publish review', class: "px-6 py-3 rounded-xl bg-white text-ssgrip-darkest font-semibold tracking-wide hover:bg-ssgrip-accent transition-transform hover:-translate-y-0.5") %>
+            <% if @review.persisted? %>
+              <%= button_to 'Delete review', review_path(@review), method: :delete, data: { turbo_confirm: 'Remove your review permanently?' }, class: "px-6 py-3 rounded-xl border border-red-500/50 text-red-200 hover:bg-red-500/10 transition-colors" %>
+            <% end %>
+          </div>
+        <% end %>
+      <% else %>
+        <div class="text-center space-y-4">
+          <p class="text-2xl font-bold text-white">Want to add your voice?</p>
+          <p class="text-ssgrip-silver max-w-2xl mx-auto">Sign in to leave a verified review. We only allow one review per account to keep feedback authentic.</p>
+          <div class="flex flex-wrap justify-center gap-3">
+            <%= link_to 'Login', login_path, class: "px-6 py-3 rounded-xl bg-white text-ssgrip-darkest font-semibold hover:bg-ssgrip-accent transition" %>
+            <%= link_to 'Create account', register_path, class: "px-6 py-3 rounded-xl border border-ssgrip-silver/30 text-white hover:border-white transition" %>
+          </div>
+        </div>
+      <% end %>
+    </div>
+  </div>
+</section>
+

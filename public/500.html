@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>500 - Internal Server Error | RK Customs</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href='https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css' rel='stylesheet'>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Poppins:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <style>
+        body { font-family: 'Inter', sans-serif; }
+        @keyframes float {
+            0%, 100% { transform: translateY(0px); }
+            50% { transform: translateY(-20px); }
+        }
+        @keyframes float-delayed {
+            0%, 100% { transform: translateY(0px); }
+            50% { transform: translateY(-15px); }
+        }
+        .animate-float { animation: float 6s ease-in-out infinite; }
+        .animate-float-delayed { animation: float-delayed 8s ease-in-out infinite 2s; }
+    </style>
+</head>
+<body class="bg-black min-h-screen flex items-center justify-center overflow-hidden">
+    <!-- Background effects -->
+    <div class="absolute inset-0">
+        <!-- Gradient overlay -->
+        <div class="absolute inset-0 bg-gradient-to-br from-black via-zinc-900 to-black"></div>
+        
+        <!-- Animated particles -->
+        <div class="absolute inset-0">
+            <div class="absolute w-2 h-2 bg-yellow-500/20 rounded-full animate-float" style="top: 10%; left: 15%"></div>
+            <div class="absolute w-2 h-2 bg-yellow-500/20 rounded-full animate-float-delayed" style="top: 20%; left: 85%"></div>
+            <div class="absolute w-2 h-2 bg-yellow-500/20 rounded-full animate-float" style="top: 50%; left: 35%"></div>
+            <div class="absolute w-2 h-2 bg-yellow-500/20 rounded-full animate-float-delayed" style="top: 70%; left: 65%"></div>
+            <div class="absolute w-2 h-2 bg-yellow-500/20 rounded-full animate-float" style="top: 85%; left: 25%"></div>
+        </div>
+
+        <!-- Subtle glow effects -->
+        <div class="absolute top-1/4 left-1/4 w-96 h-96 bg-yellow-500/5 rounded-full blur-3xl"></div>
+        <div class="absolute bottom-1/4 right-1/4 w-96 h-96 bg-orange-500/5 rounded-full blur-3xl"></div>
+    </div>
+
+    <!-- Main content -->
+    <div class="relative z-10 container mx-auto px-6 text-center">
+        <!-- Logo -->
+        <div class="flex justify-center mb-8">
+            <div class="relative">
+                <div class="absolute inset-0 bg-gradient-to-r from-yellow-400 to-orange-500 rounded-full blur-lg opacity-50"></div>
+                <img src="/assets/images/logo3.png" alt="RK Customs" class="relative w-20 h-12 object-contain">
+            </div>
+        </div>
+
+        <!-- Error badge -->
+        <div class="inline-flex items-center gap-2 px-4 py-2 bg-red-500/10 backdrop-blur-sm border border-red-500/20 rounded-full text-red-400 text-sm font-medium mb-8">
+            <i class='bx bx-error text-lg'></i>
+            <span>Server Error</span>
+        </div>
+
+        <!-- Error number -->
+        <div class="text-8xl md:text-9xl font-black text-transparent bg-clip-text bg-gradient-to-r from-yellow-400 to-orange-500 mb-6 tracking-tight">
+            500
+        </div>
+
+        <!-- Error message -->
+        <h1 class="text-3xl md:text-4xl font-bold text-white mb-4 tracking-tight">
+            Something went wrong
+        </h1>
+        <p class="text-zinc-400 max-w-2xl mx-auto text-lg leading-relaxed mb-12">
+            We're experiencing some technical difficulties. Our team has been notified and is working to resolve the issue.
+        </p>
+
+        <!-- Action buttons -->
+        <div class="flex flex-col sm:flex-row gap-4 justify-center items-center">
+            <!-- Primary button -->
+            <a href="/" class="group relative">
+                <div class="relative transform -skew-x-12 overflow-hidden
+                          bg-gradient-to-r from-yellow-400 to-orange-500
+                          px-8 py-4 shadow-[0_0_30px_rgba(234,179,8,0.3)]
+                          transition-all duration-300 ease-out
+                          hover:shadow-[0_0_40px_rgba(234,179,8,0.5)]
+                          hover:scale-105 active:scale-95">
+                    
+                    <div class="transform skew-x-12 flex items-center justify-center gap-3">
+                        <i class='bx bx-home text-lg text-white'></i>
+                        <span class="font-bold text-base tracking-wide text-white">
+                            BACK TO HOME
+                        </span>
+                    </div>
+                </div>
+            </a>
+
+            <!-- Secondary button -->
+            <button onclick="window.location.reload()" class="group flex items-center gap-2 px-6 py-4 bg-zinc-800/50 backdrop-blur-sm border border-zinc-700/50 rounded-xl text-white hover:bg-zinc-700/50 hover:border-zinc-600/50 transition-all duration-300">
+                <i class='bx bx-refresh text-lg'></i>
+                <span class="font-medium">Try Again</span>
+            </button>
+        </div>
+
+        <!-- Additional help -->
+        <div class="mt-12 pt-8 border-t border-zinc-800/50">
+            <p class="text-zinc-500 text-sm mb-4">Need immediate assistance?</p>
+            <a href="mailto:rkcustomsportsmouth@gmail.com" class="inline-flex items-center gap-2 text-yellow-400 hover:text-yellow-300 transition-colors duration-300">
+                <i class='bx bx-envelope text-lg'></i>
+                <span class="font-medium">Contact Support</span>
+            </a>
+        </div>
+    </div>
+</body>
+</html>

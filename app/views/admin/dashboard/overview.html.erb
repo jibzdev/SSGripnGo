@@ -1,0 +1,75 @@
+<section class="bg-ssgrip-darkest min-h-screen text-white">
+  <div class="max-w-7xl mx-auto px-6 py-8 space-y-8">
+    <!-- Header -->
+    <div>
+      <p class="text-xs text-ssgrip-silver-dark uppercase tracking-[0.3em] mb-2">Admin Dashboard</p>
+      <h1 class="text-4xl font-black text-white">Overview</h1>
+    </div>
+
+    <!-- Stats Grid -->
+    <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
+      <div class="rounded-xl border border-ssgrip-silver/10 bg-ssgrip-darker/30 p-6">
+        <p class="text-xs text-ssgrip-silver-dark uppercase tracking-wider mb-2">Users</p>
+        <p class="text-3xl font-black text-white"><%= @total_users %></p>
+      </div>
+      <div class="rounded-xl border border-ssgrip-silver/10 bg-ssgrip-darker/30 p-6">
+        <p class="text-xs text-ssgrip-silver-dark uppercase tracking-wider mb-2">Orders</p>
+        <p class="text-3xl font-black text-white"><%= @total_orders %></p>
+      </div>
+      <div class="rounded-xl border border-ssgrip-silver/10 bg-ssgrip-darker/30 p-6">
+        <p class="text-xs text-ssgrip-silver-dark uppercase tracking-wider mb-2">Open Orders</p>
+        <p class="text-3xl font-black text-white"><%= @open_orders %></p>
+      </div>
+      <div class="rounded-xl border border-ssgrip-silver/10 bg-ssgrip-darker/30 p-6">
+        <p class="text-xs text-ssgrip-silver-dark uppercase tracking-wider mb-2">Revenue</p>
+        <p class="text-3xl font-black text-white"><%= number_to_currency(@total_revenue) %></p>
+      </div>
+    </div>
+
+    <!-- Recent Orders -->
+    <div class="rounded-xl border border-ssgrip-silver/10 bg-ssgrip-darker/30 p-6">
+      <h2 class="text-lg font-black text-white mb-6">Recent Orders</h2>
+      <div class="overflow-x-auto">
+        <table class="w-full text-sm text-ssgrip-silver">
+          <thead>
+            <tr class="text-xs uppercase text-ssgrip-silver-dark border-b border-ssgrip-silver/10">
+              <th class="py-3 text-left font-bold tracking-wider">Order</th>
+              <th class="text-left font-bold tracking-wider">Status</th>
+              <th class="text-left font-bold tracking-wider">Total</th>
+              <th class="text-left font-bold tracking-wider">Placed</th>
+              <th class="text-right font-bold tracking-wider">Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            <% @recent_orders.each do |order| %>
+              <tr class="border-b border-ssgrip-silver/10 hover:bg-ssgrip-silver/5 transition-colors">
+                <td class="py-3 text-white font-semibold"><%= order.order_number %></td>
+                <td><span class="px-2 py-1 rounded-full text-xs font-semibold <%= status_badge_class(order.status) %>"><%= order.status %></span></td>
+                <td class="text-white"><%= number_to_currency(order.total) %></td>
+                <td class="text-ssgrip-silver"><%= l(order.created_at, format: :short) %></td>
+                <td class="text-right">
+                  <%= link_to admin_order_path(order), class: "text-white hover:text-ssgrip-accent-bright transition-colors text-sm font-medium" do %>
+                    View →
+                  <% end %>
+                </td>
+              </tr>
+            <% end %>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- Recent Activity -->
+    <div class="rounded-xl border border-ssgrip-silver/10 bg-ssgrip-darker/30 p-6">
+      <h2 class="text-lg font-black text-white mb-6">Recent Activity</h2>
+      <ul class="space-y-3 text-sm">
+        <% @recent_activities.each do |activity| %>
+          <li class="flex justify-between items-center border-b border-ssgrip-silver/10 pb-3 last:border-0">
+            <span class="text-ssgrip-silver"><%= activity.description %></span>
+            <span class="text-ssgrip-silver-dark text-xs"><%= l(activity.created_at, format: :short) %></span>
+          </li>
+        <% end %>
+      </ul>
+    </div>
+  </div>
+</section>

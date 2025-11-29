@@ -1,0 +1,169 @@
+<div class="flex-1 overflow-y-auto bg-gray-100 dark:bg-zinc-900 transition duration-200">
+  <div class="max-w-4xl mx-auto p-4 sm:p-6 lg:p-8">
+    <div class="flex items-center mb-8">
+      <span class="text-4xl font-extrabold text-gray-900 dark:text-white mr-2">Stripe</span>
+      <h1 class="text-4xl font-extrabold text-gray-900 dark:text-white transition duration-200">Configuration</h1>
+    </div>
+    <div class="bg-white dark:bg-zinc-800 rounded-2xl shadow-lg overflow-hidden transition duration-200">
+      <div class="p-8">
+        <p class="text-gray-600 dark:text-gray-400 mb-8">Configure your Stripe integration to start accepting payments securely.</p>
+        <%= form_with model: @stripe_setting, url: admin_payment_modules_path, method: :patch, local: true do |f| %>
+          <div class="space-y-6">
+            <div>
+              <%= f.label :publishable_key, "Publishable Key", class: "block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1" %>
+              <div class="relative">
+                <%= f.password_field :publishable_key, value: @stripe_setting.publishable_key, id: "stripe_publishable_key", class: "w-full px-3 py-2 pr-10 border border-gray-300 rounded-md shadow-sm focus:ring-purple-500 focus:border-purple-500 dark:bg-zinc-700 dark:border-zinc-600 dark:text-white transition duration-200" %>
+                <button type="button" class="absolute inset-y-0 right-0 pr-3 flex items-center text-gray-400 cursor-pointer <%= @stripe_setting.publishable_key.present? ? '' : 'hidden' %>" onclick="toggleVisibility('stripe_publishable_key')">
+                  <i class='bx bx-hide text-xl'></i>
+                </button>
+              </div>
+            </div>
+            <div>
+              <%= f.label :secret_key, "Secret Key", class: "block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1" %>
+              <div class="relative">
+                <%= f.password_field :secret_key, value: @stripe_setting.secret_key, id: "stripe_secret_key", class: "w-full px-3 py-2 pr-10 border border-gray-300 rounded-md shadow-sm focus:ring-purple-500 focus:border-purple-500 dark:bg-zinc-700 dark:border-zinc-600 dark:text-white transition duration-200" %>
+                <button type="button" class="absolute inset-y-0 right-0 pr-3 flex items-center text-gray-400 cursor-pointer <%= @stripe_setting.secret_key.present? ? '' : 'hidden' %>" onclick="toggleVisibility('stripe_secret_key')">
+                  <i class='bx bx-hide text-xl'></i>
+                </button>
+              </div>
+            </div>
+            <div>
+              <%= f.label :webhook_secret, "Webhook Secret", class: "block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1" %>
+              <div class="relative">
+                <%= f.password_field :webhook_secret, value: @stripe_setting.webhook_secret, id: "stripe_webhook_secret", class: "w-full px-3 py-2 pr-10 border border-gray-300 rounded-md shadow-sm focus:ring-purple-500 focus:border-purple-500 dark:bg-zinc-700 dark:border-zinc-600 dark:text-white transition duration-200" %>
+                <button type="button" class="absolute inset-y-0 right-0 pr-3 flex items-center text-gray-400 cursor-pointer <%= @stripe_setting.webhook_secret.present? ? '' : 'hidden' %>" onclick="toggleVisibility('stripe_webhook_secret')">
+                  <i class='bx bx-hide text-xl'></i>
+                </button>
+              </div>
+            </div>
+            <div>
+              <button type="button" id="testConnectionBtn" class="w-full px-4 py-3 text-sm font-medium text-gray-700 dark:text-gray-300 bg-white dark:bg-zinc-700 border border-gray-300 dark:border-zinc-600 rounded-md hover:bg-gray-100 dark:hover:bg-zinc-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-purple-500 transition duration-200 relative overflow-hidden">
+                <span class="relative z-10">Test Connection</span>
+                <div class="absolute inset-0 overflow-hidden">
+                  <div class="shine-effect"></div>
+                </div>
+              </button>
+            </div>
+            <div class="flex justify-end">
+              <%= f.submit "Save Configuration", class: "px-6 py-3 text-sm font-medium text-white bg-purple-600 border border-transparent rounded-md hover:bg-purple-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-purple-500 transition duration-200" %>
+            </div>
+          </div>
+        <% end %>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+  function toggleVisibility(inputId) {
+    const input = document.getElementById(inputId);
+    const button = input.nextElementSibling;
+    const icon = button.querySelector('i');
+
+    if (input.type === 'password') {
+      input.type = 'text';
+      icon.classList.remove('bx-hide');
+      icon.classList.add('bx-show');
+    } else {
+      input.type = 'password';
+      icon.classList.remove('bx-show');
+      icon.classList.add('bx-hide');
+    }
+  }
+
+  document.addEventListener('DOMContentLoaded', function() {
+    const testConnectionBtn = document.getElementById('testConnectionBtn');
+    const originalText = testConnectionBtn.querySelector('span').textContent;
+    const originalClasses = testConnectionBtn.className;
+    const feedbackContainer = document.createElement('div');
+    feedbackContainer.className = 'mt-2 text-sm text-red-600 dark:text-red-400';
+    testConnectionBtn.parentNode.insertBefore(feedbackContainer, testConnectionBtn.nextSibling);
+
+    testConnectionBtn.addEventListener('click', function() {
+      const textSpan = this.querySelector('span');
+      textSpan.textContent = 'Testing...';
+      feedbackContainer.textContent = '';
+
+      const publishableKey = document.getElementById('stripe_publishable_key').value;
+      const secretKey = document.getElementById('stripe_secret_key').value;
+      const webhookSecret = document.getElementById('stripe_webhook_secret').value;
+
+      fetch('<%= test_admin_payment_modules_connection_path %>', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'X-CSRF-Token': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
+        },
+        body: JSON.stringify({ publishable_key: publishableKey, secret_key: secretKey, webhook_secret: webhookSecret })
+      })
+      .then(response => response.json())
+      .then(data => {
+        if (data.success) {
+          textSpan.textContent = 'Connection Successful!';
+          this.classList.remove('bg-white', 'dark:bg-zinc-700');
+          this.classList.add('bg-green-600', 'dark:bg-green-600', 'text-white');
+        } else {
+          textSpan.textContent = 'Connection Failed!';
+          this.classList.remove('bg-white', 'dark:bg-zinc-700');
+          this.classList.add('bg-red-500', 'dark:bg-red-800', 'text-white');
+          feedbackContainer.textContent = data.message;
+        }
+
+        setTimeout(() => {
+          textSpan.textContent = originalText;
+          this.className = originalClasses;
+          feedbackContainer.textContent = '';
+        }, 3000);
+      })
+      .catch(error => {
+        textSpan.textContent = 'Error!';
+        console.error('Error:', error);
+        feedbackContainer.textContent = 'An unexpected error occurred. Please try again.';
+        setTimeout(() => {
+          textSpan.textContent = originalText;
+          this.className = originalClasses;
+          feedbackContainer.textContent = '';
+        }, 3000);
+      });
+    });
+
+    function shineEffect() {
+      const shineElement = testConnectionBtn.querySelector('.shine-effect');
+      shineElement.style.transition = 'none';
+      shineElement.style.left = '-100%';
+      
+      setTimeout(() => {
+        shineElement.style.transition = 'left 1s ease-in-out';
+        shineElement.style.left = '100%';
+      }, 50);
+    }
+
+    setInterval(shineEffect, 2000);
+  });
+</script>
+
+<style>
+  .shine-effect {
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 50%;
+    height: 100%;
+    background: linear-gradient(
+      to right,
+      rgba(0, 0, 0, 0) 0%,
+      rgba(0, 0, 0, 0.1) 50%,
+      rgba(0, 0, 0, 0) 100%
+    );
+    transform: skewX(-25deg);
+  }
+
+  .dark .shine-effect {
+    background: linear-gradient(
+      to right,
+      rgba(255, 255, 255, 0) 0%,
+      rgba(255, 255, 255, 0.1) 50%,
+      rgba(255, 255, 255, 0) 100%
+    );
+  }
+</style>

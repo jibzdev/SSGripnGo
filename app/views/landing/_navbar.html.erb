@@ -1,0 +1,155 @@
+    <!-- Desktop & Mobile Navigation -->
+    <nav id="navbar" class="fixed top-0 left-0 right-0 z-50 transition-all duration-500 bg-transparent backdrop-blur-sm" style="transition: all 0.5s ease; will-change: transform, background-color, backdrop-filter;">
+        <div class="container mx-auto px-4 sm:px-6 py-4">
+            <div class="flex items-center justify-between">
+                <!-- Logo -->
+                <div class="flex items-center">
+                    <div class="relative">
+                        <div class="absolute inset-0 bg-gradient-to-r from-yellow-400 to-orange-500 rounded-full blur-lg opacity-50"></div>
+                        <img src="/assets/images/logo3.png" alt="RK Customs" class="relative w-16 h-10 object-contain">
+                    </div>
+                </div>
+                
+                <!-- Desktop Navigation -->
+                <div class="hidden lg:flex items-center space-x-8">
+                    <a href="/" class="relative px-4 py-2 font-semibold text-sm tracking-wider uppercase text-white/90 hover:text-yellow-400 transition-all duration-300 hover:-translate-y-1 hover:tracking-widest group">
+                        <span class="relative z-10">HOME</span>
+                        <span class="absolute bottom-0 left-0 w-0 h-0.5 bg-yellow-400 transition-all duration-300 group-hover:w-full"></span>
+                    </a>
+                    <a href="<%= gallery_path %>" class="relative px-4 py-2 font-semibold text-sm tracking-wider uppercase text-white/90 hover:text-yellow-400 transition-all duration-300 hover:-translate-y-1 hover:tracking-widest group">
+                        <span class="relative z-10">GALLERY</span>
+                        <span class="absolute bottom-0 left-0 w-0 h-0.5 bg-yellow-400 transition-all duration-300 group-hover:w-full"></span>
+                    </a>
+                    <a href="<%= contact_path %>" class="relative px-4 py-2 font-semibold text-sm tracking-wider uppercase text-white/90 hover:text-yellow-400 transition-all duration-300 hover:-translate-y-1 hover:tracking-widest group">
+                        <span class="relative z-10">CONTACT</span>
+                        <span class="absolute bottom-0 left-0 w-0 h-0.5 bg-yellow-400 transition-all duration-300 group-hover:w-full"></span>
+                    </a>
+                </div>
+                
+                <!-- Desktop Login/Register Buttons -->
+                <div class="hidden lg:flex items-center space-x-4">
+                    <% if user_signed_in? %>
+                        <a href="<%= dashboard_path %>" class="relative inline-flex items-center justify-center px-6 py-2.5 bg-gradient-to-r from-yellow-400 to-orange-500 rounded-lg font-bold text-white tracking-wider shadow-[0_0_20px_rgba(234,179,8,0.3)] hover:shadow-[0_0_30px_rgba(234,179,8,0.5)] transition-all duration-300 ease-out hover:scale-105 active:scale-95 group overflow-hidden">
+                            <div class="flex items-center justify-center gap-2">
+                                <i class='bx bx-grid-alt'></i>
+                                <span>DASHBOARD</span>
+                            </div>
+                            <div class="absolute top-0 -inset-full h-full w-1/2 z-5 block transform -skew-x-12 bg-gradient-to-r from-transparent via-white/20 to-transparent group-hover:animate-[shine_1s_ease-in-out]"></div>
+                        </a>
+                    <% else %>
+                        <a href="<%= register_path %>" class="px-4 py-2 text-sm font-semibold text-white/90 hover:text-yellow-400 transition-colors duration-300">
+                            REGISTER
+                        </a>
+                        <a href="<%= login_path %>" class="px-4 py-2 bg-white/10 backdrop-blur-sm rounded-lg border border-white/20 hover:bg-white/20 hover:border-yellow-400/40 transition-all duration-300 group" data-turbo="false">
+                            <span class="text-white group-hover:text-yellow-400 transition-colors duration-300">LOGIN</span>
+                        </a>
+                    <% end %>
+                </div>
+                
+                <!-- Mobile Menu Button -->
+                <button id="mobile-menu-btn" class="lg:hidden flex flex-col gap-1.5 p-2 bg-transparent border-none cursor-pointer group">
+                    <span class="w-6 h-0.5 bg-white group-hover:bg-yellow-400"></span>
+                    <span class="w-6 h-0.5 bg-white group-hover:bg-yellow-400"></span>
+                    <span class="w-6 h-0.5 bg-white group-hover:bg-yellow-400"></span>
+                </button>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Mobile Sidebar -->
+    <div id="mobile-sidebar" class="fixed top-0 right-0 w-72 h-full bg-black/98 backdrop-blur-2xl transform translate-x-full z-[60] lg:hidden">
+        <div class="flex flex-col h-full">
+            <!-- Sidebar Header -->
+            <div class="flex items-center justify-between p-4 border-b border-white/10">
+                <div class="flex items-center space-x-3">
+                    <div class="w-8 h-8 bg-black rounded-lg flex items-center justify-center">
+                        <img src="/assets/images/logo3.png" alt="RK" class="w-5 h-3 object-contain">
+                    </div>
+                    <span class="text-white font-semibold text-sm">RK Customs</span>
+                </div>
+                <button id="close-sidebar" class="w-8 h-8 bg-white/10 rounded-lg flex items-center justify-center text-white hover:bg-white/20 transition-colors">
+                    <i class='bx bx-x text-lg'></i>
+                </button>
+            </div>
+            
+            <!-- Sidebar Navigation -->
+            <nav class="flex-1 px-4 py-6">
+                <div class="space-y-2">
+                    <a href="#services" class="flex items-center px-4 py-3 text-white/80 hover:text-white hover:bg-white/5 rounded-xl transition-all duration-200 group">
+                        <div class="w-8 h-8 bg-yellow-500/20 rounded-lg flex items-center justify-center mr-3 group-hover:bg-yellow-500/30 transition-colors">
+                            <i class='bx bx-wrench text-yellow-400 text-sm'></i>
+                        </div>
+                        <span class="font-medium text-sm">Services</span>
+                        <i class='bx bx-chevron-right text-white/40 ml-auto text-sm'></i>
+                    </a>
+                    
+                    <a href="<%= gallery_path %>" class="flex items-center px-4 py-3 text-white/80 hover:text-white hover:bg-white/5 rounded-xl transition-all duration-200 group">
+                        <div class="w-8 h-8 bg-yellow-500/20 rounded-lg flex items-center justify-center mr-3 group-hover:bg-yellow-500/30 transition-colors">
+                            <i class='bx bx-images text-yellow-400 text-sm'></i>
+                        </div>
+                        <span class="font-medium text-sm">Gallery</span>
+                        <i class='bx bx-chevron-right text-white/40 ml-auto text-sm'></i>
+                    </a>
+                    
+                    <a href="<%= contact_path %>" class="flex items-center px-4 py-3 text-white/80 hover:text-white hover:bg-white/5 rounded-xl transition-all duration-200 group">
+                        <div class="w-8 h-8 bg-yellow-500/20 rounded-lg flex items-center justify-center mr-3 group-hover:bg-yellow-500/30 transition-colors">
+                            <i class='bx bx-envelope text-yellow-400 text-sm'></i>
+                        </div>
+                        <span class="font-medium text-sm">Contact</span>
+                        <i class='bx bx-chevron-right text-white/40 ml-auto text-sm'></i>
+                    </a>
+                </div>
+                
+                <!-- Quick Actions -->
+                <div class="mt-8 pt-6 border-t border-white/10">
+                    <h3 class="text-white/60 text-xs font-medium uppercase tracking-wider mb-3 px-4">Quick Actions</h3>
+                    <div class="space-y-2">
+                        <a href="tel:+447459731426" class="flex items-center px-4 py-3 text-white/80 hover:text-white hover:bg-white/5 rounded-xl transition-all duration-200 group">
+                            <div class="w-8 h-8 bg-green-500/20 rounded-lg flex items-center justify-center mr-3 group-hover:bg-green-500/30 transition-colors">
+                                <i class='bx bx-phone text-green-400 text-sm'></i>
+                            </div>
+                            <span class="font-medium text-sm">Call Now</span>
+                        </a>
+                        
+                        <a href="mailto:rkcustomsportsmouth@gmail.com" class="flex items-center px-4 py-3 text-white/80 hover:text-white hover:bg-white/5 rounded-xl transition-all duration-200 group">
+                            <div class="w-8 h-8 bg-blue-500/20 rounded-lg flex items-center justify-center mr-3 group-hover:bg-blue-500/30 transition-colors">
+                                <i class='bx bx-envelope text-blue-400 text-sm'></i>
+                            </div>
+                            <span class="font-medium text-sm">Email Us</span>
+                        </a>
+                    </div>
+                </div>
+            </nav>
+            
+            <!-- Sidebar Footer -->
+            <div class="p-4 border-t border-white/10">
+                <% if user_signed_in? %>
+                    <a href="<%= dashboard_path %>" class="flex items-center justify-center w-full py-3 bg-gradient-to-r from-yellow-400 to-orange-500 text-black font-semibold rounded-xl transition-all duration-300 hover:from-yellow-300 hover:to-orange-400 transform hover:scale-[1.02] hover:shadow-lg hover:shadow-orange-500/20 group">
+                        <div class="flex items-center space-x-2">
+                            <i class='bx bx-dashboard text-lg'></i>
+                            <span class="text-sm">Go to Dashboard</span>
+                        </div>
+                    </a>
+                <% else %>
+                    <a href="<%= login_path %>" class="flex items-center justify-center w-full py-3 bg-gradient-to-r from-yellow-400 to-orange-500 text-black font-semibold rounded-xl transition-all duration-200 hover:from-yellow-300 hover:to-orange-400 group" data-turbo="false">
+                        <i class='bx bx-user text-lg mr-2'></i>
+                        <span class="text-sm">Login / Register</span>
+                    </a>
+                <% end %>
+                
+                <!-- Social Links -->
+                <div class="flex justify-center space-x-4 mt-4">
+                    <a href="#" class="w-8 h-8 bg-white/10 rounded-lg flex items-center justify-center text-white/60 hover:text-white hover:bg-white/20 transition-all duration-200">
+                        <i class='bx bxl-facebook text-sm'></i>
+                    </a>
+                    <a href="#" class="w-8 h-8 bg-white/10 rounded-lg flex items-center justify-center text-white/60 hover:text-white hover:bg-white/20 transition-all duration-200">
+                        <i class='bx bxl-instagram text-sm'></i>
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Mobile Sidebar Overlay -->
+    <div id="sidebar-overlay" class="fixed inset-0 bg-black/50 backdrop-blur-sm opacity-0 pointer-events-none transition-opacity duration-300 z-[55] lg:hidden"></div>
+

@@ -1,0 +1,189 @@
+<% content_for :title, "Dashboard" %>
+
+<section class="bg-ssgrip-darkest min-h-screen text-white">
+  <div class="max-w-7xl mx-auto px-6 py-12 space-y-8">
+    <!-- Header -->
+    <div class="relative overflow-hidden rounded-xl border border-ssgrip-silver/10 bg-ssgrip-darker/30 p-8">
+      <div class="flex flex-col gap-6 sm:flex-row sm:items-center sm:justify-between">
+        <div>
+          <p class="text-xs text-ssgrip-silver-dark uppercase tracking-[0.3em] mb-2">Dashboard</p>
+          <h1 class="text-4xl font-black text-white mb-2">Welcome back, <%= current_user.first_name || current_user.username %></h1>
+          <p class="text-ssgrip-silver">Track orders, manage deliveries, and keep your garage stocked.</p>
+        </div>
+        <div class="flex flex-wrap gap-3">
+          <%= link_to catalog_path, class: "inline-flex items-center gap-2 px-6 py-3 rounded-lg bg-white text-ssgrip-darkest font-semibold hover:bg-ssgrip-accent-bright transition-all" do %>
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z"/>
+            </svg>
+            <span>Shop Catalog</span>
+          <% end %>
+          <%= link_to basket_path, class: "inline-flex items-center gap-2 px-6 py-3 rounded-lg border border-ssgrip-silver/30 text-white hover:border-ssgrip-silver hover:bg-ssgrip-silver/5 transition-all" do %>
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z"/>
+            </svg>
+            <span>View Basket</span>
+          <% end %>
+        </div>
+      </div>
+    </div>
+
+    <!-- Stats Grid -->
+    <div class="grid grid-cols-2 lg:grid-cols-4 gap-4">
+      <div class="rounded-xl border border-ssgrip-silver/10 bg-ssgrip-darker/30 p-6">
+        <p class="text-xs text-ssgrip-silver-dark uppercase tracking-wider mb-2">Open Orders</p>
+        <p class="text-3xl font-black text-white"><%= @open_orders %></p>
+      </div>
+      <div class="rounded-xl border border-ssgrip-silver/10 bg-ssgrip-darker/30 p-6">
+        <p class="text-xs text-ssgrip-silver-dark uppercase tracking-wider mb-2">Items in Basket</p>
+        <p class="text-3xl font-black text-white"><%= basket_item_count %></p>
+      </div>
+      <div class="rounded-xl border border-ssgrip-silver/10 bg-ssgrip-darker/30 p-6">
+        <p class="text-xs text-ssgrip-silver-dark uppercase tracking-wider mb-2">Total Spent</p>
+        <p class="text-3xl font-black text-white"><%= number_to_currency(@total_spent) %></p>
+      </div>
+      <div class="rounded-xl border border-ssgrip-silver/10 bg-ssgrip-darker/30 p-6">
+        <p class="text-xs text-ssgrip-silver-dark uppercase tracking-wider mb-2">Pending Payments</p>
+        <p class="text-3xl font-black text-white"><%= current_user.payments.pending.count %></p>
+      </div>
+    </div>
+
+    <!-- Main Content Grid -->
+    <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+      <!-- Left Column - Orders & Basket -->
+      <div class="lg:col-span-2 space-y-6">
+        <!-- Recent Orders -->
+        <div class="rounded-xl border border-ssgrip-silver/10 bg-ssgrip-darker/30 p-6">
+          <div class="flex items-center justify-between mb-6">
+            <div>
+              <h2 class="text-xl font-black text-white mb-1">Recent Orders</h2>
+              <p class="text-sm text-ssgrip-silver">Latest five orders with live status updates.</p>
+            </div>
+            <%= link_to 'View All', orders_path, class: "text-sm text-white hover:text-ssgrip-accent-bright transition-colors" %>
+          </div>
+          <% if @recent_orders.any? %>
+            <div class="space-y-3">
+              <% @recent_orders.each do |order| %>
+                <div class="rounded-lg border border-ssgrip-silver/10 bg-ssgrip-darkest/50 p-4">
+                  <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+                    <div>
+                      <p class="text-xs text-ssgrip-silver-dark uppercase tracking-wider mb-1">Order</p>
+                      <p class="text-lg font-bold text-white"><%= order.order_number %></p>
+                      <p class="text-sm text-ssgrip-silver">Placed <%= l(order.created_at, format: :short) %></p>
+                    </div>
+                    <div class="flex items-center gap-3">
+                      <span class="px-3 py-1 rounded-full text-xs font-semibold <%= status_badge_class(order.status) %>"><%= order.status.humanize %></span>
+                      <span class="px-3 py-1 rounded-full text-xs font-semibold <%= status_badge_class(order.payment_status) %>"><%= order.payment_status.humanize %></span>
+                    </div>
+                    <div class="flex items-center gap-4">
+                      <span class="text-lg font-bold text-white"><%= number_to_currency(order.total) %></span>
+                      <%= link_to 'Details', order_path(order.order_number), class: "text-sm text-white hover:text-ssgrip-accent-bright transition-colors" %>
+                    </div>
+                  </div>
+                </div>
+              <% end %>
+            </div>
+          <% else %>
+            <div class="text-center py-12">
+              <svg class="w-16 h-16 mx-auto text-ssgrip-silver-dark mb-4 opacity-50" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z"/>
+              </svg>
+              <p class="text-ssgrip-silver">No orders yet. Once you checkout, they will appear here.</p>
+            </div>
+          <% end %>
+        </div>
+
+        <!-- Basket Snapshot -->
+        <div class="rounded-xl border border-ssgrip-silver/10 bg-ssgrip-darker/30 p-6">
+          <div class="flex items-center justify-between mb-6">
+            <div>
+              <h2 class="text-xl font-black text-white mb-1">Basket Snapshot</h2>
+              <p class="text-sm text-ssgrip-silver">Quick glance at what's ready to ship.</p>
+            </div>
+            <%= link_to 'Manage Basket', basket_path, class: "text-sm text-white hover:text-ssgrip-accent-bright transition-colors" %>
+          </div>
+          <% if @basket&.basket_items&.any? %>
+            <div class="space-y-3">
+              <% @basket.basket_items.includes(:product).each do |item| %>
+                <div class="flex items-center justify-between rounded-lg border border-ssgrip-silver/10 bg-ssgrip-darkest/50 p-4">
+                  <div>
+                    <p class="text-xs text-ssgrip-silver-dark uppercase tracking-wider mb-1">Item</p>
+                    <p class="text-base font-semibold text-white"><%= item.product_snapshot['name'] || item.product&.name %></p>
+                    <p class="text-sm text-ssgrip-silver">Qty <%= item.quantity %></p>
+                  </div>
+                  <div class="text-right">
+                    <p class="text-lg font-bold text-white"><%= number_to_currency(item.total_price) %></p>
+                  </div>
+                </div>
+              <% end %>
+            </div>
+          <% else %>
+            <div class="text-center py-12">
+              <svg class="w-16 h-16 mx-auto text-ssgrip-silver-dark mb-4 opacity-50" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z"/>
+              </svg>
+              <p class="text-ssgrip-silver">Your basket is empty. Add items from the catalog to start a build.</p>
+            </div>
+          <% end %>
+        </div>
+      </div>
+
+      <!-- Right Column - Quick Actions & Featured -->
+      <div class="space-y-6">
+        <!-- Quick Actions -->
+        <div class="rounded-xl border border-ssgrip-silver/10 bg-ssgrip-darker/30 p-6">
+          <h3 class="text-lg font-black text-white mb-4">Quick Actions</h3>
+          <div class="space-y-3">
+            <%= link_to new_order_path, class: "flex items-center justify-between rounded-lg border border-ssgrip-silver/10 px-4 py-3 hover:border-ssgrip-silver hover:bg-ssgrip-silver/5 transition-all group" do %>
+              <div>
+                <p class="text-xs text-ssgrip-silver-dark uppercase tracking-wider mb-1">Checkout</p>
+                <p class="text-white font-semibold">Start an Order</p>
+              </div>
+              <svg class="w-5 h-5 text-ssgrip-silver group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7l5 5m0 0l-5 5m5-5H6"/>
+              </svg>
+            <% end %>
+            <%= link_to payment_history_path, class: "flex items-center justify-between rounded-lg border border-ssgrip-silver/10 px-4 py-3 hover:border-ssgrip-silver hover:bg-ssgrip-silver/5 transition-all group" do %>
+              <div>
+                <p class="text-xs text-ssgrip-silver-dark uppercase tracking-wider mb-1">Payments</p>
+                <p class="text-white font-semibold">Payment History</p>
+              </div>
+              <svg class="w-5 h-5 text-ssgrip-silver group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z"/>
+              </svg>
+            <% end %>
+            <%= link_to dashboard_account_path, class: "flex items-center justify-between rounded-lg border border-ssgrip-silver/10 px-4 py-3 hover:border-ssgrip-silver hover:bg-ssgrip-silver/5 transition-all group" do %>
+              <div>
+                <p class="text-xs text-ssgrip-silver-dark uppercase tracking-wider mb-1">Profile</p>
+                <p class="text-white font-semibold">Account Settings</p>
+              </div>
+              <svg class="w-5 h-5 text-ssgrip-silver group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/>
+              </svg>
+            <% end %>
+          </div>
+        </div>
+
+        <!-- Featured Products -->
+        <div class="rounded-xl border border-ssgrip-silver/10 bg-ssgrip-darker/30 p-6">
+          <h3 class="text-lg font-black text-white mb-4">Featured Gear</h3>
+          <% if @featured_products.any? %>
+            <div class="space-y-4">
+              <% @featured_products.each do |product| %>
+                <%= link_to product_path(product), class: "block rounded-lg border border-ssgrip-silver/10 bg-ssgrip-darkest/50 p-4 hover:border-ssgrip-silver/30 transition-all group" do %>
+                  <p class="text-xs text-ssgrip-silver-dark uppercase tracking-wider mb-2"><%= product.category&.name || 'General' %></p>
+                  <p class="text-white font-semibold mb-3 group-hover:text-ssgrip-accent-bright transition-colors"><%= product.name %></p>
+                  <div class="flex items-center justify-between">
+                    <span class="text-lg font-bold text-white"><%= product.display_price %></span>
+                    <span class="text-sm text-ssgrip-silver group-hover:text-white transition-colors">View →</span>
+                  </div>
+                <% end %>
+              <% end %>
+            </div>
+          <% else %>
+            <p class="text-sm text-ssgrip-silver text-center py-6">No featured products yet.</p>
+          <% end %>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>

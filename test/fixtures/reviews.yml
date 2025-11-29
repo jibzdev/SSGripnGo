@@ -1,0 +1,12 @@
+one:
+  user: one
+  rating: 5
+  title: "Perfect control"
+  body: "This wheel transformed the driving experience. Materials feel ultra premium."
+
+two:
+  user: two
+  rating: 4
+  title: "Confident handling"
+  body: "Noticeably better grip and feedback on track days. Minor delay on shipping but worth it."
+

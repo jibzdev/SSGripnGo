@@ -1,0 +1,14 @@
+<li>
+  <% if page %>
+    <%= link_to url, remote: remote, class: "inline-flex h-10 w-10 items-center justify-center rounded-xl border border-white/10 text-white hover:border-amber-400 hover:text-amber-300 transition" do %>
+      <span class="sr-only"><%= t('views.pagination.next') %></span>
+      <i class='bx bx-chevron-right text-xl'></i>
+    <% end %>
+  <% else %>
+    <span class="inline-flex h-10 w-10 items-center justify-center rounded-xl border border-white/5 text-zinc-500 opacity-40 cursor-not-allowed">
+      <span class="sr-only"><%= t('views.pagination.next') %></span>
+      <i class='bx bx-chevron-right text-xl'></i>
+    </span>
+  <% end %>
+</li>
+

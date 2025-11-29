@@ -1,0 +1,38 @@
+<section class="bg-ssgrip-darkest min-h-screen text-white">
+  <div class="max-w-4xl mx-auto px-6 py-10 space-y-6">
+    <div>
+      <p class="text-xs text-ssgrip-silver-dark uppercase tracking-[0.3em] mb-2">Assets</p>
+      <h1 class="text-4xl font-black text-white">Media Library</h1>
+      <p class="text-sm text-ssgrip-silver">Upload images from the product form or via the API endpoints.</p>
+    </div>
+
+    <div class="rounded-xl border border-ssgrip-silver/10 bg-ssgrip-darker/30 p-6">
+      <p class="text-sm text-ssgrip-silver">
+        This endpoint primarily serves JSON for the product gallery component (<code class="bg-ssgrip-darkest px-2 py-1 rounded">/admin/media.json</code>).
+        You can still review uploaded files below.
+      </p>
+    </div>
+
+    <div class="space-y-3">
+      <% if @media_files.present? %>
+        <% @media_files.each do |path| %>
+          <% public_url = path.sub(Rails.root.join('public').to_s, '').tr('\\', '/') %>
+          <div class="rounded-xl border border-ssgrip-silver/10 bg-ssgrip-darker/40 p-4 flex items-center justify-between">
+            <div class="flex items-center gap-4">
+              <img src="<%= public_url %>" alt="Media" class="w-16 h-16 object-cover rounded-lg border border-ssgrip-silver/20">
+              <div>
+                <p class="text-white font-semibold"><%= File.basename(path) %></p>
+                <p class="text-xs text-ssgrip-silver-dark"><%= number_to_human_size(File.size(path)) %></p>
+              </div>
+            </div>
+          </div>
+        <% end %>
+      <% else %>
+        <div class="rounded-xl border border-dashed border-ssgrip-silver/20 bg-ssgrip-darker/20 p-10 text-center">
+          <p class="text-ssgrip-silver">No media files uploaded yet.</p>
+        </div>
+      <% end %>
+    </div>
+  </div>
+</section>
+

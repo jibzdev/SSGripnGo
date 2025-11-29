@@ -1,0 +1,198 @@
+<section class="bg-ssgrip-darkest min-h-screen text-white pb-24">
+  <div class="mx-auto max-w-6xl px-6 pt-12">
+    <div class="mb-10">
+      <p class="text-xs text-ssgrip-silver-dark uppercase tracking-[0.3em] mb-2">Checkout</p>
+      <h1 class="text-4xl font-black text-white">Confirm Delivery Details</h1>
+    </div>
+
+    <% if @basket.basket_items.empty? %>
+      <div class="text-center py-24 border border-ssgrip-silver/10 rounded-xl bg-ssgrip-darker/30">
+        <svg class="w-16 h-16 mx-auto text-ssgrip-silver-dark mb-4 opacity-50" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z"/>
+        </svg>
+        <h3 class="text-xl font-bold text-white mb-2">Your basket is empty</h3>
+        <p class="text-ssgrip-silver mb-6">Add items before checking out.</p>
+        <%= link_to catalog_path, class: "inline-flex items-center gap-2 px-6 py-3 rounded-lg bg-white text-ssgrip-darkest font-bold hover:bg-ssgrip-accent-bright transition-all" do %>
+          <span>Browse Catalog</span>
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
+          </svg>
+        <% end %>
+      </div>
+    <% else %>
+      <% amount_due = @basket.total.positive? ? @basket.total : @basket.subtotal %>
+      <%= form_with model: @order,
+                    url: orders_path,
+                    method: :post,
+                    local: true,
+                    html: {
+                      class: "grid gap-8 lg:grid-cols-[1.4fr_1fr]",
+                      data: { controller: "bank-details" }
+                    } do |f| %>
+        <div class="space-y-6">
+          <div class="rounded-xl border border-ssgrip-silver/10 bg-ssgrip-darker/30 p-6 space-y-4">
+            <h2 class="text-lg font-bold text-white">Contact</h2>
+            <div>
+              <label class="text-sm text-ssgrip-silver-dark uppercase tracking-wider mb-2 block">Email</label>
+              <%= f.email_field :email, value: @order.email, class: "w-full rounded-lg bg-ssgrip-darkest/50 border border-ssgrip-silver/20 px-4 py-3 text-white focus:outline-none focus:border-ssgrip-silver transition-colors" %>
+            </div>
+            <div>
+              <label class="text-sm text-ssgrip-silver-dark uppercase tracking-wider mb-2 block">Phone</label>
+              <%= f.telephone_field :phone_number, value: @order.phone_number, class: "w-full rounded-lg bg-ssgrip-darkest/50 border border-ssgrip-silver/20 px-4 py-3 text-white focus:outline-none focus:border-ssgrip-silver transition-colors" %>
+            </div>
+          </div>
+
+          <div
+            class="rounded-xl border border-ssgrip-silver/10 bg-ssgrip-darker/30 p-6 space-y-4"
+            data-controller="address-lookup"
+            data-address-lookup-fetch-url-value="<%= address_lookup_path %>"
+            data-action="input->bank-details#handleAddressInput"
+          >
+            <h2 class="text-lg font-bold text-white flex items-center justify-between">
+              Shipping Address
+              <span class="text-xs font-semibold text-ssgrip-silver-dark">UK addresses only</span>
+            </h2>
+            <% shipping_address = @order.shipping_address || {} %>
+
+            <div>
+              <label class="text-sm text-ssgrip-silver-dark uppercase tracking-wider mb-2 block">Postcode</label>
+              <div class="flex gap-3">
+                <%= text_field_tag "order[shipping_address][postal_code]",
+                                   shipping_address['postal_code'],
+                                   class: "flex-1 rounded-lg bg-ssgrip-darkest/50 border border-ssgrip-silver/20 px-4 py-3 text-white uppercase focus:outline-none focus:border-ssgrip-silver transition-colors",
+                                   data: {
+                                     address_lookup_target: "postcode",
+                                     bank_details_target: "addressField",
+                                     action: "input->bank-details#handleAddressInput"
+                                   },
+                                   placeholder: "e.g. SW1A 1AA" %>
+                <button
+                  type="button"
+                  class="rounded-lg border border-ssgrip-silver/30 px-4 py-3 text-sm font-semibold text-white hover:border-ssgrip-silver hover:bg-ssgrip-silver/10 transition-all"
+                  data-action="address-lookup#lookup"
+                >
+                  Find address
+                </button>
+              </div>
+              <p class="text-xs text-ssgrip-silver-dark mt-2" data-address-lookup-target="status">Enter a postcode to auto-fill the rest.</p>
+            </div>
+
+            <div class="hidden" data-address-lookup-target="resultsWrapper">
+              <label class="text-sm text-ssgrip-silver-dark uppercase tracking-wider mb-2 block">Select address</label>
+              <select
+                class="w-full rounded-lg bg-ssgrip-darkest/50 border border-ssgrip-silver/20 px-4 py-3 text-white focus:outline-none focus:border-ssgrip-silver transition-colors"
+                data-address-lookup-target="results"
+                data-action="change->address-lookup#applyAddress"
+              >
+                <option value="">Choose an address</option>
+              </select>
+            </div>
+
+            <div>
+              <label class="text-sm text-ssgrip-silver-dark uppercase tracking-wider mb-2 block">Address line 1</label>
+              <%= text_field_tag "order[shipping_address][line1]",
+                                 shipping_address['line1'],
+                                 class: "w-full rounded-lg bg-ssgrip-darkest/50 border border-ssgrip-silver/20 px-4 py-3 text-white focus:outline-none focus:border-ssgrip-silver transition-colors",
+                                 data: {
+                                   address_lookup_target: "line1",
+                                   bank_details_target: "addressField",
+                                   action: "input->bank-details#handleAddressInput"
+                                 },
+                                 placeholder: "Building and street" %>
+            </div>
+
+            <div>
+              <label class="text-sm text-ssgrip-silver-dark uppercase tracking-wider mb-2 block">Address line 2</label>
+              <%= text_field_tag "order[shipping_address][line2]",
+                                 shipping_address['line2'],
+                                 class: "w-full rounded-lg bg-ssgrip-darkest/50 border border-ssgrip-silver/20 px-4 py-3 text-white focus:outline-none focus:border-ssgrip-silver transition-colors",
+                                 data: { address_lookup_target: "line2" },
+                                 placeholder: "Optional (apartment, suite, etc.)" %>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div>
+                <label class="text-sm text-ssgrip-silver-dark uppercase tracking-wider mb-2 block">City</label>
+                <%= text_field_tag "order[shipping_address][city]",
+                                   shipping_address['city'],
+                                   class: "w-full rounded-lg bg-ssgrip-darkest/50 border border-ssgrip-silver/20 px-4 py-3 text-white focus:outline-none focus:border-ssgrip-silver transition-colors",
+                                   data: {
+                                     address_lookup_target: "city",
+                                     bank_details_target: "addressField",
+                                     action: "input->bank-details#handleAddressInput"
+                                   } %>
+              </div>
+              <div>
+                <label class="text-sm text-ssgrip-silver-dark uppercase tracking-wider mb-2 block">County / Region</label>
+                <%= text_field_tag "order[shipping_address][region]",
+                                   shipping_address['region'],
+                                   class: "w-full rounded-lg bg-ssgrip-darkest/50 border border-ssgrip-silver/20 px-4 py-3 text-white focus:outline-none focus:border-ssgrip-silver transition-colors",
+                                   data: { address_lookup_target: "region" } %>
+              </div>
+            </div>
+
+            <div>
+              <label class="text-sm text-ssgrip-silver-dark uppercase tracking-wider mb-2 block">Country</label>
+              <%= text_field_tag "order[shipping_address][country]",
+                                 shipping_address['country'] || 'United Kingdom',
+                                 class: "w-full rounded-lg bg-ssgrip-darkest/50 border border-ssgrip-silver/20 px-4 py-3 text-white focus:outline-none focus:border-ssgrip-silver transition-colors",
+                                 data: { address_lookup_target: "country" } %>
+            </div>
+          </div>
+
+          <div class="rounded-xl border border-ssgrip-silver/10 bg-ssgrip-darker/30 p-6 space-y-4">
+            <h2 class="text-lg font-bold text-white">Delivery</h2>
+            <div>
+              <label class="text-sm text-ssgrip-silver-dark uppercase tracking-wider mb-2 block">Preferred Shipping Method</label>
+              <%= f.select :shipping_method, ['Standard courier', 'Express next-day'], {}, class: "w-full rounded-lg bg-ssgrip-darkest/50 border border-ssgrip-silver/20 px-4 py-3 text-white focus:outline-none focus:border-ssgrip-silver transition-colors" %>
+            </div>
+            <div>
+              <label class="text-sm text-ssgrip-silver-dark uppercase tracking-wider mb-2 block">Delivery Notes</label>
+              <%= f.text_area :delivery_estimate, rows: 3, class: "w-full rounded-lg bg-ssgrip-darkest/50 border border-ssgrip-silver/20 px-4 py-3 text-white focus:outline-none focus:border-ssgrip-silver transition-colors" %>
+            </div>
+          </div>
+        </div>
+
+        <div class="space-y-4">
+          <div class="rounded-xl border border-ssgrip-silver/10 bg-ssgrip-darker/30 p-6 space-y-3">
+            <h2 class="text-lg font-bold text-white">Summary</h2>
+            <% @basket.basket_items.each do |item| %>
+              <div class="flex justify-between text-sm text-ssgrip-silver">
+                <span><%= item.product_snapshot['name'] || item.product&.name %> × <%= item.quantity %></span>
+                <span><%= number_to_currency(item.total_price) %></span>
+              </div>
+            <% end %>
+            <div class="border-t border-ssgrip-silver/10 pt-3 flex justify-between text-xl font-black text-white">
+              <span>Total</span>
+              <span><%= number_to_currency(amount_due) %></span>
+            </div>
+          </div>
+
+          <div class="rounded-xl border border-ssgrip-silver/10 bg-ssgrip-darker/30 p-6 text-sm text-ssgrip-silver space-y-3">
+            <h2 class="text-lg font-bold text-white flex items-center gap-2">
+              <svg class="w-5 h-5 text-ssgrip-silver" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z"/>
+              </svg>
+              Bank transfer details
+            </h2>
+            <div data-bank-details-target="lockedNotice" class="text-sm text-ssgrip-silver-dark">
+              Complete your shipping address to reveal the payment instructions.
+            </div>
+            <div data-bank-details-target="detailsCard" class="hidden space-y-3 text-sm text-ssgrip-silver">
+              <p>Send your transfer using the details below once your order number appears on the next screen.</p>
+              <%= render "bank_transfer_details",
+                         general_setting: @general_setting,
+                         amount: amount_due %>
+              <p class="text-xs text-ssgrip-silver-dark">You’ll receive the order number (your payment reference) immediately after submitting this form.</p>
+            </div>
+          </div>
+
+          <button class="w-full rounded-lg bg-white text-ssgrip-darkest font-bold py-4 hover:bg-ssgrip-accent-bright transition-all">Place Order</button>
+          <%= link_to basket_path, class: "block text-center rounded-lg border border-ssgrip-silver/30 py-4 font-semibold text-white hover:border-ssgrip-silver hover:bg-ssgrip-silver/5 transition-all" do %>
+            Back to Basket
+          <% end %>
+        </div>
+      <% end %>
+    <% end %>
+  </div>
+</section>

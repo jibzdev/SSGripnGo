@@ -1,0 +1,187 @@
+<div class="min-h-screen bg-gradient-to-br from-zinc-950 via-zinc-900 to-zinc-950">
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+    <!-- Header -->
+    <div class="mb-8 relative">
+      <div class="absolute inset-0 bg-gradient-to-r from-amber-500/10 via-orange-500/10 to-red-500/10 rounded-2xl blur-3xl"></div>
+      <div class="relative bg-zinc-900/50 backdrop-blur-sm border border-zinc-800/50 rounded-2xl p-6">
+        <div class="flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
+          <div>
+            <h1 class="text-3xl md:text-4xl font-bold bg-gradient-to-r from-white via-zinc-100 to-zinc-300 bg-clip-text text-transparent mb-2">
+              Service Management
+            </h1>
+            <p class="text-zinc-400">Create, edit, and manage your service offerings</p>
+          </div>
+          <div class="flex flex-wrap gap-3">
+            <%= link_to admin_vehicle_groups_path, class: "inline-flex items-center gap-2 px-5 py-3 rounded-xl border border-zinc-700 text-white hover:bg-zinc-800 transition-all duration-200" do %>
+              <i class='bx bx-car text-lg text-emerald-400'></i>
+              <span>Manage Vehicle Groups</span>
+            <% end %>
+            <a href="<%= new_admin_service_path %>" class="inline-flex items-center gap-2 bg-gradient-to-r from-amber-500 to-orange-500 hover:from-amber-400 hover:to-orange-400 text-black font-semibold px-6 py-3 rounded-xl transition-all duration-200 shadow-lg shadow-amber-500/20 hover:shadow-amber-500/30 hover:scale-105">
+              <i class='bx bx-plus text-lg'></i>
+              <span>Add New Service</span>
+            </a>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Filters -->
+    <div class="bg-gradient-to-br from-zinc-900 to-zinc-900/50 border border-zinc-800 rounded-2xl p-6 mb-8 backdrop-blur-sm">
+      <h3 class="text-lg font-bold text-white mb-4">Filter Services</h3>
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <div>
+          <label class="block text-sm font-medium text-zinc-400 mb-2">Category</label>
+          <select id="category-filter" class="w-full px-4 py-3 rounded-xl border border-zinc-700 bg-zinc-800/50 text-white focus:ring-2 focus:ring-amber-500 focus:border-amber-500 focus:outline-none transition-all">
+            <option value="">All Categories</option>
+            <% Service.distinct.pluck(:category).each do |category| %>
+              <option value="<%= category %>" <%= 'selected' if params[:category] == category %>><%= category %></option>
+            <% end %>
+          </select>
+        </div>
+        <div>
+          <label class="block text-sm font-medium text-zinc-400 mb-2">Status</label>
+          <select id="status-filter" class="w-full px-4 py-3 rounded-xl border border-zinc-700 bg-zinc-800/50 text-white focus:ring-2 focus:ring-amber-500 focus:border-amber-500 focus:outline-none transition-all">
+            <option value="">All Status</option>
+            <option value="true" <%= 'selected' if params[:active] == 'true' %>>Active</option>
+            <option value="false" <%= 'selected' if params[:active] == 'false' %>>Inactive</option>
+          </select>
+        </div>
+      </div>
+    </div>
+
+    <!-- Services Table -->
+    <div class="bg-gradient-to-br from-zinc-900 to-zinc-900/50 border border-zinc-800 rounded-2xl backdrop-blur-sm overflow-hidden">
+      <% if @services.any? %>
+        <div class="overflow-x-auto">
+          <table class="w-full">
+            <thead class="bg-zinc-800/50 border-b border-zinc-700/50">
+              <tr>
+                <th class="px-6 py-4 text-left text-xs font-semibold text-zinc-400 uppercase tracking-wider">Service</th>
+                <th class="px-6 py-4 text-left text-xs font-semibold text-zinc-400 uppercase tracking-wider">Category</th>
+                <th class="px-6 py-4 text-left text-xs font-semibold text-zinc-400 uppercase tracking-wider">Pricing</th>
+                <th class="px-6 py-4 text-left text-xs font-semibold text-zinc-400 uppercase tracking-wider">Card</th>
+                <th class="px-6 py-4 text-left text-xs font-semibold text-zinc-400 uppercase tracking-wider">Status</th>
+                <th class="px-6 py-4 text-left text-xs font-semibold text-zinc-400 uppercase tracking-wider">Position</th>
+                <th class="px-6 py-4 text-left text-xs font-semibold text-zinc-400 uppercase tracking-wider">Actions</th>
+              </tr>
+            </thead>
+            <tbody class="divide-y divide-zinc-700" id="services-table">
+              <% @services.each do |service| %>
+                <tr class="hover:bg-zinc-800/30 transition-colors duration-300" data-category="<%= service.category %>" data-status="<%= service.active %>">
+                  <td class="px-6 py-4">
+                    <div class="flex items-center">
+                      <div class="w-10 h-10 bg-gradient-to-br from-amber-500/20 to-orange-500/20 rounded-xl flex items-center justify-center mr-3 ring-1 ring-amber-500/30">
+                        <i class='bx bx-wrench text-amber-400'></i>
+                      </div>
+                      <div>
+                        <div class="text-white font-medium"><%= service.name %></div>
+                        <% if service.description.present? %>
+                          <div class="text-zinc-400 text-sm mt-1"><%= truncate(service.description, length: 50) %></div>
+                        <% end %>
+                      </div>
+                    </div>
+                  </td>
+                  <td class="px-6 py-4">
+                    <span class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold bg-gradient-to-r from-blue-500/20 to-cyan-500/20 text-blue-400 ring-1 ring-blue-500/30">
+                      <%= service.category %>
+                    </span>
+                  </td>
+                  <td class="px-6 py-4">
+                    <div class="text-amber-400 font-semibold"><%= service.formatted_price %></div>
+                    <span class="inline-flex items-center gap-1 mt-1 text-xs text-zinc-400">
+                      <i class='bx bx-slider-alt'></i>
+                      <%= service.pricing_type.capitalize %>
+                    </span>
+                  </td>
+                  <td class="px-6 py-4">
+                    <% if service.card_allowed? %>
+                      <span class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold bg-gradient-to-r from-slate-500/20 to-slate-400/20 text-slate-200 ring-1 ring-slate-500/30">
+                        <i class='bx bx-credit-card'></i>Allowed
+                      </span>
+                    <% else %>
+                      <span class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold bg-gradient-to-r from-red-500/20 to-rose-500/20 text-red-300 ring-1 ring-red-500/30">
+                        <i class='bx bx-block'></i>Cash Only
+                      </span>
+                    <% end %>
+                  </td>
+                  <td class="px-6 py-4">
+                    <% if service.active %>
+                      <span class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold bg-gradient-to-r from-green-500/20 to-emerald-500/20 text-green-400 ring-1 ring-green-500/30">
+                        <i class='bx bx-check'></i>Active
+                      </span>
+                    <% else %>
+                      <span class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold bg-gradient-to-r from-red-500/20 to-rose-500/20 text-red-400 ring-1 ring-red-500/30">
+                        <i class='bx bx-x'></i>Inactive
+                      </span>
+                    <% end %>
+                  </td>
+                  <td class="px-6 py-4">
+                    <div class="text-white"><%= service.position %></div>
+                  </td>
+                  <td class="px-6 py-4">
+                    <div class="flex items-center space-x-3">
+                      
+                      <a href="<%= edit_admin_service_path(service) %>" class="p-2 text-amber-400 hover:text-amber-300 hover:bg-amber-500/10 rounded-lg transition-all duration-200" title="Edit Service">
+                        <i class='bx bx-edit text-lg'></i>
+                      </a>
+                      
+                      <%= button_to admin_service_path(service), method: :delete, form: { data: { turbo_confirm: 'Are you sure you want to delete this service?' }, class: 'inline-block' }, class: "p-2 text-red-400 hover:text-red-300 hover:bg-red-500/10 rounded-lg transition-all duration-200", title: "Delete Service" do %>
+                        <i class='bx bx-trash text-lg'></i>
+                      <% end %>
+                    </div>
+                  </td>
+                </tr>
+              <% end %>
+            </tbody>
+          </table>
+        </div>
+      <% else %>
+        <div class="text-center py-16">
+          <div class="relative inline-flex mb-6">
+            <div class="absolute inset-0 bg-gradient-to-r from-amber-500/20 to-orange-500/20 rounded-full blur-2xl"></div>
+            <div class="relative w-20 h-20 bg-zinc-800 rounded-full flex items-center justify-center ring-1 ring-zinc-700">
+              <i class='bx bx-wrench text-zinc-500 text-3xl'></i>
+            </div>
+          </div>
+          <h3 class="text-xl font-bold text-white mb-2">No services found</h3>
+          <p class="text-zinc-500 mb-6">Get started by creating your first service offering</p>
+          <a href="<%= new_admin_service_path %>" class="inline-flex items-center gap-2 bg-gradient-to-r from-amber-500 to-orange-500 hover:from-amber-400 hover:to-orange-400 text-black font-semibold px-6 py-3 rounded-xl transition-all duration-200 shadow-lg shadow-amber-500/20 hover:shadow-amber-500/30 hover:scale-105">
+            <i class='bx bx-plus text-lg'></i>
+            <span>Add New Service</span>
+          </a>
+        </div>
+      <% end %>
+    </div>
+  </div>
+</div>
+
+<script>
+// Filter functionality
+document.getElementById('category-filter').addEventListener('change', function() {
+    filterServices();
+});
+
+document.getElementById('status-filter').addEventListener('change', function() {
+    filterServices();
+});
+
+function filterServices() {
+    const categoryFilter = document.getElementById('category-filter').value;
+    const statusFilter = document.getElementById('status-filter').value;
+    const rows = document.querySelectorAll('#services-table tr');
+    
+    rows.forEach(row => {
+        const category = row.dataset.category;
+        const status = row.dataset.status;
+        
+        const categoryMatch = !categoryFilter || category === categoryFilter;
+        const statusMatch = !statusFilter || status === statusFilter;
+        
+        if (categoryMatch && statusMatch) {
+            row.style.display = '';
+        } else {
+            row.style.display = 'none';
+        }
+    });
+}
+</script>

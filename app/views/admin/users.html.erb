@@ -1,0 +1,180 @@
+<div class="flex-1 overflow-y-auto bg-gray-50 dark:bg-zinc-900 transition duration-200">
+  <div class="max-w-8xl mx-auto p-4 sm:p-6 lg:p-8">
+    <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-4 mb-8">
+      <h1 class="text-3xl font-bold text-gray-900 dark:text-white">User Management</h1>
+      
+      <!-- Search Bar -->
+      <div class="w-full md:w-96">
+        <form action="<%= admin_users_path %>" method="get" class="relative">
+          <input name="query" type="text"
+            class="w-full h-11 pl-4 pr-12 rounded-lg border border-gray-200 dark:border-zinc-700 focus:ring-2 focus:ring-purple-500 focus:border-transparent bg-white dark:bg-zinc-800 text-gray-900 dark:text-white shadow-sm"
+            placeholder="Search users..." value="<%= params[:query] %>">
+          <button type="submit"
+            class="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-purple-500">
+            <i class='bx bx-search text-xl'></i>
+          </button>
+        </form>
+      </div>
+    </div>
+
+    <!-- Stats Cards -->
+    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
+      <!-- Total Users -->
+      <div class="bg-white dark:bg-zinc-800 rounded-lg shadow-sm border border-gray-100 dark:border-zinc-700 p-4">
+        <div class="flex items-center gap-3">
+          <div class="p-3 bg-purple-100 dark:bg-blue-900/30 rounded-lg">
+            <i class='bx bx-user text-2xl text-blue-600 dark:text-blue-400'></i>
+          </div>
+          <div>
+            <p class="text-sm text-gray-500 dark:text-gray-400">Total Users</p>
+            <p class="text-2xl font-bold text-gray-900 dark:text-white"><%= User.count %></p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Verified Users -->
+      <div class="bg-white dark:bg-zinc-800 rounded-lg shadow-sm border border-gray-100 dark:border-zinc-700 p-4">
+        <div class="flex items-center gap-3">
+          <div class="p-3 bg-green-100 dark:bg-green-900/30 rounded-lg">
+            <i class='bx bx-check-circle text-2xl text-green-600 dark:text-green-400'></i>
+          </div>
+          <div>
+            <p class="text-sm text-gray-500 dark:text-gray-400">Verified Users</p>
+            <p class="text-2xl font-bold text-gray-900 dark:text-white"><%= User.where(status: "verified").count %></p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Unverified Users -->
+      <div class="bg-white dark:bg-zinc-800 rounded-lg shadow-sm border border-gray-100 dark:border-zinc-700 p-4">
+        <div class="flex items-center gap-3">
+          <div class="p-3 bg-red-100 dark:bg-red-900/30 rounded-lg">
+            <i class='bx bx-x-circle text-2xl text-red-600 dark:text-red-400'></i>
+          </div>
+          <div>
+            <p class="text-sm text-gray-500 dark:text-gray-400">Unverified Users</p>
+            <p class="text-2xl font-bold text-gray-900 dark:text-white"><%= User.where(status: "unverified").count %></p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Subscribed Users -->
+      <div class="bg-white dark:bg-zinc-800 rounded-lg shadow-sm border border-gray-100 dark:border-zinc-700 p-4">
+        <div class="flex items-center gap-3">
+          <div class="p-3 bg-purple-100 dark:bg-purple-900/30 rounded-lg">
+            <i class='bx bx-money text-2xl text-purple-600 dark:text-purple-400'></i>
+          </div>
+          <div>
+            <p class="text-sm text-gray-500 dark:text-gray-400">Subscribed Users</p>
+            <p class="text-2xl font-bold text-gray-900 dark:text-white"><%= @all_user_subscriptions.count %></p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- User Cards Grid -->
+    <div class="overflow-y-auto">
+      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+        <% @users.each do |user| %>
+          <div class="bg-white dark:bg-zinc-800 rounded-lg shadow-sm border border-gray-100 dark:border-zinc-700 overflow-hidden hover:shadow-md transition duration-200">
+            <div class="p-4">
+              <div class="flex items-center gap-3 mb-3">
+                <div class="h-12 w-12 rounded-full bg-purple-100 dark:bg-purple-900/30 flex items-center justify-center text-purple-600 dark:text-purple-400 font-semibold text-xl">
+                  <%= user.username.present? ? user.username[0].upcase : 'N' %>
+                </div>
+                <div class="flex-1 min-w-0">
+                  <h3 class="text-sm font-medium text-gray-900 dark:text-white truncate">
+                    <%= user.username.present? ? user.username : 'Unnamed User' %>
+                  </h3>
+                  <p class="text-xs text-gray-500 dark:text-gray-400 truncate"><%= user.email %></p>
+                </div>
+                <% if @all_user_subscriptions.any? { |sub| sub.user_id == user.id } %>
+                  <div class="flex-shrink-0">
+                    <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-purple-100 text-purple-800 dark:bg-purple-900/30 dark:text-purple-400">
+                      <i class='bx bx-crown mr-1'></i>
+                      Premium
+                    </span>
+                  </div>
+                <% end %>
+              </div>
+              
+              <div class="space-y-2">
+                <div class="flex items-center justify-between text-sm">
+                  <span class="text-gray-500 dark:text-gray-400">Status:</span>
+                  <% if user.status == "unverified" %>
+                    <span class="px-2 py-1 text-xs rounded-full bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-400">
+                      <%= user.status %>
+                    </span>
+                  <% else %>
+                    <span class="px-2 py-1 text-xs rounded-full bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400">
+                      <%= user.status %>
+                    </span>
+                  <% end %>
+                </div>
+                
+                <div class="flex items-center justify-between text-sm">
+                  <span class="text-gray-500 dark:text-gray-400">Account Age:</span>
+                  <span class="text-gray-900 dark:text-gray-300"><%= time_ago_in_words(user.created_at) %></span>
+                </div>
+                
+                <div class="flex items-center justify-between text-sm">
+                  <span class="text-gray-500 dark:text-gray-400">Last Active:</span>
+                  <span class="text-gray-900 dark:text-gray-300">
+                    <%= user.last_active_at ? time_ago_in_words(user.last_active_at) + " ago" : "Never" %>
+                  </span>
+                </div>
+
+                <div class="flex items-center justify-between text-sm">
+                  <span class="text-gray-500 dark:text-gray-400">2FA:</span>
+                  <% if user.google_secret.present? %>
+                    <span class="px-2 py-1 text-xs rounded-full bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400">
+                      Enabled
+                    </span>
+                  <% else %>
+                    <span class="px-2 py-1 text-xs rounded-full bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-400">
+                      Disabled
+                    </span>
+                  <% end %>
+                </div>
+
+                <% user_subscription = @all_user_subscriptions.find { |sub| sub.user_id == user.id } %>
+                <% if user_subscription %>
+                  <div class="flex items-center justify-between text-sm">
+                    <span class="text-gray-500 dark:text-gray-400">Subscription:</span>
+                    <span class="text-gray-900 dark:text-gray-300">
+                      <%= user_subscription.product.name %>
+                    </span>
+                  </div>
+                <% end %>
+              </div>
+            </div>
+            
+            <div class="px-4 py-3 bg-gray-50 dark:bg-zinc-800/50 border-t border-gray-100 dark:border-zinc-700">
+              <%= link_to edit_admin_user_path(user), class: "w-full inline-flex items-center justify-center px-4 py-2 text-sm font-medium rounded-md text-white bg-purple-600 hover:bg-purple-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-purple-500 transition duration-200" do %>
+                <i class='bx bx-edit-alt mr-2'></i>
+                Edit User
+              <% end %>
+            </div>
+          </div>
+        <% end %>
+      </div>
+
+      <!-- Pagination -->
+      <div class="mt-8 flex justify-center">
+        <nav class="flex items-center justify-between">
+          <div class="flex-1 flex justify-between sm:hidden">
+            <%= link_to_prev_page @users, 'Previous', class: 'relative inline-flex items-center px-4 py-2 border border-gray-300 dark:border-zinc-700 text-sm font-medium rounded-md text-gray-700 dark:text-gray-300 bg-white dark:bg-zinc-800 hover:bg-gray-50 dark:hover:bg-zinc-700' %>
+            <%= link_to_next_page @users, 'Next', class: 'ml-3 relative inline-flex items-center px-4 py-2 border border-gray-300 dark:border-zinc-700 text-sm font-medium rounded-md text-gray-700 dark:text-gray-300 bg-white dark:bg-zinc-800 hover:bg-gray-50 dark:hover:bg-zinc-700' %>
+          </div>
+          <div class="hidden sm:flex-1 sm:flex sm:items-center sm:justify-center">
+            <div>
+              <nav class="relative z-0 inline-flex rounded-md shadow-sm -space-x-px" aria-label="Pagination">
+                <%= paginate @users %>
+              </nav>
+            </div>
+          </div>
+        </nav>
+      </div>
+    </div>
+  </div>
+</div>

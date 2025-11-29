@@ -1,0 +1,29 @@
+services:
+  db:
+    image: postgres:latest
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    environment:
+      POSTGRES_DB: rkcustoms
+      POSTGRES_USER: rkcustoms
+      POSTGRES_PASSWORD: 0161Mannyonthemap
+    ports:
+      - "5433:5432"    # host:container
+
+  web:
+    build: .
+    command: ["bash", "-c", "bundle exec rails server -b 0.0.0.0 -p 3001"]
+    volumes:
+      - .:/myapp
+    ports:
+      - "3001:3001"
+    depends_on:
+      - db
+    environment:
+      RAILS_ENV: production
+      DATABASE_URL: postgres://rkcustoms:0161Mannyonthemap@db:5432/rkcustoms
+      SECRET_KEY_BASE: 6465006ac0b74b3d9cf4e3111b0ec29e1c3dc6927b4e8d0d74592ad3501ec7d02d32488e326fd6c86d9c2da1f94da25005b2cda440ca6aa16b3ba9a809ab307c
+      RAILS_SERVE_STATIC_FILES: "true"
+
+volumes:
+  postgres_data:

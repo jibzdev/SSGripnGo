@@ -1,0 +1,108 @@
+<section class="bg-ssgrip-darkest min-h-screen text-white">
+  <div class="max-w-7xl mx-auto px-6 py-8 space-y-8">
+    <!-- Header -->
+    <div class="flex items-center justify-between">
+      <div>
+        <p class="text-xs text-ssgrip-silver-dark uppercase tracking-[0.3em] mb-2">Order</p>
+        <h1 class="text-4xl font-black text-white mb-1"><%= @order.order_number %></h1>
+        <p class="text-sm text-ssgrip-silver">Placed <%= l(@order.created_at, format: :long) %></p>
+      </div>
+      <div class="space-x-2">
+        <%= button_to 'Delete', admin_order_path(@order), method: :delete, data: { confirm: 'Delete order?' }, class: "rounded-lg border border-red-500/30 px-5 py-3 text-red-400 hover:bg-red-500/10 transition-all font-semibold" %>
+      </div>
+    </div>
+
+    <!-- Content Grid -->
+    <div class="grid gap-6 lg:grid-cols-[2fr_1fr]">
+      <!-- Order Items -->
+      <div class="space-y-4">
+        <% @order.order_items.each do |item| %>
+          <div class="rounded-xl border border-ssgrip-silver/10 bg-ssgrip-darker/30 p-6 flex items-center justify-between">
+            <div>
+              <p class="text-xs text-ssgrip-silver-dark uppercase tracking-wider mb-1">Item</p>
+              <p class="text-white font-bold text-lg"><%= item.product_name %></p>
+              <p class="text-sm text-ssgrip-silver">Qty <%= item.quantity %></p>
+            </div>
+            <p class="text-2xl font-black text-white"><%= number_to_currency(item.total_price) %></p>
+          </div>
+        <% end %>
+      </div>
+
+      <!-- Sidebar -->
+      <div class="space-y-4">
+        <!-- Status Update -->
+        <div class="rounded-xl border border-ssgrip-silver/10 bg-ssgrip-darker/30 p-6 space-y-4">
+          <h2 class="text-lg font-black text-white">Status</h2>
+          <p>
+            <span class="px-3 py-1 rounded-full text-xs font-semibold <%= status_badge_class(@order.status) %>"><%= @order.status.humanize %></span>
+          </p>
+          <%= form_with url: update_status_admin_order_path(@order), method: :patch, local: true do %>
+            <%= select_tag :status, options_for_select(Order.statuses.keys, @order.status), class: "mt-2 w-full rounded-lg bg-ssgrip-darkest/50 border border-ssgrip-silver/20 px-4 py-3 text-white focus:outline-none focus:border-ssgrip-silver transition-colors" %>
+            <button class="mt-4 w-full rounded-lg bg-white text-ssgrip-darkest font-bold py-3 hover:bg-ssgrip-accent-bright transition-all">Update Status</button>
+          <% end %>
+        </div>
+
+        <!-- Payment Update -->
+        <div class="rounded-xl border border-ssgrip-silver/10 bg-ssgrip-darker/30 p-6 space-y-4">
+          <h2 class="text-lg font-black text-white">Payment</h2>
+          <p>
+            <span class="px-3 py-1 rounded-full text-xs font-semibold <%= status_badge_class(@order.payment_status) %>"><%= @order.payment_status.humanize %></span>
+          </p>
+          <%= form_with url: update_payment_status_admin_order_path(@order), method: :patch, local: true do %>
+            <%= select_tag :payment_status, options_for_select(Order.payment_statuses.keys, @order.payment_status), class: "mt-2 w-full rounded-lg bg-ssgrip-darkest/50 border border-ssgrip-silver/20 px-4 py-3 text-white focus:outline-none focus:border-ssgrip-silver transition-colors mb-3" %>
+            <%= text_field_tag :reference_code, nil, placeholder: "Bank transfer reference", class: "w-full rounded-lg bg-ssgrip-darkest/50 border border-ssgrip-silver/20 px-4 py-3 text-white placeholder-ssgrip-silver-dark focus:outline-none focus:border-ssgrip-silver transition-colors mb-3" %>
+            <button class="mt-4 w-full rounded-lg bg-white text-ssgrip-darkest font-bold py-3 hover:bg-ssgrip-accent-bright transition-all">Update Payment</button>
+          <% end %>
+        </div>
+
+        <!-- Shipping Info -->
+        <div class="rounded-xl border border-ssgrip-silver/10 bg-ssgrip-darker/30 p-6 space-y-4">
+          <h2 class="text-lg font-black text-white">Fulfilment</h2>
+          <div>
+            <p class="text-xs text-ssgrip-silver-dark uppercase tracking-wider">Method</p>
+            <p class="text-sm text-ssgrip-silver"><%= @order.shipping_method || 'Standard courier' %></p>
+          </div>
+          <div>
+            <p class="text-xs text-ssgrip-silver-dark uppercase tracking-wider">Estimated delivery</p>
+            <p class="text-sm text-ssgrip-silver"><%= @order.delivery_eta %></p>
+          </div>
+          <div>
+            <p class="text-xs text-ssgrip-silver-dark uppercase tracking-wider mb-1">Shipping address</p>
+            <div class="text-sm text-ssgrip-silver leading-relaxed space-y-1">
+              <%= formatted_address(@order.shipping_address) %>
+            </div>
+          </div>
+          <div>
+            <p class="text-xs text-ssgrip-silver-dark uppercase tracking-wider mb-1">Billing address</p>
+            <div class="text-sm text-ssgrip-silver leading-relaxed space-y-1">
+              <%= formatted_address(@order.billing_address) %>
+            </div>
+          </div>
+          <% if @order.notes.present? %>
+            <div>
+              <p class="text-xs text-ssgrip-silver-dark uppercase tracking-wider mb-1">Customer notes</p>
+              <p class="text-sm text-ssgrip-silver whitespace-pre-line"><%= @order.notes %></p>
+            </div>
+          <% end %>
+        </div>
+
+        <div class="rounded-xl border border-ssgrip-silver/10 bg-ssgrip-darker/30 p-6 space-y-3">
+          <h2 class="text-lg font-black text-white">Customer</h2>
+          <p class="text-xl font-bold text-white"><%= @order.user&.full_name || @order.email %></p>
+          <div class="text-sm text-ssgrip-silver space-y-1">
+            <p>Email: <%= mail_to(@order.email, @order.email, class: "text-ssgrip-accent-bright hover:underline") %></p>
+            <% if @order.phone_number.present? %>
+              <p>Phone: <%= @order.phone_number %></p>
+            <% end %>
+            <% if @order.user %>
+              <p>Orders with SSGrip: <%= @order.user.orders.count %></p>
+            <% end %>
+          </div>
+          <% if @order.user %>
+            <%= link_to "View profile", admin_user_path(@order.user), class: "inline-flex items-center justify-center rounded-lg border border-ssgrip-silver/20 px-4 py-2 text-sm font-semibold text-white hover:border-ssgrip-silver hover:bg-ssgrip-silver/10 transition-all" %>
+          <% end %>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>

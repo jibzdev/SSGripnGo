@@ -1,0 +1,84 @@
+<div class="min-h-screen bg-gradient-to-br from-zinc-950 via-zinc-900 to-zinc-950">
+  <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+    <!-- Header -->
+    <div class="mb-8 relative">
+      <div class="absolute inset-0 bg-gradient-to-r from-amber-500/10 via-orange-500/10 to-red-500/10 rounded-2xl blur-3xl"></div>
+      <div class="relative bg-zinc-900/50 backdrop-blur-sm border border-zinc-800/50 rounded-2xl p-6">
+        <div class="flex items-center gap-4">
+          <div class="w-14 h-14 bg-gradient-to-br from-blue-500/20 to-purple-500/20 rounded-2xl flex items-center justify-center ring-1 ring-blue-500/30">
+            <i class='bx bx-credit-card text-blue-400 text-3xl'></i>
+          </div>
+          <div>
+            <h1 class="text-3xl md:text-4xl font-bold bg-gradient-to-r from-white via-zinc-100 to-zinc-300 bg-clip-text text-transparent mb-1">
+              Stripe Configuration
+            </h1>
+            <p class="text-zinc-400">Configure your Stripe integration to accept payments</p>
+          </div>
+        </div>
+      </div>
+    </div>
+    
+    <div class="bg-gradient-to-br from-zinc-900 to-zinc-900/50 border border-zinc-800 rounded-2xl backdrop-blur-sm overflow-hidden">
+      <div class="p-8">
+        <%= form_with model: @stripe_setting, url: admin_stripe_settings_path, method: :patch, local: true do |f| %>
+          <div class="space-y-6">
+            <div>
+              <%= f.label :publishable_key, "Publishable Key", class: "block text-sm font-medium text-zinc-400 mb-2" %>
+              <div class="relative">
+                <%= f.password_field :publishable_key, value: @stripe_setting.publishable_key, id: "stripe_publishable_key", class: "w-full px-4 py-3 pr-12 border border-zinc-700 rounded-xl bg-zinc-800/50 text-white focus:ring-2 focus:ring-blue-500 focus:border-blue-500 focus:outline-none transition-all" %>
+                <button type="button" class="absolute inset-y-0 right-0 pr-4 flex items-center text-zinc-400 hover:text-white cursor-pointer <%= @stripe_setting.publishable_key.present? ? '' : 'hidden' %>" onclick="toggleVisibility('stripe_publishable_key')">
+                  <i class='bx bx-hide text-xl'></i>
+                </button>
+              </div>
+              <p class="mt-2 text-sm text-zinc-500">Your Stripe publishable key (starts with pk_)</p>
+            </div>
+            
+            <div>
+              <%= f.label :secret_key, "Secret Key", class: "block text-sm font-medium text-zinc-400 mb-2" %>
+              <div class="relative">
+                <%= f.password_field :secret_key, value: @stripe_setting.secret_key, id: "stripe_secret_key", class: "w-full px-4 py-3 pr-12 border border-zinc-700 rounded-xl bg-zinc-800/50 text-white focus:ring-2 focus:ring-blue-500 focus:border-blue-500 focus:outline-none transition-all" %>
+                <button type="button" class="absolute inset-y-0 right-0 pr-4 flex items-center text-zinc-400 hover:text-white cursor-pointer <%= @stripe_setting.secret_key.present? ? '' : 'hidden' %>" onclick="toggleVisibility('stripe_secret_key')">
+                  <i class='bx bx-hide text-xl'></i>
+                </button>
+              </div>
+              <p class="mt-2 text-sm text-zinc-500">Your Stripe secret key (starts with sk_)</p>
+            </div>
+            
+            <div>
+              <%= f.label :webhook_secret, "Webhook Secret", class: "block text-sm font-medium text-zinc-400 mb-2" %>
+              <div class="relative">
+                <%= f.password_field :webhook_secret, value: @stripe_setting.webhook_secret, id: "stripe_webhook_secret", class: "w-full px-4 py-3 pr-12 border border-zinc-700 rounded-xl bg-zinc-800/50 text-white focus:ring-2 focus:ring-blue-500 focus:border-blue-500 focus:outline-none transition-all" %>
+                <button type="button" class="absolute inset-y-0 right-0 pr-4 flex items-center text-zinc-400 hover:text-white cursor-pointer <%= @stripe_setting.webhook_secret.present? ? '' : 'hidden' %>" onclick="toggleVisibility('stripe_webhook_secret')">
+                  <i class='bx bx-hide text-xl'></i>
+                </button>
+              </div>
+              <p class="mt-2 text-sm text-zinc-500">Your Stripe webhook endpoint secret (starts with whsec_)</p>
+            </div>
+            
+            <div class="flex justify-end pt-4">
+              <%= f.submit "Save Configuration", class: "inline-flex items-center gap-2 bg-gradient-to-r from-blue-500 to-purple-600 hover:from-blue-400 hover:to-purple-500 text-white font-semibold px-6 py-3 rounded-xl transition-all duration-200 shadow-lg shadow-blue-500/20 hover:shadow-blue-500/30 hover:scale-105" %>
+            </div>
+          </div>
+        <% end %>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+function toggleVisibility(fieldId) {
+  const field = document.getElementById(fieldId);
+  const button = field.nextElementSibling;
+  const icon = button.querySelector('i');
+  
+  if (field.type === 'password') {
+    field.type = 'text';
+    icon.classList.remove('bx-hide');
+    icon.classList.add('bx-show');
+  } else {
+    field.type = 'password';
+    icon.classList.remove('bx-show');
+    icon.classList.add('bx-hide');
+  }
+}
+</script>

@@ -1,0 +1,8 @@
+<%= turbo_stream.update 'basket-count' do %>
+  <%= render 'baskets/nav_badge', count: basket_item_count %>
+<% end %>
+
+<%= turbo_stream.update 'flash-container' do %>
+  <%= render 'layouts/toast' %>
+<% end %>
+

@@ -1,0 +1,193 @@
+<%= form_with model: [:admin, @service], local: true, class: "space-y-8", data: { service_pricing_form: true } do |f| %>
+  <!-- Details Card -->
+  <div class="bg-gradient-to-br from-zinc-900 to-zinc-900/60 border border-zinc-800 rounded-2xl p-6 backdrop-blur-sm">
+    <h3 class="text-xl font-bold text-white mb-6 flex items-center gap-2">
+      <div class="w-8 h-8 bg-gradient-to-br from-amber-500/20 to-orange-500/20 rounded-lg flex items-center justify-center ring-1 ring-amber-500/30">
+        <i class='bx bx-wrench text-amber-400'></i>
+      </div>
+      Service Details
+    </h3>
+
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+      <div>
+        <%= f.label :name, class: "block text-sm font-medium text-zinc-400 mb-2" %>
+        <%= f.text_field :name, class: "w-full px-4 py-3 bg-zinc-800/50 border border-zinc-700 rounded-xl text-white placeholder-zinc-500 focus:ring-2 focus:ring-amber-500 focus:border-amber-500 focus:outline-none transition-all", required: true %>
+      </div>
+
+      <% category_options = (Service.distinct.pluck(:category).compact + [@service.category, 'General']).compact.uniq %>
+      <div>
+        <%= f.label :category, class: "block text-sm font-medium text-zinc-400 mb-2" %>
+        <%= f.select :category, options_for_select(category_options, @service.category), { include_blank: 'Select a category' }, class: "w-full px-4 py-3 bg-zinc-800/50 border border-zinc-700 rounded-xl text-white focus:ring-2 focus:ring-amber-500 focus:border-amber-500 focus:outline-none transition-all" %>
+      </div>
+
+      <div>
+        <%= f.label :position, "Display Order", class: "block text-sm font-medium text-zinc-400 mb-2" %>
+        <%= f.number_field :position, min: 0, class: "w-full px-4 py-3 bg-zinc-800/50 border border-zinc-700 rounded-xl text-white placeholder-zinc-500 focus:ring-2 focus:ring-amber-500 focus:border-amber-500 focus:outline-none transition-all" %>
+      </div>
+
+      <div class="flex items-center gap-4">
+        <div class="flex items-center">
+          <%= f.check_box :active, class: "h-4 w-4 text-emerald-500 focus:ring-emerald-500 border-zinc-700 rounded bg-zinc-800/50" %>
+          <%= f.label :active, "Active", class: "ml-2 text-sm text-white" %>
+        </div>
+        <div class="flex items-center">
+          <%= f.check_box :card_allowed, class: "h-4 w-4 text-emerald-500 focus:ring-emerald-500 border-zinc-700 rounded bg-zinc-800/50" %>
+          <%= f.label :card_allowed, "Allow card payments", class: "ml-2 text-sm text-white" %>
+        </div>
+      </div>
+
+      <div class="md:col-span-2">
+        <%= f.label :description, class: "block text-sm font-medium text-zinc-400 mb-2" %>
+        <%= f.text_area :description, rows: 4, class: "w-full px-4 py-3 bg-zinc-800/50 border border-zinc-700 rounded-xl text-white placeholder-zinc-500 focus:ring-2 focus:ring-amber-500 focus:border-amber-500 focus:outline-none transition-all resize-none" %>
+      </div>
+    </div>
+  </div>
+
+  <!-- Pricing Card -->
+  <div class="bg-gradient-to-br from-zinc-900 to-zinc-900/60 border border-zinc-800 rounded-2xl p-6 backdrop-blur-sm">
+    <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-4 mb-6">
+      <div>
+        <h3 class="text-xl font-bold text-white flex items-center gap-2">
+          <div class="w-8 h-8 bg-gradient-to-br from-emerald-500/20 to-teal-500/20 rounded-lg flex items-center justify-center ring-1 ring-emerald-500/30">
+            <i class='bx bx-pound text-emerald-400'></i>
+          </div>
+          Pricing
+        </h3>
+        <p class="text-sm text-zinc-500">Choose fixed price or a range</p>
+      </div>
+      <div class="flex gap-3">
+        <% %w[fixed range].each do |type| %>
+          <label class="inline-flex items-center px-4 py-2 rounded-full border <%= @service.pricing_type == type ? 'border-emerald-400 text-white' : 'border-zinc-700 text-zinc-400' %> cursor-pointer">
+            <%= f.radio_button :pricing_type, type, class: "hidden pricing-type-radio", data: { action: "change->pricing-fields#toggle" } %>
+            <span class="text-sm font-medium capitalize"><%= type %></span>
+          </label>
+        <% end %>
+      </div>
+    </div>
+
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+    <div class="bg-zinc-800/30 border border-zinc-700 rounded-xl p-4 text-sm text-zinc-400">
+      Pricing is controlled per vehicle group. Choose the pricing style above and fill the table below.
+    </div>
+  </div>
+
+  <!-- Group Pricing Card -->
+  <div class="bg-gradient-to-br from-zinc-900 to-zinc-900/60 border border-zinc-800 rounded-2xl p-6 backdrop-blur-sm">
+    <div class="flex items-center justify-between mb-6">
+      <div>
+        <h3 class="text-xl font-bold text-white flex items-center gap-2">
+          <div class="w-8 h-8 bg-gradient-to-br from-blue-500/20 to-cyan-500/20 rounded-lg flex items-center justify-center ring-1 ring-blue-500/30">
+            <i class='bx bx-car text-blue-400'></i>
+          </div>
+          Group Pricing
+        </h3>
+        <p class="text-sm text-zinc-500">Configure a price (or range) for each vehicle group</p>
+      </div>
+      <%= link_to 'Manage Vehicle Groups', admin_vehicle_groups_path, class: 'text-sm text-emerald-400 hover:text-emerald-300 underline-offset-4 underline' %>
+    </div>
+
+    <div class="overflow-x-auto">
+      <table class="w-full">
+        <thead class="bg-zinc-800/50 border-b border-zinc-700/50">
+          <tr>
+            <th class="px-6 py-4 text-left text-xs font-semibold text-zinc-400 uppercase tracking-wider">Group</th>
+            <th class="px-6 py-4 text-left text-xs font-semibold text-zinc-400 uppercase tracking-wider" data-pricing-field="fixed">Fixed (£)</th>
+            <th class="px-6 py-4 text-left text-xs font-semibold text-zinc-400 uppercase tracking-wider" data-pricing-field="range">Range Min (£)</th>
+            <th class="px-6 py-4 text-left text-xs font-semibold text-zinc-400 uppercase tracking-wider" data-pricing-field="range">Range Max (£)</th>
+          </tr>
+        </thead>
+        <tbody class="divide-y divide-zinc-700">
+          <%= f.fields_for :group_service_prices do |price_fields| %>
+            <% group = price_fields.object.vehicle_group || VehicleGroup.find(price_fields.object.vehicle_group_id) %>
+            <tr class="hover:bg-zinc-800/30 transition-colors duration-300">
+              <td class="px-6 py-4">
+                <%= price_fields.hidden_field :id %>
+                <%= price_fields.hidden_field :vehicle_group_id %>
+                <div class="font-semibold text-white"><%= group.name %></div>
+                <div class="text-xs text-zinc-500 mt-1">Code: <%= group.code %></div>
+              </td>
+              <td class="px-6 py-4" data-pricing-field="fixed">
+                <div class="relative">
+                  <span class="absolute left-2 top-2 text-zinc-500">£</span>
+                  <%= price_fields.number_field :price,
+                      step: 0.5,
+                      min: 0,
+                      class: 'w-full pl-6 pr-2 py-2 bg-zinc-900/60 border border-zinc-700 rounded-lg text-white focus:ring-2 focus:ring-amber-500 focus:border-amber-500 focus:outline-none transition-all' %>
+                </div>
+              </td>
+              <td class="px-6 py-4" data-pricing-field="range">
+                <div class="relative">
+                  <span class="absolute left-2 top-2 text-zinc-500">£</span>
+                  <%= price_fields.number_field :min_price,
+                      step: 0.5,
+                      min: 0,
+                      class: 'w-full pl-6 pr-2 py-2 bg-zinc-900/60 border border-zinc-700 rounded-lg text-white focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 focus:outline-none transition-all' %>
+                </div>
+              </td>
+              <td class="px-6 py-4" data-pricing-field="range">
+                <div class="relative">
+                  <span class="absolute left-2 top-2 text-zinc-500">£</span>
+                  <%= price_fields.number_field :max_price,
+                      step: 0.5,
+                      min: 0,
+                      class: 'w-full pl-6 pr-2 py-2 bg-zinc-900/60 border border-zinc-700 rounded-lg text-white focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 focus:outline-none transition-all' %>
+                </div>
+              </td>
+            </tr>
+          <% end %>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- Actions -->
+  <div class="flex flex-col sm:flex-row justify-end gap-3">
+    <%= link_to admin_services_path, class: "inline-flex items-center justify-center px-6 py-3 rounded-xl border border-zinc-700 bg-zinc-800/60 text-white font-semibold hover:bg-zinc-800 transition-all duration-200" do %>
+      <i class='bx bx-x text-lg mr-2'></i>
+      Cancel
+    <% end %>
+
+    <button type="submit" class="inline-flex items-center justify-center px-8 py-3 rounded-xl bg-gradient-to-r from-amber-500 to-orange-500 text-black font-semibold shadow-lg shadow-amber-500/20 hover:shadow-amber-500/30 transition-all duration-200 hover:scale-105">
+      <i class='bx bx-save text-lg mr-2'></i>
+      <span><%= @service.new_record? ? 'Create Service' : 'Update Service' %></span>
+    </button>
+  </div>
+<% end %>
+
+<script>
+(function() {
+  function initServicePricingFields() {
+    const form = document.querySelector('[data-service-pricing-form="true"]');
+    if (!form || form.dataset.pricingInitialized === 'true') return;
+    form.dataset.pricingInitialized = 'true';
+
+    const radios = form.querySelectorAll('.pricing-type-radio');
+    const fixedFields = form.querySelectorAll('[data-pricing-field="fixed"]');
+    const rangeFields = form.querySelectorAll('[data-pricing-field="range"]');
+
+    function toggleFields() {
+      const selected = Array.from(radios).find(radio => radio.checked) || radios[0];
+      const type = selected ? selected.value : 'fixed';
+
+      fixedFields.forEach(field => {
+        field.style.display = type === 'fixed' ? '' : 'none';
+        field.querySelectorAll('input').forEach(input => input.disabled = type !== 'fixed');
+      });
+
+      rangeFields.forEach(field => {
+        field.style.display = type === 'range' ? '' : 'none';
+        field.querySelectorAll('input').forEach(input => input.disabled = type !== 'range');
+      });
+    }
+
+    radios.forEach(radio => {
+      radio.addEventListener('change', toggleFields);
+    });
+
+    toggleFields();
+  }
+
+  document.addEventListener('DOMContentLoaded', initServicePricingFields);
+  document.addEventListener('turbo:load', initServicePricingFields);
+})();
+</script>

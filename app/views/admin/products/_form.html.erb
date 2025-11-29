@@ -1,0 +1,153 @@
+<%= form_with model: [:admin, @product], class: "space-y-6" do |f| %>
+  <div class="grid gap-4 md:grid-cols-2">
+    <div>
+      <%= f.label :name, class: "text-sm text-ssgrip-silver-dark uppercase tracking-wider mb-2 block" %>
+      <%= f.text_field :name, class: "w-full rounded-lg bg-ssgrip-darkest/50 border border-ssgrip-silver/20 px-4 py-3 text-white focus:outline-none focus:border-ssgrip-silver transition-colors" %>
+    </div>
+    <div>
+      <%= f.label :sku, class: "text-sm text-ssgrip-silver-dark uppercase tracking-wider mb-2 block" %>
+      <%= f.text_field :sku, class: "w-full rounded-lg bg-ssgrip-darkest/50 border border-ssgrip-silver/20 px-4 py-3 text-white focus:outline-none focus:border-ssgrip-silver transition-colors" %>
+    </div>
+    <div>
+      <%= f.label :category_id, "Category", class: "text-sm text-ssgrip-silver-dark uppercase tracking-wider mb-2 block" %>
+      <%= f.collection_select :category_id, @categories, :id, :name, include_blank: true, class: "w-full rounded-lg bg-ssgrip-darkest/50 border border-ssgrip-silver/20 px-4 py-3 text-white focus:outline-none focus:border-ssgrip-silver transition-colors" %>
+    </div>
+    <div>
+      <%= f.label :status, class: "text-sm text-ssgrip-silver-dark uppercase tracking-wider mb-2 block" %>
+      <%= f.select :status, Product.statuses.keys, {}, class: "w-full rounded-lg bg-ssgrip-darkest/50 border border-ssgrip-silver/20 px-4 py-3 text-white focus:outline-none focus:border-ssgrip-silver transition-colors" %>
+    </div>
+  </div>
+
+  <div class="grid gap-4 md:grid-cols-2">
+    <div>
+      <%= f.label :price, class: "text-sm text-ssgrip-silver-dark uppercase tracking-wider mb-2 block" %>
+      <%= f.number_field :price, step: 0.01, class: "w-full rounded-lg bg-ssgrip-darkest/50 border border-ssgrip-silver/20 px-4 py-3 text-white focus:outline-none focus:border-ssgrip-silver transition-colors" %>
+    </div>
+    <div>
+      <%= f.label :compare_at_price, class: "text-sm text-ssgrip-silver-dark uppercase tracking-wider mb-2 block" %>
+      <%= f.number_field :compare_at_price, step: 0.01, class: "w-full rounded-lg bg-ssgrip-darkest/50 border border-ssgrip-silver/20 px-4 py-3 text-white focus:outline-none focus:border-ssgrip-silver transition-colors" %>
+    </div>
+    <div>
+      <%= f.label :stock_quantity, class: "text-sm text-ssgrip-silver-dark uppercase tracking-wider mb-2 block" %>
+      <%= f.number_field :stock_quantity, class: "w-full rounded-lg bg-ssgrip-darkest/50 border border-ssgrip-silver/20 px-4 py-3 text-white focus:outline-none focus:border-ssgrip-silver transition-colors" %>
+    </div>
+    <div>
+      <%= f.label :low_stock_threshold, class: "text-sm text-ssgrip-silver-dark uppercase tracking-wider mb-2 block" %>
+      <%= f.number_field :low_stock_threshold, class: "w-full rounded-lg bg-ssgrip-darkest/50 border border-ssgrip-silver/20 px-4 py-3 text-white focus:outline-none focus:border-ssgrip-silver transition-colors" %>
+    </div>
+  </div>
+
+  <div>
+    <%= f.label :short_description, class: "text-sm text-ssgrip-silver-dark uppercase tracking-wider mb-2 block" %>
+    <%= f.text_area :short_description, rows: 3, class: "w-full rounded-lg bg-ssgrip-darkest/50 border border-ssgrip-silver/20 px-4 py-3 text-white focus:outline-none focus:border-ssgrip-silver transition-colors" %>
+  </div>
+
+  <div>
+    <%= f.label :description, class: "text-sm text-ssgrip-silver-dark uppercase tracking-wider mb-2 block" %>
+    <%= f.text_area :description, rows: 5, class: "w-full rounded-lg bg-ssgrip-darkest/50 border border-ssgrip-silver/20 px-4 py-3 text-white focus:outline-none focus:border-ssgrip-silver transition-colors" %>
+  </div>
+
+  <div class="flex items-center gap-4">
+    <label class="inline-flex items-center gap-2 text-sm text-white">
+      <%= f.check_box :featured %>
+      Featured on storefront
+    </label>
+  </div>
+
+  <% initial_images = @product.all_images %>
+  <div
+    class="space-y-4"
+    data-controller="product-gallery"
+    data-product-gallery-fetch-url-value="/admin/media.json"
+    data-product-gallery-upload-url-value="/admin/media"
+    data-product-gallery-images-value='<%= raw(initial_images.to_json) %>'
+  >
+    <div class="flex items-center justify-between">
+      <div>
+        <%= f.label :hero_image, "Product images", class: "text-sm text-ssgrip-silver-dark uppercase tracking-wider mb-1 block" %>
+        <p class="text-xs text-ssgrip-silver-dark">
+          Drag cards to reorder. The first image becomes the cover, just like Shopify.
+        </p>
+      </div>
+      <div class="flex gap-2">
+        <button
+          type="button"
+          class="inline-flex items-center rounded-lg bg-white text-ssgrip-darkest font-semibold px-4 py-2 text-sm hover:bg-ssgrip-accent-bright transition-all"
+          data-action="product-gallery#openLibrary"
+        >
+          Browse Library
+        </button>
+      </div>
+    </div>
+
+    <%= f.hidden_field :hero_image, data: { "product-gallery-target": "heroInput" } %>
+    <div data-product-gallery-target="inputs"></div>
+
+    <div class="grid gap-4 sm:grid-cols-2 lg:grid-cols-3" data-product-gallery-target="list"></div>
+    <div
+      class="rounded-xl border border-dashed border-ssgrip-silver/20 bg-ssgrip-darker/20 p-6 text-center text-sm text-ssgrip-silver-dark <%= initial_images.any? ? 'hidden' : '' %>"
+      data-product-gallery-target="emptyState"
+    >
+      No images yet. Add your first product photo to get started.
+    </div>
+
+    <div class="flex flex-col gap-3 sm:flex-row">
+      <input
+        type="url"
+        placeholder="https://cdn.example.com/product.jpg"
+        class="flex-1 rounded-lg bg-ssgrip-darkest/50 border border-ssgrip-silver/20 px-4 py-3 text-white placeholder-ssgrip-silver-dark focus:outline-none focus:border-ssgrip-silver transition-colors"
+        data-product-gallery-target="urlInput"
+      >
+      <button
+        type="button"
+        class="rounded-lg border border-ssgrip-silver/30 px-5 py-3 text-sm text-white hover:border-ssgrip-accent hover:text-ssgrip-accent transition-all"
+        data-action="product-gallery#addFromUrl"
+      >
+        Add via URL
+      </button>
+    </div>
+
+    <div
+      class="fixed inset-0 z-50 hidden items-center justify-center bg-ssgrip-darkest/90 backdrop-blur-sm px-4"
+      data-product-gallery-target="libraryModal"
+      data-action="click->product-gallery#closeLibrary"
+    >
+      <div
+        class="relative w-full max-w-3xl rounded-xl border border-ssgrip-silver/10 bg-ssgrip-darkest p-6 shadow-2xl"
+        data-action="click->product-gallery#stopLibraryPropagation"
+      >
+        <div class="flex items-center justify-between border-b border-ssgrip-silver/10 pb-4 mb-4">
+          <div>
+            <p class="text-lg font-black text-white">Media Library</p>
+            <p class="text-sm text-ssgrip-silver">Upload once, reuse everywhere.</p>
+          </div>
+          <button
+            type="button"
+            class="text-ssgrip-silver hover:text-white"
+            data-action="product-gallery#closeLibrary"
+          >
+            ✕
+          </button>
+        </div>
+
+        <label class="flex flex-col gap-2 rounded-lg border border-dashed border-ssgrip-silver/20 bg-ssgrip-darker/30 p-6 text-center cursor-pointer hover:border-ssgrip-silver/40 transition-colors">
+          <input type="file" accept="image/*" class="hidden" data-action="change->product-gallery#uploadLibraryFile">
+          <span class="text-white font-semibold">Upload a New Image</span>
+          <span class="text-xs text-ssgrip-silver-dark" data-product-gallery-target="libraryUploadStatus">JPG, PNG, WEBP up to 5MB.</span>
+        </label>
+
+        <div class="mt-6">
+          <p class="text-sm text-ssgrip-silver-dark mb-3 uppercase tracking-wider">Library</p>
+          <div class="grid grid-cols-2 sm:grid-cols-3 gap-4" data-product-gallery-target="libraryList"></div>
+          <div class="mt-10 text-center text-sm text-ssgrip-silver hidden" data-product-gallery-target="libraryEmpty">
+            No images yet. Upload one to get started.
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="flex justify-end">
+    <%= f.submit class: "inline-flex items-center rounded-lg bg-white text-ssgrip-darkest font-bold px-8 py-4 hover:bg-ssgrip-accent-bright transition-all" %>
+  </div>
+<% end %>

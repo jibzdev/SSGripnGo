@@ -1,0 +1,138 @@
+<section class="bg-ssgrip-darkest min-h-screen text-white pb-20">
+  <div class="mx-auto max-w-6xl px-6 pt-24">
+    <div class="mb-10">
+      <h1 class="text-3xl font-black text-white mb-2">Steering Wheel Catalog</h1>
+      <p class="text-ssgrip-silver text-sm">
+        Premium aftermarket steering wheels for enthusiasts
+      </p>
+    </div>
+
+    <div class="flex gap-6">
+      <!-- Minimal Sidebar -->
+      <aside class="hidden lg:block w-48 flex-shrink-0">
+        <div class="sticky top-20 space-y-8">
+          <!-- Search -->
+          <%= form_with url: catalog_path, method: :get, local: true do %>
+            <%= hidden_field_tag :category, @selected_category&.slug %>
+            <input type="text" name="q" value="<%= @query %>" placeholder="Search"
+                   class="w-full px-3 py-2 text-sm bg-transparent border-b border-ssgrip-silver/20 text-white placeholder:text-ssgrip-silver-dark focus:outline-none focus:border-white transition-colors">
+          <% end %>
+
+          <!-- Categories -->
+          <div>
+            <h3 class="text-xs text-ssgrip-silver-dark uppercase tracking-widest mb-4">Filter</h3>
+            <nav class="space-y-2">
+              <%= link_to catalog_path, class: "block text-sm #{@selected_category.nil? && params[:category].blank? ? 'text-white' : 'text-ssgrip-silver hover:text-white'} transition-colors" do %>
+                All
+              <% end %>
+              <% @categories.each do |category| %>
+                <% active = @selected_category&.id == category.id %>
+                <%= link_to catalog_path(category: category.slug), class: "block text-sm #{active ? 'text-white' : 'text-ssgrip-silver hover:text-white'} transition-colors" do %>
+                  <%= category.name %>
+                <% end %>
+              <% end %>
+            </nav>
+          </div>
+
+          <!-- Sort -->
+          <div>
+            <h3 class="text-xs text-ssgrip-silver-dark uppercase tracking-widest mb-4">Sort</h3>
+            <%= form_with url: catalog_path, method: :get, local: true do %>
+              <%= hidden_field_tag :category, @selected_category&.slug %>
+              <%= hidden_field_tag :q, @query %>
+              <div class="space-y-2">
+                <% {'Newest': 'newest', 'Price: Low': 'price_low', 'Price: High': 'price_high'}.each do |label, value| %>
+                  <label class="flex items-center gap-2 cursor-pointer">
+                    <%= radio_button_tag :sort, value, @sort == value, class: "w-3 h-3" %>
+                    <span class="text-sm text-ssgrip-silver"><%= label %></span>
+                  </label>
+                <% end %>
+              </div>
+              <button class="mt-4 w-full text-xs py-2 border-b border-ssgrip-silver/20 hover:border-white text-ssgrip-silver hover:text-white transition-colors text-left">Apply</button>
+            <% end %>
+          </div>
+        </div>
+      </aside>
+
+      <!-- Products Grid -->
+      <div class="flex-1">
+        <!-- Mobile Search (visible on mobile) -->
+        <div class="lg:hidden mb-6">
+          <%= form_with url: catalog_path, method: :get, local: true do %>
+            <%= hidden_field_tag :category, @selected_category&.slug %>
+            <div class="relative">
+              <svg class="w-4 h-4 absolute left-3 top-1/2 -translate-y-1/2 text-ssgrip-silver-dark" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/>
+              </svg>
+              <input type="text" name="q" value="<%= @query %>" placeholder="Search..."
+                     class="w-full pl-10 pr-3 py-2 text-sm rounded-lg bg-ssgrip-darker border border-ssgrip-silver/10 text-white placeholder:text-ssgrip-silver-dark focus:outline-none focus:border-ssgrip-accent transition-all">
+            </div>
+          <% end %>
+        </div>
+
+        <% if @products.any? %>
+          <div class="grid gap-8 sm:grid-cols-2 lg:grid-cols-3">
+            <% @products.each do |product| %>
+              <%= link_to product_path(product), class: "group block" do %>
+                <!-- Clean Image Container -->
+                <% primary_image = product.primary_image %>
+                <% hover_image = product.hover_image %>
+                <div class="aspect-[3/4] overflow-hidden bg-ssgrip-darker/30 mb-4 relative">
+                  <% if primary_image.present? %>
+                    <img src="<%= primary_image %>" alt="<%= product.name %>" class="w-full h-full object-cover transition-opacity duration-500 <%= hover_image.present? ? 'group-hover:opacity-0' : 'group-hover:opacity-90' %>">
+                    <% if hover_image.present? %>
+                      <img src="<%= hover_image %>" alt="<%= product.name %> alternate" class="absolute inset-0 w-full h-full object-cover opacity-0 transition-opacity duration-500 group-hover:opacity-100">
+                    <% end %>
+                  <% else %>
+                    <div class="w-full h-full flex items-center justify-center">
+                      <svg class="w-12 h-12 text-ssgrip-silver-dark opacity-20" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="1">
+                        <circle cx="12" cy="12" r="10"/>
+                        <circle cx="12" cy="12" r="3" fill="currentColor"/>
+                      </svg>
+                    </div>
+                  <% end %>
+                  
+                  <!-- Minimal Stock Indicator -->
+                  <% if product.in_stock? %>
+                    <div class="absolute top-3 right-3 w-2 h-2 rounded-full bg-white opacity-80"></div>
+                  <% end %>
+                </div>
+                
+                <!-- Minimal Product Info -->
+                <div class="space-y-2">
+                  <!-- Product Name -->
+                  <h3 class="text-base font-medium text-white group-hover:text-ssgrip-accent-bright transition-colors leading-snug"><%= product.name %></h3>
+                  
+                  <!-- Category & Price -->
+                  <div class="flex items-center justify-between">
+                    <p class="text-xs text-ssgrip-silver-dark uppercase tracking-wider"><%= product.category&.name || 'Steering Wheel' %></p>
+                    <span class="text-sm font-semibold text-ssgrip-silver-bright"><%= product.display_price %></span>
+                  </div>
+                </div>
+              <% end %>
+            <% end %>
+          </div>
+
+          <div class="mt-10 flex justify-center">
+            <%= paginate @products, theme: 'tailwind' %>
+          </div>
+        <% else %>
+          <div class="text-center py-20">
+            <svg class="w-16 h-16 mx-auto text-ssgrip-silver-dark mb-4 opacity-50" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.172 16.172a4 4 0 015.656 0M9 10h.01M15 10h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
+            </svg>
+            <h3 class="text-xl font-bold text-white mb-2">No wheels found</h3>
+            <p class="text-ssgrip-silver text-sm mb-4">Try adjusting your filters</p>
+            <%= link_to 'Clear filters', catalog_path, class: "inline-flex items-center gap-1 text-sm text-ssgrip-accent hover:text-white transition-colors" do %>
+              <span>Clear filters</span>
+              <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+              </svg>
+            <% end %>
+          </div>
+        <% end %>
+      </div>
+    </div>
+  </div>
+</section>
+

@@ -1,0 +1,76 @@
+<%= form_with model: [:admin, @vehicle_group], class: 'space-y-8' do |f| %>
+  <!-- Basic Information Card -->
+  <div class="bg-gradient-to-br from-zinc-900 to-zinc-900/50 border border-zinc-800 rounded-2xl p-6 backdrop-blur-sm">
+    <h3 class="text-xl font-bold text-white mb-6 flex items-center gap-2">
+      <div class="w-8 h-8 bg-gradient-to-br from-emerald-500/20 to-teal-500/20 rounded-lg flex items-center justify-center ring-1 ring-emerald-500/30">
+        <i class='bx bx-info-circle text-emerald-400'></i>
+      </div>
+      Basic Information
+    </h3>
+    
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+      <div>
+        <%= f.label :name, 'Group Name', class: 'block text-sm font-medium text-zinc-400 mb-2' %>
+        <%= f.text_field :name, class: 'w-full px-4 py-3 rounded-xl border border-zinc-700 bg-zinc-800/50 text-white placeholder-zinc-500 focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 focus:outline-none transition-all', required: true, placeholder: 'e.g. Hatchback' %>
+      </div>
+      
+      <div>
+        <%= f.label :code, 'Code / Identifier', class: 'block text-sm font-medium text-zinc-400 mb-2' %>
+        <%= f.text_field :code, class: 'w-full px-4 py-3 rounded-xl border border-zinc-700 bg-zinc-800/50 text-white placeholder-zinc-500 focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 focus:outline-none transition-all', required: true, placeholder: 'e.g. hatchback' %>
+      </div>
+      
+      <div>
+        <%= f.label :position, 'Display Order', class: 'block text-sm font-medium text-zinc-400 mb-2' %>
+        <%= f.number_field :position, class: 'w-full px-4 py-3 rounded-xl border border-zinc-700 bg-zinc-800/50 text-white placeholder-zinc-500 focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 focus:outline-none transition-all', min: 0, placeholder: '0' %>
+      </div>
+      
+      <div>
+        <%= f.label :default_multiplier, 'Default Multiplier', class: 'block text-sm font-medium text-zinc-400 mb-2' %>
+        <%= f.number_field :default_multiplier, class: 'w-full px-4 py-3 rounded-xl border border-zinc-700 bg-zinc-800/50 text-white placeholder-zinc-500 focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 focus:outline-none transition-all', step: 0.1, min: 0.1, placeholder: '1.0' %>
+        <p class="text-xs text-zinc-500 mt-1">Used when no specific price is set</p>
+      </div>
+      
+      <div class="col-span-1 md:col-span-2">
+        <%= f.label :description, class: 'block text-sm font-medium text-zinc-400 mb-2' %>
+        <%= f.text_area :description, rows: 2, class: 'w-full px-4 py-3 rounded-xl border border-zinc-700 bg-zinc-800/50 text-white placeholder-zinc-500 focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 focus:outline-none transition-all resize-none', placeholder: 'Brief description of this vehicle group...' %>
+      </div>
+      
+      <div class="col-span-1 md:col-span-2">
+        <%= f.label :matching_rules, 'Matching Keywords (JSON)', class: 'block text-sm font-medium text-zinc-400 mb-2' %>
+        <%= f.text_area :matching_rules, rows: 2, class: 'w-full px-4 py-3 rounded-xl border border-zinc-700 bg-zinc-800/50 text-white placeholder-zinc-500 focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 focus:outline-none transition-all resize-none font-mono text-sm', placeholder: '["SUV","Sport Utility","Crossover"]' %>
+        <p class="text-xs text-zinc-500 mt-1">Used to auto-detect this group from DVLA data. Leave blank to require manual selection.</p>
+      </div>
+      
+      <div>
+        <%= f.label :active, 'Status', class: 'block text-sm font-medium text-zinc-400 mb-2' %>
+        <%= f.select :active, [['Active', true], ['Hidden', false]], {}, class: 'w-full px-4 py-3 rounded-xl border border-zinc-700 bg-zinc-800/50 text-white focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 focus:outline-none transition-all' %>
+      </div>
+    </div>
+  </div>
+
+  <div class="bg-gradient-to-br from-zinc-900 to-zinc-900/50 border border-zinc-800 rounded-2xl p-6 backdrop-blur-sm">
+    <h3 class="text-xl font-bold text-white mb-4 flex items-center gap-2">
+      <div class="w-8 h-8 bg-gradient-to-br from-amber-500/20 to-orange-500/20 rounded-lg flex items-center justify-center ring-1 ring-amber-500/30">
+        <i class='bx bx-pound text-amber-400'></i>
+      </div>
+      Pricing
+    </h3>
+    <p class="text-sm text-zinc-400 mb-4">
+      Per-service pricing lives on the <strong>Services</strong> page. Edit a service to adjust what each vehicle group pays.
+    </p>
+    <%= link_to 'Go to Services', admin_services_path, class: 'inline-flex items-center gap-2 px-5 py-3 rounded-xl bg-gradient-to-r from-emerald-500 to-teal-500 text-white font-semibold hover:from-emerald-400 hover:to-teal-400 transition-all duration-200 shadow-lg shadow-emerald-500/20' %>
+  </div>
+
+  <!-- Form Actions -->
+  <div class="flex justify-end gap-3">
+    <%= link_to admin_vehicle_groups_path, class: 'inline-flex items-center gap-2 px-6 py-3 rounded-xl border border-zinc-700 bg-zinc-800/50 text-white font-semibold hover:bg-zinc-800 transition-all duration-200' do %>
+      <i class='bx bx-x text-lg'></i>
+      <span>Cancel</span>
+    <% end %>
+    
+    <%= f.submit class: 'inline-flex items-center gap-2 bg-gradient-to-r from-emerald-500 to-teal-500 hover:from-emerald-400 hover:to-teal-400 text-white font-semibold px-6 py-3 rounded-xl transition-all duration-200 shadow-lg shadow-emerald-500/20 hover:shadow-emerald-500/30 hover:scale-105' do %>
+      <i class='bx bx-save text-lg'></i>
+      <span><%= @vehicle_group.new_record? ? 'Create Group' : 'Update Group' %></span>
+    <% end %>
+  </div>
+<% end %>

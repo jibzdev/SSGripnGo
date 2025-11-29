@@ -1,0 +1,109 @@
+<section class="bg-ssgrip-darkest min-h-screen text-white">
+  <div class="max-w-5xl mx-auto px-6 py-12">
+    <!-- Header -->
+    <div class="mb-10">
+      <p class="text-xs text-ssgrip-silver-dark uppercase tracking-[0.3em] mb-2">Settings</p>
+      <h1 class="text-4xl font-black text-white mb-2">Account Settings</h1>
+      <p class="text-ssgrip-silver">Manage your profile, security, and notification preferences</p>
+    </div>
+
+    <%= form_with(model: current_user, url: update_dashboard_account_path, method: :patch, local: true, class: "space-y-8") do |f| %>
+      <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+        <!-- Profile Information Card -->
+        <div class="rounded-xl border border-ssgrip-silver/10 bg-ssgrip-darker/30 overflow-hidden">
+          <div class="p-6 border-b border-ssgrip-silver/10">
+            <h3 class="text-xl font-black text-white">Profile Information</h3>
+          </div>
+
+          <div class="p-6 space-y-6">
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+              <div class="space-y-2">
+                <%= f.label :username, class: "text-sm font-semibold text-ssgrip-silver uppercase tracking-wider" %>
+                <%= f.text_field :username, class: "w-full px-4 py-3 rounded-lg border border-ssgrip-silver/20 bg-ssgrip-darkest/50 text-white focus:outline-none focus:border-ssgrip-silver transition-colors" %>
+              </div>
+
+              <div class="space-y-2">
+                <%= f.label :email, class: "text-sm font-semibold text-ssgrip-silver uppercase tracking-wider" %>
+                <div class="relative">
+                  <%= f.email_field :email, disabled: true, class: "w-full px-4 py-3 pr-10 rounded-lg border border-ssgrip-silver/10 bg-ssgrip-darkest/30 text-ssgrip-silver-dark cursor-not-allowed" %>
+                  <div class="absolute inset-y-0 right-3 flex items-center pointer-events-none">
+                    <svg class="w-4 h-4 text-ssgrip-silver-dark" fill="currentColor" viewBox="0 0 20 20">
+                      <path fill-rule="evenodd" d="M5 9V7a5 5 0 0110 0v2a2 2 0 012 2v5a2 2 0 01-2 2H5a2 2 0 01-2-2v-5a2 2 0 012-2zm8-2v2H7V7a3 3 0 016 0z" clip-rule="evenodd"/>
+                    </svg>
+                  </div>
+                </div>
+              </div>
+
+              <div class="space-y-2">
+                <%= f.label :first_name, class: "text-sm font-semibold text-ssgrip-silver uppercase tracking-wider" %>
+                <%= f.text_field :first_name, class: "w-full px-4 py-3 rounded-lg border border-ssgrip-silver/20 bg-ssgrip-darkest/50 text-white focus:outline-none focus:border-ssgrip-silver transition-colors" %>
+              </div>
+
+              <div class="space-y-2">
+                <%= f.label :last_name, class: "text-sm font-semibold text-ssgrip-silver uppercase tracking-wider" %>
+                <%= f.text_field :last_name, class: "w-full px-4 py-3 rounded-lg border border-ssgrip-silver/20 bg-ssgrip-darkest/50 text-white focus:outline-none focus:border-ssgrip-silver transition-colors" %>
+              </div>
+
+              <div class="space-y-2 md:col-span-2">
+                <%= f.label :phone_number, class: "text-sm font-semibold text-ssgrip-silver uppercase tracking-wider" %>
+                <%= f.telephone_field :phone_number, class: "w-full px-4 py-3 rounded-lg border border-ssgrip-silver/20 bg-ssgrip-darkest/50 text-white focus:outline-none focus:border-ssgrip-silver transition-colors" %>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Security Card -->
+        <div class="rounded-xl border border-ssgrip-silver/10 bg-ssgrip-darker/30 overflow-hidden">
+          <div class="p-6 border-b border-ssgrip-silver/10">
+            <div class="flex items-center justify-between">
+              <h3 class="text-xl font-black text-white">Security</h3>
+              <a href="#" class="text-sm text-ssgrip-silver hover:text-white transition-colors">
+                Forgot Password?
+              </a>
+            </div>
+          </div>
+
+          <div class="p-6">
+            <div class="space-y-6">
+              <div class="space-y-2">
+                <%= f.label :current_password, class: "text-sm font-semibold text-ssgrip-silver uppercase tracking-wider" %>
+                <%= f.password_field :current_password, class: "w-full px-4 py-3 rounded-lg border border-ssgrip-silver/20 bg-ssgrip-darkest/50 text-white focus:outline-none focus:border-ssgrip-silver transition-colors" %>
+              </div>
+
+              <div class="space-y-2">
+                <%= f.label :new_password, class: "text-sm font-semibold text-ssgrip-silver uppercase tracking-wider" %>
+                <%= f.password_field :new_password, class: "w-full px-4 py-3 rounded-lg border border-ssgrip-silver/20 bg-ssgrip-darkest/50 text-white focus:outline-none focus:border-ssgrip-silver transition-colors" %>
+              </div>
+
+              <div class="space-y-2">
+                <%= f.label :confirm_password, class: "text-sm font-semibold text-ssgrip-silver uppercase tracking-wider" %>
+                <%= f.password_field :confirm_password, class: "w-full px-4 py-3 rounded-lg border border-ssgrip-silver/20 bg-ssgrip-darkest/50 text-white focus:outline-none focus:border-ssgrip-silver transition-colors" %>
+              </div>
+            </div>
+
+            <div class="mt-6 p-4 bg-ssgrip-darkest/50 rounded-lg border border-ssgrip-silver/10">
+              <div class="flex items-start gap-3">
+                <svg class="w-4 h-4 text-ssgrip-silver mt-0.5 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
+                  <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clip-rule="evenodd"/>
+                </svg>
+                <p class="text-sm text-ssgrip-silver leading-relaxed">
+                  Password must be at least 8 characters long and contain at least one uppercase letter, one lowercase letter, and one number.
+                </p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Submit Button -->
+      <div class="flex justify-end">
+        <button type="submit" class="inline-flex items-center gap-2 px-8 py-4 bg-white text-ssgrip-darkest font-bold rounded-lg hover:bg-ssgrip-accent-bright transition-all hover:scale-105">
+          <span>Save Changes</span>
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
+          </svg>
+        </button>
+      </div>
+    <% end %>
+  </div>
+</section>
