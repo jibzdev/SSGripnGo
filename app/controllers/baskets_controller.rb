@@ -3,6 +3,7 @@ class BasketsController < ApplicationController
 
   def show
     @basket = current_basket
+    @general_setting = GeneralSetting.first_or_initialize
   end
 
   def add_item

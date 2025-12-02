@@ -1,7 +1,7 @@
 class CreateGeneralSettings < ActiveRecord::Migration[7.0]
   def change
     create_table :general_settings do |t|
-      t.string :application_name, default: "RKCustoms"
+      t.string :application_name, default: "ssgripngo"
 
       t.timestamps
     end

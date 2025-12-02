@@ -29,7 +29,7 @@
           <% end %>
           
           <!-- Zoom Icon Overlay -->
-          <div class="absolute inset-0 bg-ssgrip-darkest/0 hover:bg-ssgrip-darkest/40 transition-colors flex items-center justify-center opacity-0 hover:opacity-100">
+          <div class="absolute inset-0 bg-ssgrip-darkest/0 hover:bg-ssgrip-darkest/40 transition-colors flex items-center justify-center opacity-0 hover:opacity-100 pointer-events-none">
             <div class="w-12 h-12 rounded-full bg-white/10 backdrop-blur-md border border-white/20 flex items-center justify-center">
               <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0zM10 7v3m0 0v3m0-3h3m-3 0H7"/>
@@ -221,7 +221,7 @@
 </section>
 
 <!-- Image Modal Overlay -->
-<div id="image-modal" class="fixed inset-0 bg-ssgrip-darkest/95 backdrop-blur-md z-50 hidden items-center justify-center p-6">
+<div id="image-modal" class="fixed inset-0 bg-ssgrip-darkest/95 backdrop-blur-md z-50 hidden flex items-center justify-center p-6">
   <button id="close-modal" class="absolute top-6 right-6 w-10 h-10 rounded-full bg-white/10 hover:bg-white/20 border border-white/20 flex items-center justify-center transition-colors">
     <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
       <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
@@ -267,15 +267,17 @@
     const mainImageTag = mainImage ? mainImage.querySelector('img') : null;
     const allImages = <%= raw(all_images.to_json) %>;
     let currentIndex = 0;
-    if (allImages.length === 0) {
+    if (allImages.length === 0 && currentNumSpan) {
       currentNumSpan.textContent = 0;
     }
     
     function openModal(index) {
-      if (!allImages[index]) return;
+      if (!allImages[index] || !modal || !modalImage) return;
       currentIndex = index;
       modalImage.src = allImages[index];
-      currentNumSpan.textContent = index + 1;
+      if (currentNumSpan) {
+        currentNumSpan.textContent = index + 1;
+      }
       modal.classList.remove('hidden');
       modal.classList.add('flex');
     }
@@ -297,12 +299,19 @@
     
     // Event Listeners
     if (primaryImageAvailable()) {
-      mainImage.addEventListener('click', () => openModal(0));
+      mainImage.addEventListener('click', (e) => {
+        e.stopPropagation();
+        openModal(0);
+      });
     }
-    closeModal.addEventListener('click', closeModalFunc);
-    modal.addEventListener('click', (e) => {
-      if (e.target === modal) closeModalFunc();
-    });
+    if (closeModal) {
+      closeModal.addEventListener('click', closeModalFunc);
+    }
+    if (modal) {
+      modal.addEventListener('click', (e) => {
+        if (e.target === modal) closeModalFunc();
+      });
+    }
     
     thumbnails.forEach((thumb, index) => {
       thumb.addEventListener('click', () => {

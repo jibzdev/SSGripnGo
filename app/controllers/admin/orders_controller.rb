@@ -15,8 +15,12 @@ module Admin
 
     def update_status
       if params[:status].present? && Order.statuses.key?(params[:status])
-        @order.update(status: params[:status])
-        redirect_to admin_order_path(@order), notice: 'Order status updated.'
+        if @order.update(status: params[:status])
+          send_status_email(@order)
+          redirect_to admin_order_path(@order), notice: 'Order status updated.'
+        else
+          redirect_to admin_order_path(@order), alert: @order.errors.full_messages.to_sentence
+        end
       else
         redirect_to admin_order_path(@order), alert: 'Invalid status.'
       end
@@ -43,6 +47,14 @@ module Admin
     def set_order
       identifier = params[:id] || params[:order_id]
       @order = Order.includes(:order_items, :user).find_by!(order_number: identifier)
+    end
+
+    def send_status_email(order)
+      return unless defined?(UserMailer) && !Rails.env.test?
+
+      UserMailer.order_status_update(order).deliver_later
+    rescue => e
+      Rails.logger.error("Failed to send status update for #{order.order_number}: #{e.message}")
     end
   end
 end

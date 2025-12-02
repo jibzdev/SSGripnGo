@@ -48,7 +48,7 @@
           </div>
         <% end %>
 
-        <%= form_with model: @review, local: true, class: "space-y-6" do |form| %>
+        <%= form_with model: @review, local: true, html: { multipart: true }, class: "space-y-6" do |form| %>
           <div class="grid md:grid-cols-2 gap-6">
             <div>
               <%= form.label :rating, "Rating (1-5)", class: "block text-sm font-semibold text-ssgrip-silver mb-2" %>
@@ -62,6 +62,21 @@
           <div>
             <%= form.label :body, "Review", class: "block text-sm font-semibold text-ssgrip-silver mb-2" %>
             <%= form.text_area :body, rows: 5, required: true, class: "w-full rounded-2xl bg-ssgrip-darkest border border-ssgrip-silver/20 px-4 py-3 text-white focus:outline-none focus:ring-2 focus:ring-ssgrip-accent" %>
+          </div>
+          <div>
+            <div class="flex items-center justify-between mb-2">
+              <%= form.label :photo, "Add a photo (optional)", class: "block text-sm font-semibold text-ssgrip-silver" %>
+              <% if @review.photo.attached? %>
+                <span class="text-xs text-ssgrip-silver-dark">Uploading a new file replaces the current photo.</span>
+              <% end %>
+            </div>
+            <% if @review.photo.attached? %>
+              <div class="mb-3">
+                <%= image_tag url_for(@review.photo), alt: "Current review photo", class: "w-full max-h-64 object-cover rounded-2xl border border-ssgrip-silver/10" %>
+              </div>
+            <% end %>
+            <%= form.file_field :photo, accept: "image/png,image/jpeg,image/webp", class: "block w-full text-sm text-ssgrip-silver file:mr-4 file:py-2 file:px-4 file:rounded-xl file:border-0 file:bg-white file:text-ssgrip-darkest hover:file:bg-ssgrip-accent transition" %>
+            <p class="mt-2 text-xs text-ssgrip-silver-dark">Supports JPG, PNG, or WEBP up to 5MB.</p>
           </div>
           <div class="flex flex-wrap gap-3 items-center">
             <%= form.submit(@review.persisted? ? 'Update review' : 'Publish review', class: "px-6 py-3 rounded-xl bg-white text-ssgrip-darkest font-semibold tracking-wide hover:bg-ssgrip-accent transition-transform hover:-translate-y-0.5") %>

@@ -95,13 +95,24 @@
             </div>
 
             <div class="space-y-3 pt-2">
-              <%= link_to new_order_path, class: "block w-full text-center rounded-lg bg-white text-ssgrip-darkest font-bold py-3 hover:bg-ssgrip-accent-bright transition-all group" do %>
-                <span class="inline-flex items-center gap-2">
-                  Proceed to Checkout
-                  <svg class="w-4 h-4 group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
-                  </svg>
-                </span>
+              <% if @general_setting.orders_disabled %>
+                <button type="button" id="checkout-disabled-btn" class="block w-full text-center rounded-lg bg-white text-ssgrip-darkest font-bold py-3 hover:bg-ssgrip-accent-bright transition-all group">
+                  <span class="inline-flex items-center gap-2">
+                    Proceed to Checkout
+                    <svg class="w-4 h-4 group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
+                    </svg>
+                  </span>
+                </button>
+              <% else %>
+                <%= link_to new_order_path, class: "block w-full text-center rounded-lg bg-white text-ssgrip-darkest font-bold py-3 hover:bg-ssgrip-accent-bright transition-all group" do %>
+                  <span class="inline-flex items-center gap-2">
+                    Proceed to Checkout
+                    <svg class="w-4 h-4 group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
+                    </svg>
+                  </span>
+                <% end %>
               <% end %>
               
               <%= link_to catalog_path, class: "block w-full text-center rounded-lg border border-ssgrip-silver/30 text-white font-semibold py-3 hover:border-ssgrip-silver hover:bg-ssgrip-silver/5 transition-all" do %>
@@ -157,4 +168,95 @@
     <% end %>
   </div>
 </section>
+
+<!-- Orders Disabled Overlay -->
+<% if @general_setting.orders_disabled %>
+  <div id="orders-disabled-overlay" class="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 flex items-center justify-center p-4 hidden">
+    <div class="bg-ssgrip-darker border border-ssgrip-silver/20 rounded-2xl p-8 max-w-md w-full relative shadow-2xl">
+      <!-- Close Button -->
+      <button type="button" id="close-overlay-btn" class="absolute top-4 right-4 text-ssgrip-silver hover:text-white transition-colors">
+        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+        </svg>
+      </button>
+
+      <!-- Icon -->
+      <div class="flex justify-center mb-6">
+        <div class="w-16 h-16 rounded-full bg-red-500/20 flex items-center justify-center">
+          <svg class="w-8 h-8 text-red-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/>
+          </svg>
+        </div>
+      </div>
+
+      <!-- Content -->
+      <div class="text-center">
+        <h2 class="text-2xl font-black text-white mb-4">Payments Are Currently Disabled</h2>
+        <% if @general_setting.orders_disabled_reason.present? %>
+          <p class="text-ssgrip-silver mb-6 leading-relaxed">
+            <%= @general_setting.orders_disabled_reason %>
+          </p>
+        <% else %>
+          <p class="text-ssgrip-silver mb-6 leading-relaxed">
+            We're currently unable to process orders through our website.
+          </p>
+        <% end %>
+        
+        <div class="bg-ssgrip-darkest/50 rounded-xl p-4 mb-6 border border-ssgrip-silver/10">
+          <p class="text-sm text-ssgrip-silver mb-2">To place an order, please contact us via:</p>
+          <p class="text-white font-semibold">DM us on social media</p>
+        </div>
+
+        <button type="button" id="close-overlay-btn-bottom" class="w-full bg-white text-ssgrip-darkest font-bold py-3 rounded-lg hover:bg-ssgrip-accent-bright transition-all">
+          Got it
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    document.addEventListener('DOMContentLoaded', function() {
+      const checkoutBtn = document.getElementById('checkout-disabled-btn');
+      const overlay = document.getElementById('orders-disabled-overlay');
+      const closeBtn = document.getElementById('close-overlay-btn');
+      const closeBtnBottom = document.getElementById('close-overlay-btn-bottom');
+
+      if (checkoutBtn && overlay) {
+        // Show overlay when checkout button is clicked
+        checkoutBtn.addEventListener('click', function() {
+          overlay.classList.remove('hidden');
+          document.body.style.overflow = 'hidden';
+        });
+
+        // Close overlay functions
+        function closeOverlay() {
+          overlay.classList.add('hidden');
+          document.body.style.overflow = '';
+        }
+
+        if (closeBtn) {
+          closeBtn.addEventListener('click', closeOverlay);
+        }
+
+        if (closeBtnBottom) {
+          closeBtnBottom.addEventListener('click', closeOverlay);
+        }
+
+        // Close overlay when clicking outside
+        overlay.addEventListener('click', function(e) {
+          if (e.target === overlay) {
+            closeOverlay();
+          }
+        });
+
+        // Close overlay with Escape key
+        document.addEventListener('keydown', function(e) {
+          if (e.key === 'Escape' && !overlay.classList.contains('hidden')) {
+            closeOverlay();
+          }
+        });
+      }
+    });
+  </script>
+<% end %>
 

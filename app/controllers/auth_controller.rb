@@ -160,7 +160,7 @@ class AuthController < ApplicationController
       # Send verification email with error handling (skip for Google Sign In users)
       unless @user.signed_up_via_google?
         begin
-          if defined?(UserMailer) && ActionMailer::Base.delivery_method != :test
+          if defined?(UserMailer) && !Rails.env.test?
             UserMailer.verification_email(@user).deliver_now
           end
         rescue => e
@@ -186,7 +186,7 @@ class AuthController < ApplicationController
       
       # Send forgot password email with error handling
       begin
-        if defined?(UserMailer) && ActionMailer::Base.delivery_method != :test
+        if defined?(UserMailer) && !Rails.env.test?
           UserMailer.forgot_password(user).deliver_now
         end
       rescue => e
@@ -257,7 +257,7 @@ class AuthController < ApplicationController
       
       # Send welcome email with error handling
       begin
-        if defined?(UserMailer) && ActionMailer::Base.delivery_method != :test
+        if defined?(UserMailer) && !Rails.env.test?
           UserMailer.welcome_email(user).deliver_now
         end
       rescue => e
@@ -271,6 +271,7 @@ class AuthController < ApplicationController
 
   def verify_email_page
     @user = current_user
+    @general_setting = GeneralSetting.first_or_initialize
     
     # Redirect to login if user is not authenticated
     unless @user
@@ -301,7 +302,7 @@ class AuthController < ApplicationController
         
         # Send verification email with error handling
         begin
-          if defined?(UserMailer) && ActionMailer::Base.delivery_method != :test
+          if defined?(UserMailer) && !Rails.env.test?
             UserMailer.verification_email(user).deliver_now
           end
         rescue => e
@@ -317,7 +318,7 @@ class AuthController < ApplicationController
       
       # Send verification email with error handling
       begin
-        if defined?(UserMailer) && ActionMailer::Base.delivery_method != :test
+        if defined?(UserMailer) && !Rails.env.test?
           UserMailer.verification_email(user).deliver_now
         end
       rescue => e
@@ -351,12 +352,19 @@ class AuthController < ApplicationController
   private
 
   def google_auth_callback_url
-    # Use the current host for the callback URL
-    if Rails.env.production?
-      "#{request.protocol}#{request.host_with_port}/auth/google/callback"
-    else
-      "#{request.protocol}#{request.host_with_port}/auth/google/callback"
-    end
+    callback_path = ENV['GOOGLE_OAUTH_CALLBACK_PATH'].presence ||
+                    (Rails.env.production? ? '/auth/google_oauth2/callback' : '/auth/google/callback')
+
+    base_url =
+      if Rails.env.production?
+        protocol = ENV['APP_PROTOCOL'].presence || 'https'
+        host = ENV.fetch('APP_HOST', request.host_with_port)
+        "#{protocol}://#{host}"
+      else
+        request.base_url
+      end
+
+    "#{base_url.chomp('/')}#{callback_path}"
   end
 
   def user_params

@@ -25,7 +25,7 @@ production:
   adapter: postgresql
   encoding: unicode
   pool: 5
-  database: db/rkcustoms_production
+  database: db/ssgripngo_production
   username: <%= ENV['DB_USERNAME'] %>
   password: <%= ENV['DB_PASSWORD'] %>
   host: postgres

@@ -38,6 +38,9 @@ Rails.application.routes.draw do
   # Google OAuth
   get '/auth/google', to: 'auth#google_auth', as: 'google_auth'
   get '/auth/google/callback', to: 'auth#google_auth_callback', as: 'google_auth_callback'
+  # Support default OmniAuth callback naming
+  get '/auth/google_oauth2', to: 'auth#google_auth'
+  get '/auth/google_oauth2/callback', to: 'auth#google_auth_callback', as: 'google_oauth2_callback'
 
   # 2FA routes
   get '/auth/2fa', to: 'auth#two_factor_auth', as: 'auth_2fa'

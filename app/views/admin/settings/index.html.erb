@@ -68,6 +68,26 @@
                     <div class="w-11 h-6 bg-zinc-700 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-purple-500/20 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-purple-600"></div>
                   </label>
                 </div>
+
+                <div class="flex items-center justify-between p-4 rounded-xl bg-zinc-800/50 border border-zinc-700/50">
+                  <div>
+                    <h4 class="font-medium text-white">Disable Orders</h4>
+                    <p class="text-sm text-zinc-400 mt-1">Prevent users from placing new orders</p>
+                  </div>
+                  <label class="relative inline-flex items-center cursor-pointer">
+                    <%= f.check_box :orders_disabled, class: "sr-only peer", id: "orders_disabled_toggle" %>
+                    <div class="w-11 h-6 bg-zinc-700 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-purple-500/20 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-purple-600"></div>
+                  </label>
+                </div>
+              </div>
+
+              <!-- Orders Disabled Reason -->
+              <div id="orders_disabled_reason_field" class="<%= 'hidden' unless @general_setting.orders_disabled %>">
+                <div>
+                  <%= f.label :orders_disabled_reason, "Reason for Disabling Orders", class: "block text-sm font-medium text-zinc-400 mb-2" %>
+                  <%= f.text_area :orders_disabled_reason, rows: 3, placeholder: "e.g. Temporarily closed for maintenance, Please DM us on social media to place orders", class: "block w-full border border-zinc-700 rounded-xl bg-zinc-800/50 py-3 px-4 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-purple-500 text-white transition-all" %>
+                  <p class="text-xs text-zinc-500 mt-1">This message will be shown to users when they try to checkout</p>
+                </div>
               </div>
 
               <!-- Text Fields -->
@@ -149,3 +169,27 @@
     }
   }
 </style>
+
+<script>
+  document.addEventListener('DOMContentLoaded', function() {
+    const ordersDisabledToggle = document.getElementById('orders_disabled_toggle');
+    const ordersDisabledReasonField = document.getElementById('orders_disabled_reason_field');
+    
+    if (ordersDisabledToggle && ordersDisabledReasonField) {
+      // Show/hide reason field based on toggle state
+      function toggleReasonField() {
+        if (ordersDisabledToggle.checked) {
+          ordersDisabledReasonField.classList.remove('hidden');
+        } else {
+          ordersDisabledReasonField.classList.add('hidden');
+        }
+      }
+      
+      // Initial state
+      toggleReasonField();
+      
+      // Listen for changes
+      ordersDisabledToggle.addEventListener('change', toggleReasonField);
+    }
+  });
+</script>

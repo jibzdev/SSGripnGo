@@ -1,3 +1,27 @@
-<h1>Thanks for your order, <%= @order.user&.first_name || @order.email %>!</h1>
-<p>Your order <strong><%= @order.order_number %></strong> is confirmed. We'll notify you when it ships.</p>
+<h2>Order Confirmed</h2>
+<p>Hi <%= @order.user&.first_name || @order.email.split('@').first.capitalize %>,</p>
+<p>Your order is confirmed and we're getting it ready. You'll receive another email when it ships.</p>
 
+<div class="info-box">
+  <h3>Order Details</h3>
+  <p><strong>Order Number:</strong> <span class="accent-text"><%= @order.order_number %></span></p>
+  <p><strong>Order Date:</strong> <%= @order.created_at.strftime("%B %d, %Y") %></p>
+  <p><strong>Total:</strong> <%= number_to_currency(@order.total_amount, unit: '£') %></p>
+</div>
+
+<% if @order.order_items.any? %>
+<div class="info-box">
+  <h3>Items</h3>
+  <% @order.order_items.each do |item| %>
+    <p><strong><%= item.product_name %></strong> × <%= item.quantity %> — <%= number_to_currency(item.price * item.quantity, unit: '£') %></p>
+  <% end %>
+</div>
+<% end %>
+
+<div class="divider"></div>
+
+<p style="text-align: center;">
+  <a href="<%= dashboard_orders_url %>" class="button">View Order Status</a>
+</p>
+
+<p style="font-size: 13px; color: #6b7280;">If you have any questions about your order, feel free to reach out.</p>

@@ -90,7 +90,7 @@ Rails.application.configure do
   # Do not dump schema after migrations.
   config.active_record.dump_schema_after_migration = false
 
-  Rails.application.routes.default_url_options[:host] = 'rkcustoms.co.uk'
+  Rails.application.routes.default_url_options[:host] = 'ssgrip8go.com'
 
   # Load environment variables from .env files if dotenv-rails is available
   begin
@@ -102,41 +102,29 @@ Rails.application.configure do
     # dotenv-rails not available, continue without it
   end
 
-  # Gmail SMTP Configuration
-  gmail_username = ENV['GMAIL_USERNAME'] || Rails.application.credentials.gmail_username
-  gmail_password = ENV['GMAIL_PASSWORD'] || Rails.application.credentials.gmail_password
-  
-  if gmail_username.present? && gmail_password.present?
-    config.action_mailer.delivery_method = :smtp
-    config.action_mailer.smtp_settings = {
-      address:              'smtp.gmail.com',
-      port:                 587,
-      domain:               'rkcustoms.co.uk',
-      user_name:            gmail_username,
-      password:             gmail_password,
-      authentication:       'plain',
-      enable_starttls_auto: true,
-      openssl_verify_mode:  'none',
-      return_response:      true,
-      enable_ssl:           false
-    }
-    
-    # ActionMailer configuration
-    config.action_mailer.raise_delivery_errors = false
-    config.action_mailer.perform_deliveries = true
-    config.action_mailer.default_url_options = { host: 'rkcustoms.co.uk' }
-    
-    Rails.logger&.info "Gmail SMTP configured successfully in production"
-  else
-    # Fallback for production when Gmail credentials are not set
-    config.action_mailer.delivery_method = :test
-    config.action_mailer.perform_deliveries = false
-    config.action_mailer.raise_delivery_errors = false
-    
-    # Only log errors if logger is available (not during migrations)
-    if defined?(Rails.logger) && Rails.logger
-      Rails.logger.error "Gmail SMTP credentials not found in production. Emails will not be sent!"
-      Rails.logger.error "Set GMAIL_USERNAME and GMAIL_PASSWORD environment variables to enable email sending."
-    end
-  end
+  smtp_user = ENV["SMTP_USERNAME"].presence ||
+              ENV["GMAIL_EMAIL"].presence ||
+              ENV["GMAIL_USERNAME"].presence ||
+              Rails.application.credentials.dig(:smtp, :username)
+  smtp_pass = ENV["SMTP_PASSWORD"].presence ||
+              ENV["GMAIL_PASSWORD"].presence ||
+              Rails.application.credentials.dig(:smtp, :password)
+
+  config.action_mailer.perform_deliveries = true
+  config.action_mailer.raise_delivery_errors = true
+  config.action_mailer.delivery_method = :smtp
+  config.action_mailer.default_url_options = {
+    host: ENV.fetch("APP_HOST", "ssgrip8go.com"),
+    protocol: "https"
+  }
+  config.action_mailer.smtp_settings = {
+    address: ENV.fetch("SMTP_ADDRESS", "smtp.gmail.com"),
+    port: ENV.fetch("SMTP_PORT", 587),
+    domain: ENV.fetch("SMTP_DOMAIN", "ssgrip8go.com"),
+    user_name: smtp_user,
+    password: smtp_pass,
+    authentication: :plain,
+    enable_starttls_auto: true,
+    openssl_verify_mode: "none"
+  }
 end

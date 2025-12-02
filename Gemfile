@@ -9,9 +9,12 @@ gem "rails", "~> 7.0.8", ">= 7.0.8.4"
 # The original asset pipeline for Rails [https://github.com/rails/sprockets-rails]
 gem "sprockets-rails"
 
+# Load environment variables from .env in all environments where it's available.
+# In production you can either rely on real ENV vars or mount a .env/.env.production file.
+gem "dotenv-rails"
+
 group :development, :test do
   gem 'sqlite3', '~> 1.4'
-  gem 'dotenv-rails'
 end
 
 group :production do

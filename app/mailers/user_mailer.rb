@@ -1,7 +1,4 @@
 class UserMailer < ApplicationMailer
-  default from: -> { GeneralSetting.first_or_initialize.contact_email || 'RK Customs <rkcustomsportsmouth@gmail.com>' }
-  default reply_to: -> { GeneralSetting.first_or_initialize.contact_email || 'RK Customs <rkcustomsportsmouth@gmail.com>' }
-  default 'Return-Path' => 'rkcustomsportsmouth@gmail.com'
 
   def order_confirmation(order)
     @order = order

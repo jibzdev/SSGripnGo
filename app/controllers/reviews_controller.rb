@@ -3,7 +3,7 @@ class ReviewsController < ApplicationController
   before_action :set_review, only: [:edit, :update, :destroy]
 
   def index
-    @reviews = Review.published.recent.includes(:user)
+    @reviews = Review.published.recent.includes(:user).with_attached_photo
     @review = if user_signed_in?
                 current_user.review || current_user.build_review
               else
@@ -18,7 +18,7 @@ class ReviewsController < ApplicationController
     if @review.save
       redirect_to reviews_path, notice: 'Thanks for sharing your experience!'
     else
-      @reviews = Review.published.recent.includes(:user)
+      @reviews = Review.published.recent.includes(:user).with_attached_photo
       render :index, status: :unprocessable_entity
     end
   end
@@ -30,7 +30,7 @@ class ReviewsController < ApplicationController
     if @review.update(review_params)
       redirect_to reviews_path, notice: 'Your review has been updated.'
     else
-      @reviews = Review.published.recent.includes(:user)
+      @reviews = Review.published.recent.includes(:user).with_attached_photo
       render :index, status: :unprocessable_entity
     end
   end
@@ -48,7 +48,7 @@ class ReviewsController < ApplicationController
   end
 
   def review_params
-    params.require(:review).permit(:rating, :title, :body)
+    params.require(:review).permit(:rating, :title, :body, :photo)
   end
 end
 

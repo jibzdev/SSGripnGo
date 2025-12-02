@@ -1,8 +1,9 @@
 // Import Action Cable using ES module syntax
 import { createConsumer } from "@rails/actioncable";
-// Import Turbo for proper form handling
 import "@hotwired/turbo-rails";
 import "controllers";
+import "dashboard";
+import "landing";
 
 // Define the global App object
 window.App = {}

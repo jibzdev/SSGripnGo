@@ -83,8 +83,11 @@ Rails.application.configure do
   end
 
   # Gmail SMTP Configuration
-  gmail_username = ENV['GMAIL_USERNAME'] || Rails.application.credentials.gmail_username
-  gmail_password = ENV['GMAIL_PASSWORD'] || Rails.application.credentials.gmail_password
+  gmail_username = ENV['GMAIL_EMAIL'].presence ||
+                   ENV['GMAIL_USERNAME'].presence ||
+                   Rails.application.credentials.gmail_username
+  gmail_password = ENV['GMAIL_PASSWORD'].presence ||
+                   Rails.application.credentials.gmail_password
   
   if gmail_username.present? && gmail_password.present?
     config.action_mailer.delivery_method = :smtp
@@ -119,6 +122,6 @@ Rails.application.configure do
     # Only log warnings if logger is available (not during migrations)
     Rails.logger&.info "Using File delivery for email in development."
     Rails.logger&.info "Emails will be saved to tmp/mails folder."
-    Rails.logger&.info "Set GMAIL_USERNAME and GMAIL_PASSWORD environment variables to enable actual email sending."
+    Rails.logger&.info "Set GMAIL_EMAIL (or GMAIL_USERNAME) and GMAIL_PASSWORD environment variables to enable actual email sending."
   end
 end

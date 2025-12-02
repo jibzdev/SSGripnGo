@@ -1,15 +1,19 @@
 // RK Customs Website JavaScript
 
-// Register GSAP plugins
-if (typeof gsap !== 'undefined') {
-    gsap.registerPlugin(ScrollTrigger, TextPlugin);
+const hasGsap = typeof window !== 'undefined' && typeof window.gsap !== 'undefined';
+const gsapInstance = hasGsap ? window.gsap : null;
+
+if (hasGsap && window.ScrollTrigger && window.TextPlugin) {
+    gsapInstance.registerPlugin(window.ScrollTrigger, window.TextPlugin);
 }
+
+let mobileNavInitAttempts = 0;
+let mobileNavInitialized = false;
 
 // Initialize mobile navigation as soon as possible
 if (document.readyState === 'loading') {
     document.addEventListener('DOMContentLoaded', initMobileNav);
 } else {
-    // DOM is already loaded
     initMobileNav();
 }
 
@@ -254,6 +258,7 @@ function initHeroParticles() {
 
 // Hero Section Text Animation
 function initHeroTextAnimation() {
+    if (!hasGsap) return;
     const textItems = document.querySelectorAll('.hero-text-item');
     if (textItems.length === 0) return;
     
@@ -273,13 +278,13 @@ function initHeroTextAnimation() {
     }
     
     function animateHeroText() {
-        gsap.to(textItems[currentTextIndex], {
+        gsapInstance.to(textItems[currentTextIndex], {
             opacity: 0,
             y: 10,
             duration: 0.3,
             onComplete: () => {
                 currentTextIndex = getNextTextIndex();
-                gsap.to(textItems[currentTextIndex], {
+                gsapInstance.to(textItems[currentTextIndex], {
                     opacity: 1,
                     y: 0,
                     duration: 0.3
@@ -289,7 +294,7 @@ function initHeroTextAnimation() {
     }
 
     // Initial text setup
-    gsap.set(textItems[0], { opacity: 1, y: 0 });
+    gsapInstance.set(textItems[0], { opacity: 1, y: 0 });
     usedIndices.add(0);
     setInterval(animateHeroText, 2000);
 }
@@ -297,93 +302,107 @@ function initHeroTextAnimation() {
 // Navbar scroll behavior
 function initNavbarScroll() {
     const navbar = document.getElementById('navbar');
+    if (!navbar) return;
+
+    if (!hasGsap) {
+        window.addEventListener('scroll', () => {
+            if (window.pageYOffset > 10) {
+                navbar.classList.add('scrolled');
+            } else {
+                navbar.classList.remove('scrolled');
+            }
+        });
+        return;
+    }
+
     let lastScroll = 0;
     let ticking = false;
     let isAnimating = false;
-    
-    if (!navbar) return;
 
-    // Set initial state
     navbar.style.background = 'transparent';
     navbar.style.backdropFilter = 'none';
 
     window.addEventListener('scroll', () => {
-        if (!ticking) {
-            window.requestAnimationFrame(() => {
-                const currentScroll = window.pageYOffset;
-                
-                if (currentScroll <= 0) {
-                    if (!isAnimating) {
-                        isAnimating = true;
-                        gsap.to(navbar, {
-                            y: 0,
-                            background: 'transparent',
-                            backdropFilter: 'none',
-                            duration: 0.15,
-                            ease: 'power2.out',
-                            onComplete: () => {
-                                navbar.classList.remove('scrolled', 'nav-hidden');
-                                isAnimating = false;
-                            }
-                        });
-                    }
-                } else if (currentScroll > lastScroll && currentScroll > 30) {
-                    if (!isAnimating && !navbar.classList.contains('nav-hidden')) {
-                        isAnimating = true;
-                        gsap.to(navbar, {
-                            y: -100,
-                            background: 'rgba(0, 0, 0, 0.8)',
-                            backdropFilter: 'blur(20px)',
-                            duration: 0.05,
-                            ease: 'power2.in',
-                            onComplete: () => {
-                                navbar.classList.add('nav-hidden');
-                                navbar.classList.add('scrolled');
-                                isAnimating = false;
-                            }
-                        });
-                    }
-                } else if (currentScroll < lastScroll) {
-                    if (!isAnimating && navbar.classList.contains('nav-hidden')) {
-                        isAnimating = true;
-                        gsap.to(navbar, {
-                            y: 0,
-                            background: 'rgba(0, 0, 0, 0.8)',
-                            backdropFilter: 'blur(20px)',
-                            duration: 0.05,
-                            ease: 'power2.out',
-                            onComplete: () => {
-                                navbar.classList.remove('nav-hidden');
-                                navbar.classList.add('scrolled');
-                                isAnimating = false;
-                            }
-                        });
-                    }
+        if (ticking) return;
+
+        window.requestAnimationFrame(() => {
+            const currentScroll = window.pageYOffset;
+
+            if (currentScroll <= 0) {
+                if (!isAnimating) {
+                    isAnimating = true;
+                    gsapInstance.to(navbar, {
+                        y: 0,
+                        background: 'transparent',
+                        backdropFilter: 'none',
+                        duration: 0.15,
+                        ease: 'power2.out',
+                        onComplete: () => {
+                            navbar.classList.remove('scrolled', 'nav-hidden');
+                            isAnimating = false;
+                        }
+                    });
                 }
-                
-                lastScroll = currentScroll;
-                ticking = false;
-            });
-            
-            ticking = true;
-        }
+            } else if (currentScroll > lastScroll && currentScroll > 30) {
+                if (!isAnimating && !navbar.classList.contains('nav-hidden')) {
+                    isAnimating = true;
+                    gsapInstance.to(navbar, {
+                        y: -100,
+                        background: 'rgba(0, 0, 0, 0.8)',
+                        backdropFilter: 'blur(20px)',
+                        duration: 0.05,
+                        ease: 'power2.in',
+                        onComplete: () => {
+                            navbar.classList.add('nav-hidden', 'scrolled');
+                            isAnimating = false;
+                        }
+                    });
+                }
+            } else if (currentScroll < lastScroll) {
+                if (!isAnimating && navbar.classList.contains('nav-hidden')) {
+                    isAnimating = true;
+                    gsapInstance.to(navbar, {
+                        y: 0,
+                        background: 'rgba(0, 0, 0, 0.8)',
+                        backdropFilter: 'blur(20px)',
+                        duration: 0.05,
+                        ease: 'power2.out',
+                        onComplete: () => {
+                            navbar.classList.remove('nav-hidden');
+                            navbar.classList.add('scrolled');
+                            isAnimating = false;
+                        }
+                    });
+                }
+            }
+
+            lastScroll = currentScroll;
+            ticking = false;
+        });
+
+        ticking = true;
     });
 }
 
 // Mobile Navigation
 function initMobileNav() {
+    if (mobileNavInitialized) return;
+
     const mobileMenuBtn = document.getElementById('mobile-menu-btn');
     const mobileSidebar = document.getElementById('mobile-sidebar');
     const sidebarOverlay = document.getElementById('sidebar-overlay');
     const closeSidebarBtn = document.getElementById('close-sidebar');
     let isOpen = false;
 
-    if (!mobileMenuBtn || !mobileSidebar || !sidebarOverlay) {
-        console.log('Mobile nav elements not found, retrying...');
-        // Retry after a short delay if elements aren't ready
-        setTimeout(initMobileNav, 100);
+    if (!mobileMenuBtn || !mobileSidebar || !sidebarOverlay || !closeSidebarBtn) {
+        if (mobileNavInitAttempts < 5) {
+            mobileNavInitAttempts += 1;
+            setTimeout(initMobileNav, 150);
+        }
         return;
     }
+    mobileNavInitAttempts = 0;
+    mobileNavInitialized = true;
 
     function openSidebar() {
         isOpen = true;
@@ -391,38 +410,34 @@ function initMobileNav() {
         // Store scroll position before opening
         const scrollY = window.pageYOffset || document.documentElement.scrollTop;
         
-        // Instant overlay - no delay
         sidebarOverlay.style.pointerEvents = 'auto';
         sidebarOverlay.style.opacity = '1';
-        
-        // Smooth sidebar slide
-        gsap.to(mobileSidebar, {
-            x: 0,
-            duration: 0.3,
-            ease: 'power2.out',
-            onComplete: () => {
-                // Animate menu items after sidebar opens
-                const menuItems = mobileSidebar.querySelectorAll('nav a');
-                gsap.fromTo(menuItems, 
-                    { opacity: 0, x: 20 },
-                    { 
-                        opacity: 1, 
-                        x: 0, 
-                        duration: 0.3, 
-                        stagger: 0.05, 
-                        ease: 'power2.out' 
-                    }
-                );
-            }
-        });
-        
-        // Smooth hamburger color change
+
+        if (hasGsap) {
+            gsapInstance.to(mobileSidebar, {
+                x: 0,
+                duration: 0.3,
+                ease: 'power2.out',
+                onComplete: () => {
+                    const menuItems = mobileSidebar.querySelectorAll('nav a');
+                    gsapInstance.fromTo(menuItems, 
+                        { opacity: 0, x: 20 },
+                        { 
+                            opacity: 1, 
+                            x: 0, 
+                            duration: 0.3, 
+                            stagger: 0.05, 
+                            ease: 'power2.out' 
+                        }
+                    );
+                }
+            });
+        } else {
+            mobileSidebar.style.transform = 'translateX(0)';
+        }
+
         const lines = mobileMenuBtn.querySelectorAll('span');
-        gsap.to(lines, {
-            backgroundColor: '#fbbf24',
-            duration: 0.2,
-            ease: 'power2.out'
-        });
+        lines.forEach(line => line.style.backgroundColor = '#fbbf24');
         
         // Prevent scroll jump - alternative approach
         document.body.style.overflow = 'hidden';
@@ -440,30 +455,29 @@ function initMobileNav() {
     function closeSidebar() {
         isOpen = false;
         
-        // Smooth overlay hide
-        gsap.to(sidebarOverlay, {
-            opacity: 0,
-            duration: 0.2,
-            ease: 'power2.in',
-            onComplete: () => {
-                sidebarOverlay.style.pointerEvents = 'none';
-            }
-        });
-        
-        // Smooth sidebar slide back
-        gsap.to(mobileSidebar, {
-            x: '100%',
-            duration: 0.3,
-            ease: 'power2.in'
-        });
-        
-        // Smooth hamburger color reset
+        if (hasGsap) {
+            gsapInstance.to(sidebarOverlay, {
+                opacity: 0,
+                duration: 0.2,
+                ease: 'power2.in',
+                onComplete: () => {
+                    sidebarOverlay.style.pointerEvents = 'none';
+                }
+            });
+    
+            gsapInstance.to(mobileSidebar, {
+                x: '100%',
+                duration: 0.3,
+                ease: 'power2.in'
+            });
+        } else {
+            sidebarOverlay.style.opacity = '0';
+            sidebarOverlay.style.pointerEvents = 'none';
+            mobileSidebar.style.transform = 'translateX(100%)';
+        }
+
         const lines = mobileMenuBtn.querySelectorAll('span');
-        gsap.to(lines, {
-            backgroundColor: '#ffffff',
-            duration: 0.2,
-            ease: 'power2.out'
-        });
+        lines.forEach(line => line.style.backgroundColor = '#ffffff');
         
         // Restore scroll position - alternative approach
         const scrollY = parseInt(document.body.dataset.scrollY || '0');

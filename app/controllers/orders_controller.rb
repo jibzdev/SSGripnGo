@@ -22,6 +22,11 @@ class OrdersController < ApplicationController
       return
     end
 
+    if @general_setting.orders_disabled
+      redirect_to basket_path, alert: 'Orders are currently disabled. Please contact us via social media to place an order.'
+      return
+    end
+
     @order = current_user.orders.build(
       email: current_user.email,
       phone_number: current_user.phone_number
@@ -33,6 +38,11 @@ class OrdersController < ApplicationController
     @basket = current_basket
     if @basket.basket_items.empty?
       redirect_to catalog_path, alert: 'Add items to your basket before checking out.'
+      return
+    end
+
+    if @general_setting.orders_disabled
+      redirect_to basket_path, alert: 'Orders are currently disabled. Please contact us via social media to place an order.'
       return
     end
 
@@ -53,6 +63,7 @@ class OrdersController < ApplicationController
       @basket.empty!
     end
 
+    send_order_confirmation(@order)
     redirect_to order_path(@order.order_number), notice: 'Order placed successfully. You can track it from your dashboard.'
   rescue ActiveRecord::RecordInvalid => e
     flash.now[:alert] = e.record.errors.full_messages.to_sentence
@@ -118,6 +129,14 @@ class OrdersController < ApplicationController
     return if order.shipping_address.blank?
 
     current_user.update_shipping_profile(order.shipping_address)
+  end
+
+  def send_order_confirmation(order)
+    return unless defined?(UserMailer) && !Rails.env.test?
+
+    UserMailer.order_confirmation(order).deliver_later
+  rescue => e
+    Rails.logger.error("Failed to send order confirmation for #{order.order_number}: #{e.message}")
   end
 end
 

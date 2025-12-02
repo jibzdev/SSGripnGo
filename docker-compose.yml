@@ -1,11 +1,11 @@
 services:
   db:
-    image: postgres:latest
+    image: postgres:18
     volumes:
-      - postgres_data:/var/lib/postgresql/data
+      - postgres_data:/var/lib/postgresql
     environment:
-      POSTGRES_DB: rkcustoms
-      POSTGRES_USER: rkcustoms
+      POSTGRES_DB: ssgrip8gear
+      POSTGRES_USER: ssgrip8gear
       POSTGRES_PASSWORD: 0161Mannyonthemap
     ports:
       - "5433:5432"    # host:container
@@ -21,9 +21,15 @@ services:
       - db
     environment:
       RAILS_ENV: production
-      DATABASE_URL: postgres://rkcustoms:0161Mannyonthemap@db:5432/rkcustoms
+      DATABASE_URL: postgres://ssgrip8gear:0161Mannyonthemap@db:5432/ssgrip8gear
       SECRET_KEY_BASE: 6465006ac0b74b3d9cf4e3111b0ec29e1c3dc6927b4e8d0d74592ad3501ec7d02d32488e326fd6c86d9c2da1f94da25005b2cda440ca6aa16b3ba9a809ab307c
       RAILS_SERVE_STATIC_FILES: "true"
+      # SMTP / Gmail credentials (set these in your real environment or a .env file)
+      SMTP_USERNAME: ${SMTP_USERNAME}
+      SMTP_PASSWORD: ${SMTP_PASSWORD}
+      GMAIL_USERNAME: ${GMAIL_USERNAME}
+      GMAIL_PASSWORD: ${GMAIL_PASSWORD}
+      OUTBOUND_EMAIL_FROM: ${OUTBOUND_EMAIL_FROM}
 
 volumes:
   postgres_data:

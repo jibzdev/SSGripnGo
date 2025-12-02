@@ -1,7 +1,7 @@
 <div class="bg-ssgrip-darker/40 border border-ssgrip-silver/10 rounded-2xl p-6 flex flex-col gap-4 hover:border-ssgrip-silver/30 transition-all">
   <div class="flex items-center justify-between text-sm text-ssgrip-silver">
     <div class="flex items-center gap-3">
-      <div class="flex items-center gap-1">
+  <div class="flex items-center gap-1">
         <% max_rating = Review::RATINGS.max %>
         <% max_rating.times do |i| %>
           <svg class="w-4 h-4 <%= i < review.rating ? 'text-ssgrip-accent' : 'text-ssgrip-silver/30' %>" fill="currentColor" viewBox="0 0 20 20">
@@ -14,14 +14,19 @@
     <span class="text-ssgrip-silver-dark"><%= review.created_at.strftime("%d %b %Y") %></span>
   </div>
 
-  <div>
+  <div class="break-words">
     <p class="text-xs uppercase tracking-[0.2em] text-ssgrip-silver/60 mb-1">Owner</p>
     <p class="text-lg font-semibold text-white"><%= review.author_name %></p>
   </div>
 
   <div>
     <p class="text-xl font-bold text-white mb-2"><%= review.title %></p>
-    <div class="text-sm text-ssgrip-silver leading-relaxed space-y-2"><%= simple_format(review.body) %></div>
+  <div class="text-sm text-ssgrip-silver leading-relaxed space-y-2 break-words break-all"><%= simple_format(review.body) %></div>
+  <% if review.photo.attached? %>
+    <div class="mt-4">
+      <%= image_tag url_for(review.photo), alt: "Photo from #{review.author_name}", class: "w-full rounded-2xl border border-ssgrip-silver/10 object-cover max-h-72" %>
+    </div>
+  <% end %>
   </div>
 </div>
 

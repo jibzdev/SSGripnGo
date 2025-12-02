@@ -28,7 +28,9 @@ module Admin
         :bank_sort_code,
         :bank_iban,
         :bank_instructions,
-        :bank_reference_hint
+        :bank_reference_hint,
+        :orders_disabled,
+        :orders_disabled_reason
       )
     end
   end

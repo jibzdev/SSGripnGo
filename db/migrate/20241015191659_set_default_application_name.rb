@@ -3,9 +3,9 @@ class SetDefaultApplicationName < ActiveRecord::Migration[7.0]
     general_setting = GeneralSetting.first
 
     if general_setting.nil?
-      GeneralSetting.create(application_name: "RKCustoms")
+      GeneralSetting.create(application_name: "ssgripngo")
     elsif general_setting.application_name.blank?
-      general_setting.update(application_name: "RKCustoms")
+      general_setting.update(application_name: "ssgripngo")
     end
   end
 

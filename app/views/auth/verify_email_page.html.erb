@@ -1,122 +1,126 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <title>Email Verification - RK Customs</title>
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <%= csrf_meta_tags %>
-    <%= csp_meta_tag %>
-    
-    <%= stylesheet_link_tag "tailwind", "data-turbo-track": "reload" %>
-    <%= stylesheet_link_tag "application", "data-turbo-track": "reload" %>
-    
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Poppins:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
-    
-    <!-- Boxicons for icons -->
-    <link href='https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css' rel='stylesheet'>
-    
-    <link rel="icon" type="image/png" href="/assets/images/logo3.png">
-</head>
-<body style="user-select: none; -webkit-user-select: none; -webkit-user-drag: none;">
-<div class="min-h-screen bg-gradient-to-br from-zinc-900 via-zinc-800 to-zinc-900 flex items-center justify-center p-4">
-  <div class="max-w-md w-full">
-    <!-- Logo -->
-    <div class="text-center mb-8">
-      <%= image_tag "logo4.png", alt: "RKCustoms", class: "h-16 w-auto mx-auto mb-4" %>
-      <h1 class="text-2xl font-bold text-white">Email Verification Required</h1>
-    </div>
-
-    <!-- Verification Card -->
-    <div class="bg-zinc-800/50 backdrop-blur-sm rounded-2xl border border-zinc-700 p-8 shadow-2xl">
-      <!-- Status Icon -->
-      <div class="text-center mb-6">
-        <div class="inline-flex items-center justify-center w-16 h-16 bg-yellow-500/20 rounded-full mb-4">
-          <i class="bx bx-envelope text-3xl text-yellow-400"></i>
-        </div>
-        <h2 class="text-xl font-semibold text-white mb-2">Verify Your Email Address</h2>
-        <p class="text-zinc-400 text-sm">
-          We've sent a verification link to <strong class="text-white"><%= @user.email %></strong>
-        </p>
-      </div>
-
-      <!-- Instructions -->
-      <div class="bg-zinc-700/30 rounded-xl p-4 mb-6">
-        <h3 class="text-white font-medium mb-2 flex items-center">
-          <i class="bx bx-info-circle text-blue-400 mr-2"></i>
-          What to do next:
-        </h3>
-        <ul class="text-zinc-300 text-sm space-y-1">
-          <li class="flex items-start">
-            <span class="text-blue-400 mr-2">1.</span>
-            Check your email inbox (and spam folder)
-          </li>
-          <li class="flex items-start">
-            <span class="text-blue-400 mr-2">2.</span>
-            Click the verification link in the email
-          </li>
-          <li class="flex items-start">
-            <span class="text-blue-400 mr-2">3.</span>
-            You'll be redirected to your dashboard
-          </li>
-        </ul>
-      </div>
-
-      <!-- Resend Button -->
-      <div class="space-y-4">
-        <%= form_with url: resend_verification_email_path, method: :post, local: true, class: "w-full" do |form| %>
-          <button type="submit" class="w-full bg-gradient-to-r from-yellow-500 to-orange-500 hover:from-yellow-600 hover:to-orange-600 text-white font-semibold py-3 px-6 rounded-xl transition-all duration-200 transform hover:scale-105 focus:outline-none focus:ring-2 focus:ring-yellow-500 focus:ring-offset-2 focus:ring-offset-zinc-800">
-            <i class="bx bx-refresh mr-2"></i>
-            Resend Verification Email
-          </button>
-        <% end %>
-
-        <!-- Cooldown Info -->
-        <% if @user.verification_sent_at && Time.current < @user.verification_sent_at + 2.minutes %>
-          <div class="bg-yellow-500/10 border border-yellow-500/20 rounded-xl p-3">
-            <p class="text-yellow-400 text-sm text-center">
-              <i class="bx bx-time mr-1"></i>
-              Please wait <%= ((@user.verification_sent_at + 2.minutes) - Time.current).to_i %> seconds before requesting another email
-            </p>
-          </div>
-        <% end %>
-
-        <!-- Help Text -->
-        <div class="text-center">
-          <p class="text-zinc-400 text-xs">
-            Didn't receive the email? Check your spam folder or try resending.
-          </p>
-        </div>
-      </div>
-
-      <!-- Back to Login -->
-      <div class="mt-6 pt-6 border-t border-zinc-700">
-        <div class="text-center">
-          <p class="text-zinc-400 text-sm mb-3">Need to use a different email?</p>
-          <%= link_to logout_path, method: :get, class: "text-yellow-400 hover:text-yellow-300 text-sm font-medium transition-colors duration-200" do %>
-            <i class="bx bx-log-out mr-1"></i>
-            Sign out and try again
-          <% end %>
-        </div>
-      </div>
-    </div>
-
-    <!-- Footer -->
-    <div class="text-center mt-8">
-      <p class="text-zinc-500 text-xs">
-        Having trouble? Contact support for assistance.
+<section class="pt-32 pb-20 bg-ssgrip-darkest min-h-screen">
+  <div class="max-w-4xl mx-auto px-6 space-y-10">
+    <!-- Header -->
+    <div class="text-center space-y-4">
+      <p class="text-xs uppercase tracking-[0.4em] text-ssgrip-silver/60">Verification Required</p>
+      <h1 class="text-4xl md:text-5xl font-black text-white">Confirm Your Email</h1>
+      <p class="text-ssgrip-silver max-w-2xl mx-auto">
+        We've sent a verification link to <span class="font-semibold text-white"><%= @user&.email || 'your email' %></span>. 
+        Check your inbox and click the link to activate your account.
       </p>
     </div>
-  </div>
-</div>
 
-<!-- Background Animation -->
-<div class="fixed inset-0 -z-10 overflow-hidden">
-  <div class="absolute -inset-10 opacity-50">
-    <div class="absolute top-1/4 left-1/4 w-72 h-72 bg-yellow-500/10 rounded-full mix-blend-multiply filter blur-xl animate-pulse"></div>
-    <div class="absolute top-3/4 right-1/4 w-72 h-72 bg-orange-500/10 rounded-full mix-blend-multiply filter blur-xl animate-pulse animation-delay-2000"></div>
-    <div class="absolute bottom-1/4 left-1/3 w-72 h-72 bg-red-500/10 rounded-full mix-blend-multiply filter blur-xl animate-pulse animation-delay-4000"></div>
+    <!-- Flash Messages -->
+    <% flash.each do |type, message| %>
+      <% next if message.blank? %>
+      <% is_alert = %w[alert error].include?(type.to_s) %>
+      <div class="rounded-2xl border px-6 py-4 text-sm text-center font-medium <%= is_alert ? 'border-red-500/30 bg-red-500/10 text-red-200' : 'border-emerald-400/30 bg-emerald-400/10 text-emerald-200' %>">
+        <%= message %>
+      </div>
+    <% end %>
+
+    <!-- Main Card -->
+    <div class="bg-ssgrip-darker/50 border border-ssgrip-silver/10 rounded-3xl p-8 md:p-10 shadow-2xl shadow-black/30">
+      <div class="grid md:grid-cols-2 gap-10">
+        <!-- Steps -->
+        <div class="space-y-6">
+          <div>
+            <p class="text-xs uppercase tracking-[0.3em] text-ssgrip-silver/60 mb-3">How it works</p>
+            <h2 class="text-2xl font-bold text-white">Three quick steps</h2>
+          </div>
+
+          <div class="space-y-4">
+            <div class="flex gap-4 items-start">
+              <div class="w-10 h-10 rounded-full bg-ssgrip-accent/20 border border-ssgrip-accent/30 flex items-center justify-center text-ssgrip-accent font-bold text-sm shrink-0">1</div>
+              <div>
+                <p class="font-semibold text-white">Check your inbox</p>
+                <p class="text-sm text-ssgrip-silver">Look for an email from SSGrip8Go with the subject "Verify Your Email".</p>
+              </div>
+            </div>
+            <div class="flex gap-4 items-start">
+              <div class="w-10 h-10 rounded-full bg-ssgrip-accent/20 border border-ssgrip-accent/30 flex items-center justify-center text-ssgrip-accent font-bold text-sm shrink-0">2</div>
+              <div>
+                <p class="font-semibold text-white">Click the verification link</p>
+                <p class="text-sm text-ssgrip-silver">The secure link confirms your email and activates your account.</p>
+              </div>
+            </div>
+            <div class="flex gap-4 items-start">
+              <div class="w-10 h-10 rounded-full bg-ssgrip-accent/20 border border-ssgrip-accent/30 flex items-center justify-center text-ssgrip-accent font-bold text-sm shrink-0">3</div>
+              <div>
+                <p class="font-semibold text-white">Access your dashboard</p>
+                <p class="text-sm text-ssgrip-silver">You'll be redirected to your dashboard with full account access.</p>
+              </div>
+            </div>
+          </div>
+
+          <div class="pt-4 border-t border-ssgrip-silver/10">
+            <p class="text-xs text-ssgrip-silver-dark">
+              <svg class="w-4 h-4 inline-block mr-1 text-ssgrip-silver/50" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"/>
+              </svg>
+              The verification link expires in 24 hours for security.
+            </p>
+          </div>
+        </div>
+
+        <!-- Actions -->
+        <div class="space-y-6">
+          <div class="bg-ssgrip-darkest/50 border border-ssgrip-silver/10 rounded-2xl p-6">
+            <div class="flex items-center gap-3 mb-4">
+              <div class="w-10 h-10 rounded-full bg-ssgrip-silver/10 flex items-center justify-center">
+                <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/>
+                </svg>
+              </div>
+              <div>
+                <p class="text-xs uppercase tracking-[0.2em] text-ssgrip-silver/60">Didn't receive it?</p>
+                <p class="font-semibold text-white">Resend verification email</p>
+              </div>
+            </div>
+
+            <p class="text-sm text-ssgrip-silver mb-5">
+              We'll send another verification link to your email. Check your spam folder if you don't see it.
+            </p>
+
+            <%= form_with url: resend_verification_email_path, method: :post, local: true do %>
+              <button type="submit" class="w-full inline-flex items-center justify-center gap-2 px-6 py-3 rounded-xl bg-white text-ssgrip-darkest font-semibold hover:bg-ssgrip-accent transition-all group">
+                <svg class="w-4 h-4 group-hover:rotate-180 transition-transform duration-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/>
+                </svg>
+                <span>Resend Email</span>
+              </button>
+            <% end %>
+
+            <% if @user&.verification_sent_at && Time.current < @user.verification_sent_at + 2.minutes %>
+              <% time_left = ((@user.verification_sent_at + 2.minutes) - Time.current).ceil %>
+              <div class="mt-4 rounded-xl border border-ssgrip-silver/20 bg-ssgrip-silver/5 px-4 py-3 text-sm text-ssgrip-silver flex items-center gap-2">
+                <svg class="w-4 h-4 text-ssgrip-silver/70" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                </svg>
+                <span>You can request another email in <span class="font-semibold text-white"><%= time_left %>s</span></span>
+              </div>
+            <% end %>
+          </div>
+
+          <div class="bg-ssgrip-darkest/30 border border-ssgrip-silver/10 rounded-2xl p-5 space-y-3">
+            <p class="text-sm text-ssgrip-silver">
+              Wrong email address? Sign out and register again with the correct one.
+            </p>
+            <%= link_to logout_path, class: "inline-flex items-center gap-2 text-sm font-semibold text-white hover:text-ssgrip-accent transition-colors" do %>
+              <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"/>
+              </svg>
+              <span>Sign out and try again</span>
+            <% end %>
+          </div>
+
+          <div class="text-center">
+            <p class="text-xs text-ssgrip-silver-dark">
+              Still having trouble? Contact us at <a href="mailto:support@ssgrip8go.com" class="text-ssgrip-silver hover:text-white transition-colors">support@ssgrip8go.com</a>
+            </p>
+          </div>
+        </div>
+      </div>
+    </div>
   </div>
-</div>
-</body>
-</html>
+</section>

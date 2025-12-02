@@ -300,58 +300,6 @@
 
     <div id="drawerBackdrop" class="fixed inset-0 bg-black opacity-0 transition-opacity duration-200 z-40 hidden"></div>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/flowbite/2.3.0/flowbite.min.js"></script>
-    <script>
-      (function() {
-        function initAdminPanel() {
-          const sidebar = document.getElementById('sidebar');
-          const menuToggle = document.getElementById('menuToggle');
-          const backdrop = document.getElementById('sidebarBackdrop');
-
-          if (menuToggle && sidebar && backdrop && !menuToggle.dataset.init) {
-            menuToggle.dataset.init = 'true';
-
-            menuToggle.addEventListener('click', function() {
-              sidebar.classList.toggle('-translate-x-full');
-              backdrop.classList.toggle('opacity-0');
-              backdrop.classList.toggle('hidden');
-            });
-
-            backdrop.addEventListener('click', function() {
-              sidebar.classList.add('-translate-x-full');
-              backdrop.classList.add('opacity-0', 'hidden');
-            });
-
-            document.addEventListener('keydown', function(event) {
-              if (event.key === 'Escape' && !sidebar.classList.contains('-translate-x-full')) {
-                sidebar.classList.add('-translate-x-full');
-                backdrop.classList.add('opacity-0', 'hidden');
-              }
-            });
-          }
-
-          const themeToggle = document.getElementById('themeToggle');
-          if (themeToggle && !themeToggle.dataset.init) {
-            themeToggle.dataset.init = 'true';
-            themeToggle.addEventListener('click', function() {
-              const html = document.documentElement;
-              const isDark = html.classList.contains('dark');
-
-              if (isDark) {
-                html.classList.remove('dark');
-                localStorage.setItem('darkMode', 'false');
-              } else {
-                html.classList.add('dark');
-                localStorage.setItem('darkMode', 'true');
-              }
-            });
-          }
-
-        }
-
-        document.addEventListener('DOMContentLoaded', initAdminPanel);
-        document.addEventListener('turbo:load', initAdminPanel);
-      })();
-    </script>
     
     <!-- Toast Notifications -->
     <div id="flash-container">
